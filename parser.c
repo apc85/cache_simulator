@@ -329,6 +329,21 @@ int readFile(char * ini_name) {
     }
 
 
+    //reading key memory:access_time_burst
+    const char * mem_access_time_burst=           iniparser_getstring(ini, "memory:access_time_burst", NULL);
+    double double_mem_access_time_burst=            parseDouble(mem_access_time_burst);
+
+    if(double_mem_access_time_burst==-1) {
+        printf("Error: memory:access_time value is not valid\n");
+        errors++;
+    } else if(double_mem_access_time_burst==-2) {
+        printf("Error: Missing value memory:access_time\n");
+        errors++;
+    } else {
+        memory.access_time_burst=double_mem_access_time_burst;
+    }
+
+
     //reading key memory:bus_width
     /*
     const char * mem_bus_width= iniparser_getstring(ini, "memory:bus_width", NULL);
@@ -557,7 +572,8 @@ void showState() {
     printf("size:               [%ld bytes] \n",  memory.size);
     printf("bus_width:          [%ld bits] \n", memory.bus_width);
     printf("bus_frequency:      [%ld Hz] \n", memory.bus_frequency);
-    printf("access_time_1:      [%lf s] \n", memory.access_time_1);
+    printf("access_time_1:      [%lf ns] \n", memory.access_time_1*1000000000);
+    printf("access_time_burst:  [%lf ns] \n", memory.access_time_burst*1000000000);
 
 
 
