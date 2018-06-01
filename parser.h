@@ -27,6 +27,7 @@
       double access_time_1;           // Timepo de acceso en nanosegundos.
       double access_time_burst;
       long page_size;
+      long page_base_address;
 
   };
 
@@ -52,7 +53,7 @@
 
   #define NCLAVES_CPU 3
   char* keysCPU[NCLAVES_CPU];
-  #define NCLAVES_MEMORY 4
+  #define NCLAVES_MEMORY 5
   char* keysMEMORY[NCLAVES_MEMORY];
   #define NCLAVES_CACHE 7
   char* keysCACHE[NCLAVES_CACHE];
@@ -83,5 +84,6 @@
   int isPowerOf2(long number);
   int isCorrectBinary(const char * cadena);
   double parseDouble(const char * cadena);
+  long parseAddress(const char* page_base_address);
 
 #endif

@@ -3,7 +3,7 @@
 char* str_replacementPolicy[]= {"lru", "lfu", "rnd", "fifo"};
 char* str_writePolicy[]= {"wt", "wb"};
 char* keysCPU[]= {"word_width", "frequency", /*"bus_frequency", "mem_bus_frequency",*/"trace_file"};
-char* keysMEMORY[]= {"size", "access_time_1","access_time_burst", "page_size"/*, "bus_width", "bus_frequency","access_time"*/};
+char* keysMEMORY[]= {"size", "access_time_1","access_time_burst", "page_size", "page_base_address"};
 char* keysCACHE[]= {"line_size", "size","asociativity", "write_policy", "replacement","separated","column_bit_mask"};
 char* str_true[]= {"1", "yes", "true"};
 char* str_false[]= {"0","no","false"};
@@ -357,6 +357,20 @@ int readFile(char * ini_name) {
         memory.page_size=long_page_size;
     }
 
+    //reading key memory:page_base_address
+    const char * page_base_address= iniparser_getstring(ini, "memory:page_base_address", NULL);
+    long long_page_base_address= parseAddress(page_base_address);
+
+    if(long_page_base_address==-1) {
+        printf("Error: memory:page_base_address value is not valid\n");
+        errors++;
+    } else if(long_page_base_address==-2) {
+        printf("Error: Missing value memory:page_base_address\n");
+        errors++;
+    } else {
+        memory.page_base_address=long_page_base_address;
+    }
+
     //reading key memory:bus_width
     /*
     const char * mem_bus_width= iniparser_getstring(ini, "memory:bus_width", NULL);
@@ -588,6 +602,7 @@ void showState() {
     printf("access_time_1:      [%lf ns] \n", memory.access_time_1*1000000000);
     printf("access_time_burst:  [%lf ns] \n", memory.access_time_burst*1000000000);
     printf("page_size:          [%ld bytes] \n", memory.page_size);
+    printf("page_base_address:  [0x%lx] \n", memory.page_base_address);
 
 
 
@@ -887,5 +902,25 @@ double parseDouble(const char * cadena) {
     }
 
     return atoi(cadena)*multiplicador;
+}
+
+/*
+ * convert string hex address into long. It can have a the format 0x...... 
+ * Other char will result in error.
+ * @param  page_base_address to be converted into long
+ * @return long with converted value or error. -1 for wrong value error. -2 for null pointer error.
+ */
+long parseAddress(const char* page_base_address){
+
+        if(page_base_address==NULL){
+		return -2;
+	}
+
+        long toReturn= strtol(page_base_address, NULL, 16);
+	return toReturn;
+        //provisional TODO
+	return 33;
+
+
 }
 
