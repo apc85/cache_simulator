@@ -24,7 +24,8 @@
       long size;                  // Tamaño de la memory en bytes. Ver Nota 2.
       long bus_width;             // Tamaño del bus extremo en bits.
       long bus_frequency;         // Frecuencia en herzios del bus. Ver Nota 1.
-      long access_time;           // Timepo de acceso en nanosegundos.
+      double access_time_1;           // Timepo de acceso en nanosegundos.
+      double access_time_burst;
 
   };
 
@@ -48,9 +49,9 @@
   enum write_policy {WRITE_THROUGH=0, WRITE_BACK=1};
 
 
-  #define NCLAVES_CPU 5
+  #define NCLAVES_CPU 3
   char* keysCPU[NCLAVES_CPU];
-  #define NCLAVES_MEMORY 4
+  #define NCLAVES_MEMORY 3
   char* keysMEMORY[NCLAVES_MEMORY];
   #define NCLAVES_CACHE 7
   char* keysCACHE[NCLAVES_CACHE];
@@ -80,6 +81,6 @@
   int parseWritePolicy(const char * cadena);
   int isPowerOf2(long number);
   int isCorrectBinary(const char * cadena);
-  long parseDouble(const char * cadena);
+  double parseDouble(const char * cadena);
 
 #endif

@@ -3,7 +3,7 @@
 char* str_replacementPolicy[]= {"lru", "lfu", "rnd", "fifo"};
 char* str_writePolicy[]= {"wt", "wb"};
 char* keysCPU[]= {"word_width", "frequency", /*"bus_frequency", "mem_bus_frequency",*/"trace_file"};
-char* keysMEMORY[]= {"size"/*, "bus_width", "bus_frequency"*/,"access_time"};
+char* keysMEMORY[]= {"size", "access_time_1","access_time_burst"/*, "bus_width", "bus_frequency","access_time"*/};
 char* keysCACHE[]= {"line_size", "size","asociativity", "write_policy", "replacement","separated","column_bit_mask"};
 char* str_true[]= {"1", "yes", "true"};
 char* str_false[]= {"0","no","false"};
@@ -314,6 +314,21 @@ int readFile(char * ini_name) {
         memory.size=long_mem_size;
     }
 
+    //reading key memory:access_time_1
+    const char * mem_access_time_1=           iniparser_getstring(ini, "memory:access_time_1", NULL);
+    double double_mem_access_time_1=            parseDouble(mem_access_time_1);
+
+    if(double_mem_access_time_1==-1) {
+        printf("Error: memory:access_time value is not valid\n");
+        errors++;
+    } else if(double_mem_access_time_1==-2) {
+        printf("Error: Missing value memory:access_time\n");
+        errors++;
+    } else {
+        memory.access_time_1=double_mem_access_time_1;
+    }
+
+
     //reading key memory:bus_width
     /*
     const char * mem_bus_width= iniparser_getstring(ini, "memory:bus_width", NULL);
@@ -344,7 +359,7 @@ int readFile(char * ini_name) {
     } else {
         memory.bus_frequency=long_mem_bus_frequency;
     }
-    */
+    
 
     //reading key memory:access_time
     const char * mem_access_time=         iniparser_getstring(ini, "memory:access_time", NULL);
@@ -359,7 +374,7 @@ int readFile(char * ini_name) {
     } else {
         memory.access_time=long_mem_access_time;
     }
-
+    */
 
 
 
@@ -529,20 +544,20 @@ void showState() {
     //show cpu info
     printf("\nCPU\n");
 
-    printf("word_width:         [%ld]\n", cpu.word_width);
-    printf("frecuency:          [%ld]\n", cpu.frequency);
-    printf("bus_frequency:      [%ld]\n", cpu.bus_frequency);
-    printf("mem_bus_frequency:  [%ld]\n", cpu.mem_bus_frequency);
+    printf("word_width:         [%ld bits] \n", cpu.word_width);
+    printf("frecuency:          [%ld Hz] \n", cpu.frequency);
+    printf("bus_frequency:      [%ld Hz] \n", cpu.bus_frequency);
+    printf("mem_bus_frequency:  [%ld Hz] \n", cpu.mem_bus_frequency);
     printf("trace_file:         [%s]\n", cpu.trace_file);
 
 
     //show memory info
     printf("\nMEMORY\n");
 
-    printf("size:               [%ld]\n",  memory.size);
-    printf("bus_width:          [%ld]\n", memory.bus_width);
-    printf("bus_frequency:      [%ld]\n", memory.bus_frequency);
-    printf("access_time:        [%ld]\n", memory.access_time);
+    printf("size:               [%ld bytes] \n",  memory.size);
+    printf("bus_width:          [%ld bits] \n", memory.bus_width);
+    printf("bus_frequency:      [%ld Hz] \n", memory.bus_frequency);
+    printf("access_time_1:      [%lf s] \n", memory.access_time_1);
 
 
 
@@ -550,8 +565,8 @@ void showState() {
     for(long i=0; i<numberCaches; i++) {
         printf("\nCACHE L%ld\n", i+1);
 
-        printf("line_size:          [%ld]\n",  caches[i].line_size);
-        printf("size:               [%ld]\n",  caches[i].size);
+        printf("line_size:          [%ld bits] \n",  caches[i].line_size);
+        printf("size:               [%ld bytes] \n",  caches[i].size);
         printf("asociativity:       [%ld]\n",  caches[i].asociativity);
         printf("write_policy:       [%s]\n",   str_writePolicy[caches[i].write_policy]);
         printf("replacement:        [%s]\n",   str_replacementPolicy[caches[i].replacement]);
@@ -802,7 +817,7 @@ int isCorrectBinary(const char * cadena) {
  * @param  String to be converted into double
  * @return long with converted value or error. -1 for wrong value error. -2 for null pointer error.
  */
-long parseDouble(const char * cadena) {
+double parseDouble(const char * cadena) {
 
     if(cadena==NULL) {
         return -2;
