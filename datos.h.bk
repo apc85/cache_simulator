@@ -38,15 +38,15 @@ enum {
 };
 enum {
     LINE=0,
-    SET=1,
-    VALID=2,
-    DIRTY=3,
-    TIMES_ACCESSED=4,
-    LAST_ACCESSED=5,
-    TAG=6,
-    CONTENT_CACHE=7,
-    COLOR_CACHE=8,
-    USER_CONTENT_CACHE=9,
+    TAG=1,
+    SET=2,
+    CONTENT_CACHE=3,
+    COLOR_CACHE=4,
+    USER_CONTENT_CACHE=5,
+    VALID=6,
+    DIRTY=7,
+    TIMES_ACCESSED=8,
+    LAST_ACCESSED=9,
     N_COLUMNS_CACHE=10
 };
 

@@ -867,6 +867,7 @@ void set_estatistics(char* component, char* property, char* value){
 	  char *name;
           gtk_tree_model_get (tree_model, &iter,
                               COMPONET_OR_PROPERTY, &name, -1);
+	  printf("%s\n", name);
           //found
 	  if(!strcmp(component, name)){
               componentExists=1;
@@ -890,6 +891,7 @@ void set_estatistics(char* component, char* property, char* value){
 	           char *name;
                    gtk_tree_model_get (tree_model, &child,
                               COMPONET_OR_PROPERTY, &name, -1);
+	           //printf("%s\n", name);
                    //found
 	           if(!strcmp(property, name)){
                         propertyExists=1;
@@ -900,6 +902,7 @@ void set_estatistics(char* component, char* property, char* value){
 
             //If the componet's property exists I set the value
             if(propertyExists){
+                    //printf("llego a aquí\n");
 		    gtk_tree_store_set(GTK_TREE_STORE(tree_model), &child,
 		             //COMPONET_OR_PROPERTY, "probando",
 		             VALUE, value,
@@ -961,6 +964,7 @@ char* get_estatistics(char* component, char* property){
 	  char *name;
           gtk_tree_model_get (tree_model, &iter,
                               COMPONET_OR_PROPERTY, &name, -1);
+	  printf("%s\n", name);
           //found
 	  if(!strcmp(component, name)){
               componentExists=1;
@@ -984,6 +988,7 @@ char* get_estatistics(char* component, char* property){
 	           char *name;
                    gtk_tree_model_get (tree_model, &child,
                               COMPONET_OR_PROPERTY, &name, -1);
+	           printf("%s\n", name);
                    //found
 	           if(!strcmp(property, name)){
                         propertyExists=1;
@@ -994,6 +999,7 @@ char* get_estatistics(char* component, char* property){
 
             //If the componet's property exists I get the value
             if(propertyExists){
+                    printf("llego a aquí\n");
                     char* value;
 		    gtk_tree_model_get(GTK_TREE_MODEL(tree_model), &child,
 		             //COMPONET_OR_PROPERTY, "probando",

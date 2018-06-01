@@ -95,13 +95,13 @@ void callbackNextStep( GtkWidget *widget, gpointer   data)
     set_estatistics("Cache NUEVA", "nueva categoria2", "cuatro2");
     char *value;
     value=get_estatistics("Cache L1", "Fault rate");
-    //printf("valor: %s\n", value);
+    printf("valor: %s\n", value);
     value=get_estatistics("Cache NUEVA", "nueva categoria2");
-    //printf("valor: %s\n", value);
+    printf("valor: %s\n", value);
     value=get_estatistics("Cache NUEVA", "ia2");
-    //printf("valor: %s\n", value);
+    printf("valor: %s\n", value);
     value=get_estatistics("CaUEVA", "ia2");
-    //printf("valor: %s\n", value);
+    printf("valor: %s\n", value);
 
 
 

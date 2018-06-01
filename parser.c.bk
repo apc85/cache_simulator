@@ -491,7 +491,7 @@ int readFile(char * ini_name) {
         return -1;
     } else {
         showState();
-        printf("\nConfiguration file loaded correctly\n");
+        printf("\nConfiguration file loaded without errors\n");
         return 0;
     }
 

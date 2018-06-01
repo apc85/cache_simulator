@@ -106,47 +106,35 @@ void createCacheModel(int level){
 	GtkTreeViewColumn* column;
 	GtkListStore *modelData;
 	GtkListStore *modelInstruction;
-    /*
-    LINE=0,
-    SET=1,
-    VALID=2,
-    DIRTY=3,
-    TIMES_ACCESSED=4,
-    LAST_ACCESSED=5,
-    TAG=6,
-    CONTENT_CACHE=7,
-    COLOR_CACHE=8,
-    USER_CONTENT_CACHE=9,
-    N_COLUMNS_CACHE=10
-    */
+		
 	
 	modelData= gtk_list_store_new(N_COLUMNS_CACHE,
-				       G_TYPE_STRING,   
-		                       G_TYPE_STRING,   
-		                       G_TYPE_UINT,   
-                                       G_TYPE_UINT,    
-				       G_TYPE_UINT,   
+				       G_TYPE_STRING,   /* LINE */
+		                       G_TYPE_STRING,   /* TAG */
+		                       G_TYPE_STRING,   /* SET */
+                                       G_TYPE_STRING,    /* CONTENT */
+				       G_TYPE_STRING,    /* COLOR */
+                                       G_TYPE_POINTER,
                                        G_TYPE_UINT,
-                                       G_TYPE_STRING,
-                                       G_TYPE_STRING,
-                                       G_TYPE_STRING,
-                                       G_TYPE_POINTER
+                                       G_TYPE_UINT,
+                                       G_TYPE_UINT,
+                                       G_TYPE_UINT
 		                      );
 
 	cacheLevels[level].modelData=modelData;
 
 	if(caches[level].separated){
 		modelInstruction= gtk_list_store_new(N_COLUMNS_CACHE,
-				       G_TYPE_STRING,   
-		                       G_TYPE_STRING,   
-		                       G_TYPE_UINT,   
-                                       G_TYPE_UINT,    
-				       G_TYPE_UINT,   
+				       G_TYPE_STRING,   /* LINE */
+		                       G_TYPE_STRING,   /* TAG */
+		                       G_TYPE_STRING,   /* SET */
+                                       G_TYPE_STRING,    /* CONTENT */
+				       G_TYPE_STRING,    /* COLOR */
+                                       G_TYPE_POINTER,
                                        G_TYPE_UINT,
-                                       G_TYPE_STRING,
-                                       G_TYPE_STRING,
-                                       G_TYPE_STRING,
-                                       G_TYPE_POINTER
+                                       G_TYPE_UINT,
+                                       G_TYPE_UINT,
+                                       G_TYPE_UINT
 		                      );
 		cacheLevels[level].modelInstruction=modelInstruction;
 	}

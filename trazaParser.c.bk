@@ -453,7 +453,7 @@ int readFileTrace(char * filename){
     if(errors==0){
 
 	showOperations();
-	printf("\nTracefile was loaded correctly\n");
+	printf("\nTracefile was loaded without errors\n");
 	return 0;
     }
 
