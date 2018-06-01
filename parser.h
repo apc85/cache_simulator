@@ -80,5 +80,6 @@
   int parseWritePolicy(const char * cadena);
   int isPowerOf2(long number);
   int isCorrectBinary(const char * cadena);
+  long parseDouble(const char * cadena);
 
 #endif

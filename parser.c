@@ -797,3 +797,40 @@ int isCorrectBinary(const char * cadena) {
 }
 
 
+/*
+ * convert string into double. It can have a multiplier p for 1e-12, n for 1e-9, u for 1e-6, m for 1e-3. Other char will result in error.
+ * @param  String to be converted into double
+ * @return long with converted value or error. -1 for wrong value error. -2 for null pointer error.
+ */
+long parseDouble(const char * cadena) {
+
+    if(cadena==NULL) {
+        return -2;
+    }
+    //Obtain the multiplier p, n, u, or m. Else error
+    long len=strlen(cadena);
+    double multiplicador=1;
+    if(cadena[len-1]=='m') {
+        multiplicador=1.0/1000.0;
+    } else if(cadena[len-1]=='u') {
+        multiplicador=1.0/1000000.0;
+    } else if(cadena[len-1]=='n') {
+        multiplicador=1.0/1000000000.0;
+    } else if(cadena[len-1]=='p') {
+        multiplicador=1.0/1000000000000.0;
+    } else if(cadena[len-1]>'9'||cadena[len-1]<'0') {
+        return -1;
+
+    }
+
+    //if something not numeric or multiplier. error return -1
+    for(long i=0; i<len-1; i++) {
+
+        if(cadena[i]>'9'||cadena[i]<'0') {
+            return -1;
+        }
+    }
+
+    return atoi(cadena)*multiplicador;
+}
+
