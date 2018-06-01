@@ -3,7 +3,7 @@
 char* str_replacementPolicy[]= {"lru", "lfu", "rnd", "fifo"};
 char* str_writePolicy[]= {"wt", "wb"};
 char* keysCPU[]= {"word_width", "frequency", /*"bus_frequency", "mem_bus_frequency",*/"trace_file"};
-char* keysMEMORY[]= {"size", "access_time_1","access_time_burst"/*, "bus_width", "bus_frequency","access_time"*/};
+char* keysMEMORY[]= {"size", "access_time_1","access_time_burst", "page_size"/*, "bus_width", "bus_frequency","access_time"*/};
 char* keysCACHE[]= {"line_size", "size","asociativity", "write_policy", "replacement","separated","column_bit_mask"};
 char* str_true[]= {"1", "yes", "true"};
 char* str_false[]= {"0","no","false"};
@@ -343,6 +343,19 @@ int readFile(char * ini_name) {
         memory.access_time_burst=double_mem_access_time_burst;
     }
 
+    //reading key memory:page_size
+    const char * page_size= iniparser_getstring(ini, "memory:page_size", NULL);
+    long long_page_size= parselongK1024(page_size);
+
+    if(long_page_size==-1) {
+        printf("Error: memory:page_size value is not valid\n");
+        errors++;
+    } else if(long_page_size==-2) {
+        printf("Error: Missing value memory:page_size\n");
+        errors++;
+    } else {
+        memory.page_size=long_page_size;
+    }
 
     //reading key memory:bus_width
     /*
@@ -574,6 +587,7 @@ void showState() {
     printf("bus_frequency:      [%ld Hz] \n", memory.bus_frequency);
     printf("access_time_1:      [%lf ns] \n", memory.access_time_1*1000000000);
     printf("access_time_burst:  [%lf ns] \n", memory.access_time_burst*1000000000);
+    printf("page_size:          [%ld bytes] \n", memory.page_size);
 
 
 
@@ -627,6 +641,11 @@ long parselongK1000(const char * cadena) {
         }
     }
 
+    if(len==1){
+         return multiplicador;
+
+    }
+
     return atoi(cadena)*multiplicador;
 }
 
@@ -661,6 +680,11 @@ long parselongK1024(const char * cadena) {
         if(cadena[i]>'9'||cadena[i]<'0') {
             return -1;
         }
+    }
+
+    if(len==1){
+         return multiplicador;
+
     }
 
     return atoi(cadena)*multiplicador;

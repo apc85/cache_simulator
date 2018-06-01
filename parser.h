@@ -26,6 +26,7 @@
       long bus_frequency;         // Frecuencia en herzios del bus. Ver Nota 1.
       double access_time_1;           // Timepo de acceso en nanosegundos.
       double access_time_burst;
+      long page_size;
 
   };
 
@@ -51,7 +52,7 @@
 
   #define NCLAVES_CPU 3
   char* keysCPU[NCLAVES_CPU];
-  #define NCLAVES_MEMORY 3
+  #define NCLAVES_MEMORY 4
   char* keysMEMORY[NCLAVES_MEMORY];
   #define NCLAVES_CACHE 7
   char* keysCACHE[NCLAVES_CACHE];
