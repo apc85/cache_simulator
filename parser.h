@@ -30,12 +30,13 @@
 
   struct structCache
   {
-      long line_size;             // Tamaño de line en bytes. Ver Nota 2, aunque no has mucho sentido prácitco, pero seamos coherentes.
-      long size;                  // Tamaño cache en bytes. Ver Nota 2.
-      long asociativity;          // Asociatividad: 1 = Mapeo directo, F = totalmente asociatva, cualquier user_use número potencia de dos.    
-      long write_policy;          // Política de escritura: wt = write through, wb = write back
-      long replacement;           // Política de reemplazo: lru, rand
-      int separated;              // Si la memory cache es separada. Nota 3.
+      long line_size;               // Tamaño de line en bytes. Ver Nota 2, aunque no has mucho sentido prácitco, pero seamos coherentes.
+      long size;                    // Tamaño cache en bytes. Ver Nota 2.
+      long asociativity;            // Asociatividad: 1= Mapeo directo, F= totalmente asociatva, cualquier user_use número potencia de dos.    
+      long write_policy;            // Política de escritura: wt = write through, wb = write back
+      long replacement;             // Política de reemplazo: lru, rand
+      int separated;                // Si la memory cache es separada. Nota 3.
+      const char* column_bit_mask;  //Esto indica que columnas se muestran y cuales se ocultan. Mascara en binario
   };
 
   #define N_REPLACEMENT 4
@@ -48,11 +49,11 @@
 
 
   #define NCLAVES_CPU 5
-  char* keysCPU[5];
+  char* keysCPU[NCLAVES_CPU];
   #define NCLAVES_MEMORY 4
-  char* keysMEMORY[4];
-  #define NCLAVES_CACHE 6
-  char* keysCACHE[6];
+  char* keysMEMORY[NCLAVES_MEMORY];
+  #define NCLAVES_CACHE 7
+  char* keysCACHE[NCLAVES_CACHE];
 
   #define N_TRUES 3
   char* str_true[3];
@@ -61,6 +62,8 @@
 
   #define MAX_CACHES 10
   int numberCaches;
+
+  #define N_BITS_MASK 8
 
   struct structCpu cpu;
   struct structMemory memory;
@@ -76,5 +79,6 @@
   int parseReplacementPolicy(const char * cadena);
   int parseWritePolicy(const char * cadena);
   int isPowerOf2(long number);
+  int isCorrectBinary(const char * cadena);
 
 #endif

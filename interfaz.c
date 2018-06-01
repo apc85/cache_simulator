@@ -319,7 +319,8 @@ GtkWidget * createPanelMemory() {
 
 void createPanelCache(int level) {
 
-    char* mask="11000011";
+    //char* mask="11000011";
+    const char* mask= caches[level].column_bit_mask;
 
     //Creo la cache. en caso de que sea dividia esta será la parte de data
     GtkTreeIter   iter;

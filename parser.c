@@ -4,7 +4,7 @@ char* str_replacementPolicy[]= {"lru", "lfu", "rnd", "fifo"};
 char* str_writePolicy[]= {"wt", "wb"};
 char* keysCPU[]= {"word_width", "frequency", /*"bus_frequency", "mem_bus_frequency",*/"trace_file"};
 char* keysMEMORY[]= {"size"/*, "bus_width", "bus_frequency"*/,"access_time"};
-char* keysCACHE[]= {"line_size", "size","asociativity", "write_policy", "replacement","separated"};
+char* keysCACHE[]= {"line_size", "size","asociativity", "write_policy", "replacement","separated","column_bit_mask"};
 char* str_true[]= {"1", "yes", "true"};
 char* str_false[]= {"0","no","false"};
 
@@ -365,7 +365,7 @@ int readFile(char * ini_name) {
 
 
 
-    //READING THE CONFIGURATION OF ALL THE CACHES/////////////////////////////////////////
+    //READING ALL THE CACHES CONFIGURATION /////////////////////////////////////////
 
     //Browse the cache array and check the configuration of each cache.
 
@@ -411,6 +411,23 @@ int readFile(char * ini_name) {
             caches[i].size=long_size;
         }
 
+        //reading key cache:column_bit_mask
+        sprintf(param, "%s:column_bit_mask", cache);
+
+        const char * column_bit_mask=iniparser_getstring(ini, param, NULL);
+        int isBinary=isCorrectBinary(column_bit_mask);
+        if(isBinary==-1) {
+            printf("Error: cache%d:column_bit_mask value is not valid\n", i+1);
+            errors++;
+        } else if(isBinary==-2) {
+            printf("Error: Missing value cache%d:column_bit_mask\n", i+1);
+            errors++;
+        } else if(strlen(column_bit_mask)<N_BITS_MASK){
+            printf("Error: Bit mask is to small cache%d:column_bit_mask\n", i+1);
+            errors++;
+        }else{
+            caches[i].column_bit_mask=column_bit_mask;
+        }
 
         //reading key cache:asocitivity
         sprintf(param, "%s:asociativity", cache);
@@ -429,7 +446,7 @@ int readFile(char * ini_name) {
                 printf("Error: Missing value cache%d:asociativity\n", i+1);
                 errors++;
             } else if(!isPowerOf2(long_asociativity)) {
-                printf("Error: The value of cache%d:asociativity must be powr of 2\n", i+1);
+                printf("Error: The value of cache%d:asociativity must be power of 2\n", i+1);
                 errors++;
             } else {
                 caches[i].asociativity=long_asociativity;
@@ -689,6 +706,9 @@ int parseBoolean(const char * cadena) {
 }
 
 
+
+
+
 /*
  * Convert string into enum which represent replacement policy.
  * @param  String to be converted into enum. Possible strings defined in str_replacementPolicy
@@ -749,4 +769,31 @@ int isPowerOf2(long number) {
     return number && !(number & (number - 1));
 
 }
+
+
+/*
+ * Checks if a string has binary value inside.
+ * @param  cadena String to be checked
+ * @return 1 if it is binary. -1 if it is not binary. -2 if NULL char* param
+ */
+int isCorrectBinary(const char * cadena) {
+
+    //if null return error -2
+    if(cadena==NULL) {
+        return -2;
+    }
+
+    
+    for(int i= 0; cadena[i]; i++) {
+        if(cadena[i]!='0'&&cadena[i]!='1'){
+        	return -1;
+	}
+    }
+   
+
+    return 1;
+
+
+}
+
 
