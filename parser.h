@@ -12,6 +12,7 @@
 
   struct structCpu
   {
+      long address_width;
       long word_width;            // Número de bits en la word del procesador
       long frequency;             // Frecuencia en herzios. Ver Nota 1.
       long bus_frequency;         // Frecuencia en herzios del bus longerno. Ver Nota 1.
@@ -24,7 +25,7 @@
       long size;                  // Tamaño de la memory en bytes. Ver Nota 2.
       long bus_width;             // Tamaño del bus extremo en bits.
       long bus_frequency;         // Frecuencia en herzios del bus. Ver Nota 1.
-      double access_time_1;           // Timepo de acceso en nanosegundos.
+      double access_time_1;       // Timepo de acceso en nanosegundos.
       double access_time_burst;
       long page_size;
       long page_base_address;
@@ -51,7 +52,7 @@
   enum write_policy {WRITE_THROUGH=0, WRITE_BACK=1};
 
 
-  #define NCLAVES_CPU 3
+  #define NCLAVES_CPU 4
   char* keysCPU[NCLAVES_CPU];
   #define NCLAVES_MEMORY 5
   char* keysMEMORY[NCLAVES_MEMORY];

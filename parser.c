@@ -2,7 +2,7 @@
 
 char* str_replacementPolicy[]= {"lru", "lfu", "rnd", "fifo"};
 char* str_writePolicy[]= {"wt", "wb"};
-char* keysCPU[]= {"word_width", "frequency", /*"bus_frequency", "mem_bus_frequency",*/"trace_file"};
+char* keysCPU[]= {"word_width", "address_width", "frequency", "trace_file"};
 char* keysMEMORY[]= {"size", "access_time_1","access_time_burst", "page_size", "page_base_address"};
 char* keysCACHE[]= {"line_size", "size","asociativity", "write_policy", "replacement","separated","column_bit_mask"};
 char* str_true[]= {"1", "yes", "true"};
@@ -221,6 +221,22 @@ int readFile(char * ini_name) {
 
 
     //READING CPU CONFIGURATION///////////////////////////////////////////////
+
+    //reading key cpu:address_width
+    const char * cpu_address_width= iniparser_getstring(ini, "cpu:address_width", NULL);
+    long long_cpu_address_width= parseInt(cpu_address_width);
+
+    if(long_cpu_address_width==-1) {
+        printf("Error: cpu:address_width value is not valid\n");
+        errors++;
+    } else if(long_cpu_address_width==-2) {
+        printf("Error: Missing value cpu:address_width\n");
+        errors++;
+    } else {
+        cpu.address_width=long_cpu_address_width;
+    }
+
+
 
     //reading key cpu:word_width
     const char * cpu_word_width= iniparser_getstring(ini, "cpu:word_width", NULL);
@@ -587,6 +603,7 @@ void showState() {
     printf("\nCPU\n");
 
     printf("word_width:         [%ld bits] \n", cpu.word_width);
+    printf("address_width:      [%ld bits] \n", cpu.address_width);
     printf("frecuency:          [%ld Hz] \n", cpu.frequency);
     printf("bus_frequency:      [%ld Hz] \n", cpu.bus_frequency);
     printf("mem_bus_frequency:  [%ld Hz] \n", cpu.mem_bus_frequency);
