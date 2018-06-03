@@ -360,7 +360,6 @@ int readFile(char * ini_name) {
 
 
     //READING ALL THE CACHES CONFIGURATION /////////////////////////////////////////
-
     //Browse the cache array and check the configuration of each cache.
 
     for(int i=0; i<numberCaches; i++) {
@@ -496,6 +495,23 @@ int readFile(char * ini_name) {
             caches[i].separated=long_separated;
         }
     }
+
+    //checking all the caches have the same line_size
+    if(numberCaches>0){
+            int previous=caches[0].line_size;
+	    for(int i=1; i<numberCaches; i++) {
+		if(caches[i].line_size!=previous){
+			printf("Error: All the caches must have the same line_size.\n");
+                        errors++;
+		        break;
+		}
+	    }
+    }
+
+
+
+
+
 
     if(errors>0) {
         printf("\nTotal errors: %d\n", errors);

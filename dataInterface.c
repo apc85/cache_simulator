@@ -74,7 +74,7 @@ void cacheDataReset(int level){
     //this is for filling each field with the correct amount of bits it must be represented with.
     int hexDigsSet=ceil(log(numsets)/log(16));
     int hexDigsLine=ceil(log(numLines)/log(16));
-    int hexDigsTag=(cpu.word_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
+    int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
 
     struct cacheLine* line;
     GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
@@ -146,7 +146,7 @@ void cacheInstructionReset(int level){
     //this is for filling each field with the correct amount of bits it must be represented with.
     int hexDigsSet=ceil(log(numsets)/log(16));
     int hexDigsLine=ceil(log(numLines)/log(16));
-    int hexDigsTag=(cpu.word_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
+    int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
 
     struct cacheLine* line;
     GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
@@ -459,7 +459,7 @@ void writeLineCacheData(int level, struct cacheLine* line, int i){
 
         int hexDigsSet=ceil(log(numsets)/log(16));
 	int hexDigsLine=ceil(log(numLines)/log(16));
-	int hexDigsTag=(cpu.word_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
+	int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
 
 	wordHexadecimalN(a,(*line).line, hexDigsLine);
 	wordHexadecimalN(b,(*line).tag, hexDigsTag);
@@ -523,7 +523,7 @@ void writeLineCacheInstructions(int level, struct cacheLine* line, int i){
 
         int hexDigsSet=ceil(log(numsets)/log(16));
 	int hexDigsLine=ceil(log(numLines)/log(16));
-	int hexDigsTag=(cpu.word_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
+	int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
 
 	wordHexadecimalN(a,(*line).line, hexDigsLine);
 	wordHexadecimalN(b,(*line).tag, hexDigsTag);
