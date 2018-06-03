@@ -768,7 +768,7 @@ void scrollTextViewToLine(long line) {
 
 
 
-int scrollMemoryToPos(long address) {
+int scrollMemoryToRow(long address) {
     char rowChar[50];
 
 

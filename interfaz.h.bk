@@ -86,7 +86,7 @@ void insertTextInBuffer(char* text, GtkTextBuffer *buffer);
 void nextLineTrace();
 void wordHexadecimalN(char * returned, int number, int totalDigitos);
 void addressHexadecimal(char * returned, int number);
-int scrollMemoryToPos(long address);
+int scrollMemoryToRow(long address);
 void scrollCacheToRow(int level, long row);
 void scrollDataCacheToRow(int level, long row);
 void scrollInstructionCacheToRow(int level, long row);

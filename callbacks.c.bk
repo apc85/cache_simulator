@@ -53,7 +53,7 @@ void callbackRestart( GtkWidget *widget, gpointer   data){
                           &lineIterInicial);
 	
         //Scroll each panel to initial line
-        scrollMemoryToPos(0);
+        scrollMemoryToRow(0);
         scrollTextViewToLine(0);
         for(int i=0; i<numberCaches; i++){
 
@@ -145,8 +145,8 @@ void callbackNextStep( GtkWidget *widget, gpointer   data)
    //setColorInstructionsCacheLine(0, 2, 11);
    setColorCacheLine(1, 2, 5);
    //free((line).content);
-   scrollMemoryToPos(134217832);
-   //scrollMemoryToPos(518);
+   scrollMemoryToRow(512);
+   //scrollMemoryToRow(518);
    //scrollDataCacheToRow(0, 32);
    //scrollInstructionCacheToRow(0, 32);
    //scrollCacheToRow(1, 32);
