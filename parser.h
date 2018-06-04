@@ -73,12 +73,12 @@
   struct structMemory memory;
   struct structCache caches[MAX_CACHES];
 
-
-  int readConfigurationFile(char * file);
+  dictionary *readConfigurationFile(char * file);
+  int parseConfiguration(dictionary *ini);
   void checkSectionKeys(dictionary *ini, const char *section, int numberOfValidKeys, char *validKeys[], int *errors);
   void showState();
-  long parselongK1000(const char * cadena);
-  long parselongK1024(const char * cadena);
+  long parseLongK1000(const char * cadena);
+  long parseLongK1024(const char * cadena);
   int parseBoolean(const char * cadena);
   int parseInt(const char * cadena);
   int parseReplacementPolicy(const char * cadena);

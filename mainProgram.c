@@ -69,8 +69,13 @@ int main(int argc, char *argv[]) {
        return 1;
     }
 
-    /* Load configuration file */
-    if(readConfigurationFile(argv[optind]) != 0) {
+    /* Read configuration file */
+    dictionary *ini;
+    if((ini = readConfigurationFile(argv[optind])) == NULL) {
+       return 1;
+    }
+    // Parse read configuration and populate global configuration variables.
+    if(parseConfiguration(ini) != 0) {
        return 1;
     }
     /* Load trace file specified in the configuration file */

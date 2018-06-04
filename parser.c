@@ -8,19 +8,95 @@ char* keysCACHE[]= {"line_size", "size","asociativity", "write_policy", "replace
 char* str_true[]= {"1", "yes", "true"};
 char* str_false[]= {"0","no","false"};
 
+void parseConfInt(dictionary *ini, const char *key, long int *confVariable, int *errors) {
+    const char * confString = iniparser_getstring(ini, key, NULL);
+    long value = parseInt(confString);
+
+    if(value == -1) {
+        fprintf(stderr,"Error: %s value is not valid\n", key);
+        errors++;
+    } else if(value == -2) {
+        fprintf(stderr,"Error: Missing mandatory key %s\n", key);
+        errors++;
+    } else {
+        *confVariable = value;
+    }
+}
+
+void parseConfLongK1000(dictionary *ini, const char *key, long int *confVariable, int *errors) {
+    const char * confString = iniparser_getstring(ini, key, NULL);
+    long value = parseLongK1000(confString);
+
+    if(value == -1) {
+        fprintf(stderr,"Error: %s value is not valid\n", key);
+        errors++;
+    } else if(value == -2) {
+        fprintf(stderr,"Error: Missing mandatory key %s\n", key);
+        errors++;
+    } else {
+        *confVariable = value;
+    }
+}
+
+void parseConfLongK1024(dictionary *ini, const char *key, long int *confVariable, int *errors) {
+    const char * confString = iniparser_getstring(ini, key, NULL);
+    long value = parseLongK1024(confString);
+
+    if(value == -1) {
+        fprintf(stderr,"Error: %s value is not valid\n", key);
+        errors++;
+    } else if(value == -2) {
+        fprintf(stderr,"Error: Missing mandatory key %s\n", key);
+        errors++;
+    } else {
+        *confVariable = value;
+    }
+}
+
+void parseConfDouble(dictionary *ini, const char *key, double *confVariable, int *errors) {
+    const char * confString = iniparser_getstring(ini, key, NULL);
+    double value = parseDouble(confString);
+
+    if(value == -1) {
+        fprintf(stderr,"Error: %s value is not valid\n", key);
+        errors++;
+    } else if(value == -2) {
+        fprintf(stderr,"Error: Missing mandatory key %s\n", key);
+        errors++;
+    } else {
+        *confVariable = value;
+    }
+}
+
+void parseConfAddress(dictionary *ini, const char *key, long int *confVariable, int *errors) {
+    const char * confString = iniparser_getstring(ini, key, NULL);
+    long value = parseAddress(confString);
+
+    if(value == -1) {
+        fprintf(stderr,"Error: %s value is not valid\n", key);
+        errors++;
+    } else if(value == -2) {
+        fprintf(stderr,"Error: Missing mandatory key %s\n", key);
+        errors++;
+    } else {
+        *confVariable = value;
+    }
+}
+
+
 /**
  * This functions read the simulator configuration file.
  * @param ini_name the file name
  *
  */
-int readConfigurationFile(char * ini_name) {
+dictionary *readConfigurationFile(char * ini_name) {
     numberCaches = 0;
     int errors = 0;
-    dictionary *ini ;
+    dictionary *ini;
 
     if((ini = iniparser_load(ini_name))==NULL) {
         fprintf(stderr, "Error loading file: %s\n", ini_name);
-        return -1 ;
+        return NULL;
     }
 
 #if DEBUG
@@ -79,14 +155,14 @@ int readConfigurationFile(char * ini_name) {
             }
         // If the section name isn't "cpu" or "memory" and section name isn't like "cache..." then error.
         } else {
-            printf("Error: Unknown section name [%s]\n", section);
+            fprintf(stderr,"Error: Unknown section name [%s]\n", section);
             errors++;
         }
     }
 
     // Check the mandatory [cpu] section
     if(numberCPUs==0) {
-        printf("Error: Missing mandatory section [cpu]\n");
+        fprintf(stderr,"Error: Missing mandatory section [cpu]\n");
         errors++;
     // Look for unknown keys in [cpu] section
     } else {
@@ -95,7 +171,7 @@ int readConfigurationFile(char * ini_name) {
 
     // Check the mandatory [memory] section
     if(numberMemories==0) {
-        printf("Error: Missing mandatory section [memory]\n");
+        fprintf(stderr,"Error: Missing mandatory section [memory]\n");
         errors++;
     // Look for unknown keys in [memory] section
     } else {
@@ -104,314 +180,164 @@ int readConfigurationFile(char * ini_name) {
 
     // Check that the number of cache levels is within range
     if(numberCaches>MAX_CACHES) {
-        printf("Error: The number of caches is excesive.\n");
+        fprintf(stderr,"Error: The number of caches is excesive.\n");
         errors++;
-        printf("\nTotal errors: %d\n", errors);
-        return -1;
     }
+
+    // End with error message if there has been any errors
+    if(errors > 0) {
+        fprintf(stderr,"\nTotal errors: %d\n", errors);
+        return NULL;
+    }
+    return ini;
+}
+
+
+int parseConfiguration(dictionary *ini) {
+    int errors = 0;
 
     // READING CPU CONFIGURATION///////////////////////////////////////////////
 
-    // reading key cpu:address_width
-    const char * cpu_address_width= iniparser_getstring(ini, "cpu:address_width", NULL);
-    long long_cpu_address_width= parseInt(cpu_address_width);
-
-    if(long_cpu_address_width==-1) {
-        printf("Error: cpu:address_width value is not valid\n");
-        errors++;
-    } else if(long_cpu_address_width==-2) {
-        printf("Error: Missing value cpu:address_width\n");
-        errors++;
-    } else {
-        cpu.address_width=long_cpu_address_width;
-    }
-
-
-
-    // reading key cpu:word_width
-    const char * cpu_word_width= iniparser_getstring(ini, "cpu:word_width", NULL);
-    long long_cpu_word_width= parseInt(cpu_word_width);
-
-    if(long_cpu_word_width==-1) {
-        printf("Error: cpu:word_width value is not valid\n");
-        errors++;
-    } else if(long_cpu_word_width==-2) {
-        printf("Error: Missing value cpu:word_width\n");
-        errors++;
-    } else {
-        cpu.word_width=long_cpu_word_width;
-    }
-
-    // reading key cpu:frequency
-    const char * cpu_frequency= iniparser_getstring(ini, "cpu:frequency", NULL);
-    long long_cpu_frequency= parselongK1000(cpu_frequency);
-
-    if(long_cpu_frequency==-1) {
-        printf("Error: cpu:frequency value is not valid\n");
-        errors++;
-
-    } else if(long_cpu_frequency==-2) {
-        printf("Error: Missing value cpu:frequency\n");
-        errors++;
-    } else {
-        cpu.frequency=long_cpu_frequency;
-    }
-
+    parseConfInt(ini,"cpu:address_width",&cpu.address_width,&errors);
+    parseConfInt(ini,"cpu:word_width",&cpu.word_width,&errors);
+    parseConfLongK1000(ini,"cpu:frequency",&cpu.frequency,&errors);
 
     // reading key cpu:trace_file
     const char * cpu_trace_file=          iniparser_getstring(ini, "cpu:trace_file", NULL);
     if(cpu_trace_file==NULL) {
-        printf("Error: Missing value cpu:trace_file\n");
+        fprintf(stderr,"Error: Missing value cpu:trace_file\n");
         errors++;
     } else {
         cpu.trace_file=cpu_trace_file;
     }
 
-
-
-
-
-
     // READING MEMORY CONFIGURATION//////////////////////////////////////
 
-    // reading key memory:size
-    const char * mem_size= iniparser_getstring(ini, "memory:size", NULL);
-    long long_mem_size= parselongK1024(mem_size);
-
-    if(long_mem_size==-1) {
-        printf("Error: memory:mem_size value is not valid\n");
-        errors++;
-    } else if(long_mem_size==-2) {
-        printf("Error: Missing value memory:mem_size\n");
-        errors++;
-    } else {
-        memory.size=long_mem_size;
-    }
-
-    // reading key memory:access_time_1
-    const char * mem_access_time_1=           iniparser_getstring(ini, "memory:access_time_1", NULL);
-    double double_mem_access_time_1=            parseDouble(mem_access_time_1);
-
-    if(double_mem_access_time_1==-1) {
-        printf("Error: memory:access_time value is not valid\n");
-        errors++;
-    } else if(double_mem_access_time_1==-2) {
-        printf("Error: Missing value memory:access_time\n");
-        errors++;
-    } else {
-        memory.access_time_1=double_mem_access_time_1;
-    }
-
-
-    // reading key memory:access_time_burst
-    const char * mem_access_time_burst=           iniparser_getstring(ini, "memory:access_time_burst", NULL);
-    double double_mem_access_time_burst=            parseDouble(mem_access_time_burst);
-
-    if(double_mem_access_time_burst==-1) {
-        printf("Error: memory:access_time value is not valid\n");
-        errors++;
-    } else if(double_mem_access_time_burst==-2) {
-        printf("Error: Missing value memory:access_time\n");
-        errors++;
-    } else {
-        memory.access_time_burst=double_mem_access_time_burst;
-    }
-
-    // reading key memory:page_size
-    const char * page_size= iniparser_getstring(ini, "memory:page_size", NULL);
-    long long_page_size= parselongK1024(page_size);
-
-    if(long_page_size==-1) {
-        printf("Error: memory:page_size value is not valid\n");
-        errors++;
-    } else if(long_page_size==-2) {
-        printf("Error: Missing value memory:page_size\n");
-        errors++;
-    } else {
-        memory.page_size=long_page_size;
-    }
-
-    // reading key memory:page_base_address
-    const char * page_base_address= iniparser_getstring(ini, "memory:page_base_address", NULL);
-    long long_page_base_address= parseAddress(page_base_address);
-
-    if(long_page_base_address==-1) {
-        printf("Error: memory:page_base_address value is not valid\n");
-        errors++;
-    } else if(long_page_base_address==-2) {
-        printf("Error: Missing value memory:page_base_address\n");
-        errors++;
-    } else {
-        memory.page_base_address=long_page_base_address;
-    }
-
-
-
-
+    parseConfLongK1024(ini,"memory:size",&memory.size,&errors);
+    parseConfDouble(ini,"memory:access_time_1",&memory.access_time_1,&errors);
+    parseConfLongK1024(ini,"memory:page_size",&memory.page_size,&errors);
+    parseConfAddress(ini,"memory:page_base_address",&memory.page_base_address,&errors);
 
     // READING ALL THE CACHES CONFIGURATION /////////////////////////////////////////
     // Browse the cache array and check the configuration of each cache.
 
-    for(int i=0; i<numberCaches; i++) {
+    for(int cacheNumber=0; cacheNumber<numberCaches; cacheNumber++) {
 
-        /*This is for creating the string format in which the ini library receives the params.
-        Each value must be refered as section:key */
-        char cache[50]="cache";
-        sprintf(cache, "cache%d", i+1);
+        // This is for creating the string format in which the ini library receives the params.
+        // Each value must be refered as section:key
         char param[50];
-
-
-        // reading key cache:line_size
-        sprintf(param, "%s:line_size", cache);
-
-        const char * cache_line_size=iniparser_getstring(ini, param, NULL);
-        long long_line_size=parselongK1024(cache_line_size);
-        if(long_line_size==-1) {
-            printf("Error: cache%d:line_size value is not valid\n", i+1);
-            errors++;
-        } else if(long_line_size==-2) {
-            printf("Error: Missing value cache%d:line_size\n", i+1);
-            errors++;
-
-        } else {
-            caches[i].line_size=long_line_size;
-        }
-
-
+        sprintf(param, "cache%d:line_size", cacheNumber+1);
+        parseConfLongK1024(ini, param, &caches[cacheNumber].line_size,&errors);
 
         // reading key cache:size
-        sprintf(param, "%s:size", cache);
-
-        const char * cache_size=iniparser_getstring(ini, param, NULL);
-        long long_size=parselongK1024(cache_size);
-        if(long_size==-1) {
-            printf("Error: cache%d:size value is not valid\n", i+1);
-            errors++;
-        } else if(long_size==-2) {
-            printf("Error: Missing value cache%d:size\n", i+1);
-            errors++;
-        } else {
-            caches[i].size=long_size;
-        }
+        sprintf(param, "cache%d:size", cacheNumber+1);
+        parseConfLongK1024(ini, param, &caches[cacheNumber].size,&errors);
 
         // reading key cache:column_bit_mask
-        sprintf(param, "%s:column_bit_mask", cache);
-
+        sprintf(param, "cache%d:column_bit_mask", cacheNumber+1);
         const char * column_bit_mask=iniparser_getstring(ini, param, NULL);
         int isBinary=isCorrectBinary(column_bit_mask);
         if(isBinary==-1) {
-            printf("Error: cache%d:column_bit_mask value is not valid\n", i+1);
+            fprintf(stderr,"Error: cache%d:column_bit_mask value is not valid\n", cacheNumber+1);
             errors++;
         } else if(isBinary==-2) {
-            printf("Error: Missing value cache%d:column_bit_mask\n", i+1);
+            fprintf(stderr,"Error: Missing value cache%d:column_bit_mask\n", cacheNumber+1);
             errors++;
         } else if(strlen(column_bit_mask)<N_BITS_MASK){
-            printf("Error: Bit mask is to small cache%d:column_bit_mask\n", i+1);
+            fprintf(stderr,"Error: Bit mask is to small cache%d:column_bit_mask\n", cacheNumber+1);
             errors++;
-        }else{
-            caches[i].column_bit_mask=column_bit_mask;
+        } else {
+            caches[cacheNumber].column_bit_mask=column_bit_mask;
         }
 
         // reading key cache:asocitivity
-        sprintf(param, "%s:asociativity", cache);
-
+        sprintf(param, "cache%d:asociativity", cacheNumber+1);
         const char * cache_asociativity=iniparser_getstring(ini, param, NULL);
         // si es F es de compleatamente asociativa. Un solo set. Tantas lines/set como lines totales.
         if(cache_asociativity!=NULL&&strcmp(cache_asociativity, "F")==0) {
-            caches[i].asociativity=caches[i].size/caches[i].line_size;
+            caches[cacheNumber].asociativity=caches[cacheNumber].size/caches[cacheNumber].line_size;
         } else {
-
             long long_asociativity=parseInt(cache_asociativity);
             if(long_asociativity==-1) {
-                printf("Error: cache%d:asociativity value is not valid\n", i+1);
+                fprintf(stderr,"Error: cache%d:asociativity value is not valid\n", cacheNumber+1);
                 errors++;
             } else if(long_asociativity==-2) {
-                printf("Error: Missing value cache%d:asociativity\n", i+1);
+                fprintf(stderr,"Error: Missing value cache%d:asociativity\n", cacheNumber+1);
                 errors++;
             } else if(!isPowerOf2(long_asociativity)) {
-                printf("Error: The value of cache%d:asociativity must be power of 2\n", i+1);
+                fprintf(stderr,"Error: The value of cache%d:asociativity must be power of 2\n", cacheNumber+1);
                 errors++;
             } else {
-                caches[i].asociativity=long_asociativity;
-
+                caches[cacheNumber].asociativity=long_asociativity;
             }
-
         }
 
-
         // reading key cache:write_policy
-        sprintf(param, "%s:write_policy", cache);
+        sprintf(param, "cache%d:write_policy", cacheNumber+1);
         const char * cache_write_policy=iniparser_getstring(ini, param, NULL);
         long long_write_policy=parseWritePolicy(cache_write_policy);
         if(long_write_policy==-1) {
-            printf("Error: cache%d:write_policy value is not valid\n", i+1);
+            fprintf(stderr,"Error: cache%d:write_policy value is not valid\n", cacheNumber+1);
             errors++;
         } else if(long_write_policy==-2) {
-            printf("Error: Missing value cache%d:write_policy\n", i+1);
+            fprintf(stderr,"Error: Missing value cache%d:write_policy\n", cacheNumber+1);
             errors++;
         } else {
-            caches[i].write_policy=long_write_policy;
+            caches[cacheNumber].write_policy=long_write_policy;
         }
 
         // reading key cache:replacement
-        sprintf(param, "%s:replacement", cache);
+        sprintf(param, "cache%d:replacement", cacheNumber+1);
 
         const char * cache_replacement=iniparser_getstring(ini, param, NULL);
         long long_replacement=parseReplacementPolicy(cache_replacement);
         if(long_replacement==-1) {
-            printf("Error: cache%d:replacement value is not valid\n", i+1);
+            fprintf(stderr,"Error: cache%d:replacement value is not valid\n", cacheNumber+1);
             errors++;
         } else if(long_replacement==-2) {
-            printf("Error: Missing value cache%d:replacement\n", i+1);
+            fprintf(stderr,"Error: Missing value cache%d:replacement\n", cacheNumber+1);
             errors++;
         } else {
-            caches[i].replacement=long_replacement;
+            caches[cacheNumber].replacement=long_replacement;
         }
 
-
-
         // reading key cache:separated
-        sprintf(param, "%s:separated", cache);
+        sprintf(param, "cache%d:separated", cacheNumber+1);
 
         const char * cache_separated=iniparser_getstring(ini, param, NULL);
         long long_separated=parseBoolean(cache_separated);
         if(long_separated==-1) {
-            printf("Error: cache%d:separated value is not valid\n", i+1);
+            fprintf(stderr,"Error: cache%d:separated value is not valid\n", cacheNumber+1);
             errors++;
         } else if(long_separated==-2) {
-            printf("Error: Missing value cache%d:separated\n", i+1);
+            fprintf(stderr,"Error: Missing value cache%d:separated\n", cacheNumber+1);
             errors++;
         } else {
-            caches[i].separated=long_separated;
+            caches[cacheNumber].separated=long_separated;
         }
     }
 
     // checking all the caches have the same line_size
     if(numberCaches>0){
-            int previous=caches[0].line_size;
-	    for(int i=1; i<numberCaches; i++) {
-		if(caches[i].line_size!=previous){
-			printf("Error: All the caches must have the same line_size.\n");
-                        errors++;
-		        break;
-		}
-	    }
+       int previous=caches[0].line_size;
+       for(int cacheNumber=1; cacheNumber<numberCaches; cacheNumber++) {
+          if(caches[cacheNumber].line_size!=previous){
+             fprintf(stderr,"Error: All the caches must have the same line_size.\n");
+             errors++;
+             break;
+          }
+       }
     }
-
-
-
-
-
 
     if(errors>0) {
-        printf("\nTotal errors: %d\n", errors);
+        fprintf(stderr,"\nTotal errors: %d\n", errors);
         return -1;
-    } else {
-        showState();
-        printf("\nConfiguration file loaded correctly\n");
-        return 0;
     }
-
+#if DEBUG
+    showState();
+    fprintf(stderr,"\nConfiguration file loaded correctly\n");
+#endif
+    return 0;
 }
 
 
@@ -452,39 +378,39 @@ void checkSectionKeys(dictionary *ini, const char *section, int numberOfValidKey
 void showState() {
 
     // show cpu info
-    printf("\nCPU\n");
+    fprintf(stderr,"\nCPU\n");
 
-    printf("word_width:         [%ld bits] \n", cpu.word_width);
-    printf("address_width:      [%ld bits] \n", cpu.address_width);
-    printf("frecuency:          [%ld Hz] \n", cpu.frequency);
-    printf("bus_frequency:      [%ld Hz] \n", cpu.bus_frequency);
-    printf("mem_bus_frequency:  [%ld Hz] \n", cpu.mem_bus_frequency);
-    printf("trace_file:         [%s]\n", cpu.trace_file);
+    fprintf(stderr,"word_width:         [%ld bits] \n", cpu.word_width);
+    fprintf(stderr,"address_width:      [%ld bits] \n", cpu.address_width);
+    fprintf(stderr,"frecuency:          [%ld Hz] \n", cpu.frequency);
+    fprintf(stderr,"bus_frequency:      [%ld Hz] \n", cpu.bus_frequency);
+    fprintf(stderr,"mem_bus_frequency:  [%ld Hz] \n", cpu.mem_bus_frequency);
+    fprintf(stderr,"trace_file:         [%s]\n", cpu.trace_file);
 
 
     // show memory info
-    printf("\nMEMORY\n");
+    fprintf(stderr,"\nMEMORY\n");
 
-    printf("size:               [%ld bytes] \n",  memory.size);
-    printf("bus_width:          [%ld bits] \n", memory.bus_width);
-    printf("bus_frequency:      [%ld Hz] \n", memory.bus_frequency);
-    printf("access_time_1:      [%lf ns] \n", memory.access_time_1*1000000000);
-    printf("access_time_burst:  [%lf ns] \n", memory.access_time_burst*1000000000);
-    printf("page_size:          [%ld bytes] \n", memory.page_size);
-    printf("page_base_address:  [0x%lx] \n", memory.page_base_address);
+    fprintf(stderr,"size:               [%ld bytes] \n",  memory.size);
+    fprintf(stderr,"bus_width:          [%ld bits] \n", memory.bus_width);
+    fprintf(stderr,"bus_frequency:      [%ld Hz] \n", memory.bus_frequency);
+    fprintf(stderr,"access_time_1:      [%lf ns] \n", memory.access_time_1*1000000000);
+    fprintf(stderr,"access_time_burst:  [%lf ns] \n", memory.access_time_burst*1000000000);
+    fprintf(stderr,"page_size:          [%ld bytes] \n", memory.page_size);
+    fprintf(stderr,"page_base_address:  [0x%lx] \n", memory.page_base_address);
 
 
 
     // show each cache info
     for(long i=0; i<numberCaches; i++) {
-        printf("\nCACHE L%ld\n", i+1);
+        fprintf(stderr,"\nCACHE L%ld\n", i+1);
 
-        printf("line_size:          [%ld bits] \n",  caches[i].line_size);
-        printf("size:               [%ld bytes] \n",  caches[i].size);
-        printf("asociativity:       [%ld]\n",  caches[i].asociativity);
-        printf("write_policy:       [%s]\n",   str_writePolicy[caches[i].write_policy]);
-        printf("replacement:        [%s]\n",   str_replacementPolicy[caches[i].replacement]);
-        printf("separated:          [%d]\n",   caches[i].separated);
+        fprintf(stderr,"line_size:          [%ld bits] \n",  caches[i].line_size);
+        fprintf(stderr,"size:               [%ld bytes] \n",  caches[i].size);
+        fprintf(stderr,"asociativity:       [%ld]\n",  caches[i].asociativity);
+        fprintf(stderr,"write_policy:       [%s]\n",   str_writePolicy[caches[i].write_policy]);
+        fprintf(stderr,"replacement:        [%s]\n",   str_replacementPolicy[caches[i].replacement]);
+        fprintf(stderr,"separated:          [%d]\n",   caches[i].separated);
 
     }
 
@@ -498,7 +424,7 @@ void showState() {
  * @param  String to be converted into long
  * @return long with converted value or error. -1 for wrong value error. -2 for null pointer error.
  */
-long parselongK1000(const char * cadena) {
+long parseLongK1000(const char * cadena) {
 
     if(cadena==NULL) {
         return -2;
@@ -538,7 +464,7 @@ long parselongK1000(const char * cadena) {
  * @param  String to be converted into long
  * @return long with converted value or error. -1 for wrong value error. -2 for null pointer error.
  */
-long parselongK1024(const char * cadena) {
+long parseLongK1024(const char * cadena) {
 
     if(cadena==NULL) {
         return -2;
@@ -574,8 +500,6 @@ long parselongK1024(const char * cadena) {
     return atoi(cadena)*multiplicador;
 }
 
-
-
 /*
  * convert string into int.
  * @param  String to be converted into int
@@ -599,8 +523,6 @@ int parseInt(const char * cadena) {
 
     return atoi(cadena);
 }
-
-
 
 /*
  * Convert string into boolean.
@@ -644,10 +566,6 @@ int parseBoolean(const char * cadena) {
 
 }
 
-
-
-
-
 /*
  * Convert string into enum which represent replacement policy.
  * @param  String to be converted into enum. Possible strings defined in str_replacementPolicy
@@ -669,10 +587,6 @@ int parseReplacementPolicy(const char * cadena) {
     return -1;
 
 }
-
-
-
-
 
 /*
  * Convert string into enum which represent write policy.
@@ -696,8 +610,6 @@ int parseWritePolicy(const char * cadena) {
 
 }
 
-
-
 /*
  * Check if a number is power of 2
  * @param number to check
@@ -708,7 +620,6 @@ int isPowerOf2(long number) {
     return number && !(number & (number - 1));
 
 }
-
 
 /*
  * Checks if a string has binary value inside.
@@ -721,20 +632,14 @@ int isCorrectBinary(const char * cadena) {
     if(cadena==NULL) {
         return -2;
     }
-
     
     for(int i= 0; cadena[i]; i++) {
         if(cadena[i]!='0'&&cadena[i]!='1'){
         	return -1;
 	}
     }
-   
-
     return 1;
-
-
 }
-
 
 /*
  * convert string into double. It can have a multiplier p for 1e-12, n for 1e-9, u for 1e-6, m for 1e-3. Other char will result in error.
@@ -789,7 +694,4 @@ long parseAddress(const char* page_base_address){
 	return toReturn;
         // provisional TODO
 	return 33;
-
-
 }
-
