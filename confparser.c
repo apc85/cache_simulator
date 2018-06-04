@@ -1,4 +1,8 @@
-﻿#include "parser.h"
+﻿#include <stdio.h>
+#include <ctype.h>
+
+#include "datamanipulation.h"
+#include "confparser.h"
 
 char* str_replacementPolicy[]= {"lru", "lfu", "rnd", "fifo"};
 char* str_writePolicy[]= {"wt", "wb"};

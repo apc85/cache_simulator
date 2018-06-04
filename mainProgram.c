@@ -1,20 +1,8 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <ctype.h>
-#include "iniparser.h"
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 #include <getopt.h>
-#include "parser.h"
-#include "traceparser.h"
 
-#include "interfaz.h"
-#include "dataInterface.h"
-#include "datos.h"
-#include "callbacks.h"
+#include "confparser.h"
+#include "traceparser.h"
 
 #define PROGRAM_NAME "cache_simulator"
 #define VERSION "0.1"
@@ -35,7 +23,6 @@ void printUsage() {
 }
 
 int main(int argc, char *argv[]) {
-
    int c;
 
    /* Parse command line arguments */

@@ -1,15 +1,7 @@
-#ifndef PARSER_H
-#define PARSER_H
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <ctype.h>
+#ifndef CONFPARSER_H
+#define CONFPARSER_H
 
 #include "iniparser.h"
-#include "datamanipulation.h"
-
 
   struct structCpu
   {

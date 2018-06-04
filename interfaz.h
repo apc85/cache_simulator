@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "parser.h"
+#include "confparser.h"
 #include "traceparser.h"
 #include "dataInterface.h"
 #include "datos.h"
