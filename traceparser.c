@@ -138,6 +138,31 @@ void showOperations(){
    }
 }
 
+/** 
+ * Remove comments and other string operations on a line from a trace file.
+ * Returns 1 if the line is not empty, after removing the comments.
+ */
+
+int preprocessTraceLine(char *currentLine) {
+   int emptyLine=1;
+   for(int i=0; currentLine[i]!='\0'; i++){
+      // Replace tabs with spaces
+      if(currentLine[i]=='\t'){
+         currentLine[i]=' ';
+      }
+      // Trim lines at comment characters
+      if(currentLine[i]=='#'||currentLine[i]=='\n'){
+         currentLine[i]='\0';
+         break;
+      }
+      // Check if there are any non-space characters
+      if(currentLine[i] != ' '){
+         emptyLine=0;
+      }
+   }
+   return !emptyLine;
+}
+
 /**
  * Function to load the trace file information in the program. It returns -1 when it encounters errors.
  * It allocates memory, freeMemory() should be called when the memory operations read are no longer necessary.
@@ -171,26 +196,10 @@ int readTraceFile(char * filename){
    // Read all the lines in the file
    while ((read = getline(&currentLine, &len, file)) != -1) {
       currentLineNumber++;
-
       insertTextInBuffer(currentLine, buffer);
-      int emptyLine=1;
-      for(int i=0; currentLine[i]!='\0'; i++){
-         // Replace tabs with spaces
-         if(currentLine[i]=='\t'){
-            currentLine[i]=' ';
-         }
-         // Trim lines at comment characters
-         if(currentLine[i]=='#'||currentLine[i]=='\n'){
-            currentLine[i]='\0';
-           break;
-         }
-         // Check if there are any non-space characters
-         if(currentLine[i] != ' '){
-            emptyLine=0;
-         }
-      }
+
       // Skip empty lines
-      if(emptyLine){
+      if(!preprocessTraceLine(currentLine)){
          continue;
       }
 
@@ -203,8 +212,10 @@ int readTraceFile(char * filename){
    }
 
    if(errors==0){
+#if DEBUG
       showOperations();
       fprintf(stderr,"\nTracefile was loaded correctly\n");
+#endif
       return 0;
    }
    fprintf(stderr,"\n");

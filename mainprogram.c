@@ -6,6 +6,7 @@
 #include "traceparser.h"
 #include "datastore.h"
 #include "gui.h"
+#include "simulator.h"
 
 #define PROGRAM_NAME "cache_simulator"
 #define VERSION "0.1"
@@ -16,6 +17,7 @@ void printUsage() {
       "Simulate the memory hierarchy defined in <file>.ini.\n"
       "This a list of the options accepted:\n"
       "\n"
+      "  -g    toggle GUI\n"
       "  -h    display this help and exit\n"
       "  -v    output version information and exit\n"
       "\n"
@@ -30,9 +32,12 @@ int main(int argc, char *argv[]) {
 
    // Parse command line arguments
    opterr = 0;
-   while ((c = getopt (argc, argv, "vh")) != -1)
+   while ((c = getopt (argc, argv, "vhg")) != -1)
     switch (c)
       {
+      case 'g':
+         useGUI = !useGUI;
+        break;
       case 'v':
         printf("%s version %s\n",PROGRAM_NAME,VERSION);
         return 0;
@@ -76,8 +81,13 @@ int main(int argc, char *argv[]) {
     // Create simulator data structures
     generateDataStorage();
 
-    // Start GUI
-    generateInterface(argc, argv);
+    // Start GUI...
+    if(useGUI) {
+       generateInterface(argc, argv);
+    // ... or run batch simulation
+    } else {
+       simulate();
+    }
 
     // Free memory allocated by readTraceFile()
     freeMemory();

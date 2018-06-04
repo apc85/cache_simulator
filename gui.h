@@ -4,6 +4,8 @@
 #include <gtk/gtk.h>
 #include "confparser.h"
 
+extern int useGUI;
+
 /* GtkWidget is the storage type for widgets */
    GtkWidget *window;
 
@@ -25,7 +27,6 @@
 
    GtkTextMark *marcaLineCurrent;
 
-   char *lineCurrent;
    GtkTextTag *tagBlue;
    GtkTextTag *tagBlack;
 
@@ -57,7 +58,7 @@
    GtkWidget *create_view_statistics(void);
    void wordHexadecimal(char * returned, int number);
    void insertTextInPanel(char* text);
-   void nextLineTrace();
+   char *nextLineTrace();
    void wordHexadecimalN(char * returned, int number, int totalDigitos);
    void addressHexadecimal(char * returned, int number);
    int scrollMemoryToPos(long address);

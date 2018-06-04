@@ -126,7 +126,9 @@ void createCacheModel(int level){
    if(caches[level].separated){
       numLines/=2;
    }
-   printf("\ncache level %d: lines: %d, asociativity: %d, sets: %d, words line: %d\n", level+1, numLines, asociativity, numsets, numWords);
+#if DEBUG
+   fprintf(stderr,"cache level %d: lines: %d, asociativity: %d, sets: %d, words line: %d\n", level+1, numLines, asociativity, numsets, numWords);
+#endif
    for(int i=0; i<numLines; i++){
       gtk_list_store_append(modelData, &iter);
       if(caches[level].separated){ 
