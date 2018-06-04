@@ -1,7 +1,7 @@
 #ifndef CALLBACKS_H
 #define CALLBACKS_H
 
-#include "interfaz.h"
+#include "gui.h"
 
 void callbackNextStep( GtkWidget *widget, gpointer   data);
 void callbackRestart( GtkWidget *widget, gpointer   data);

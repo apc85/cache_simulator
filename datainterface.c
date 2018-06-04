@@ -1,4 +1,5 @@
-#include "dataInterface.h"
+#include <math.h>
+#include "datainterface.h"
 
 //colors defined to be used in the program
 const char* const colores[]={"blue", "black", "yellow", "green", "red", "grey", "orange", "purple", "pink", "lightblue", "lightgreen", "white"};

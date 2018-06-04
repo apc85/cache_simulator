@@ -1,9 +1,8 @@
-#ifndef DATOS_H
-#define DATOS_H
+#ifndef DATAINTERFACE_H
+#define DATAINTERFACE_H
 
-#include "interfaz.h"
+#include "gui.h"
 #include "datastore.h"
-
 
 enum {
     BLUE=0,
@@ -20,9 +19,6 @@ enum {
     WHITE=11
 };
 
-
-
-
 struct cacheLine{
   long line;
   long tag;
@@ -38,18 +34,10 @@ struct cacheLine{
 };
 
 struct memoryPosition{
-
   long address;
   long content;
-
   void * user_content;
-
 };
-
-
-
-
-
 
 //para caches unificadas
 void showCacheLine(int level, int i);
@@ -59,9 +47,7 @@ void setColorCacheLine(int level, int i, int color);
 void cacheReset(int level);
 void writeBlankCacheLine(int level, long line);
 
-
 //para caches divididas
-
 void showCacheLineData(int level, int i);
 void readLineCacheData(int level, struct cacheLine* line, int i);
 void writeLineCacheData(int level, struct cacheLine* line, int i);
@@ -84,10 +70,8 @@ int setColorMemoryPosition(int i, int color);
 void memoryReset();
 void writeBlankMemoryPosition(long positionIndex);
 
-
 //para las estadisticas
 void set_estatistics(char* component, char* property, char* value);
 char* get_estatistics(char* component, char* property);
-
 
 #endif

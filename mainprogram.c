@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <ctype.h>
 #include <getopt.h>
 
 #include "confparser.h"
 #include "traceparser.h"
 #include "datastore.h"
+#include "gui.h"
 
 #define PROGRAM_NAME "cache_simulator"
 #define VERSION "0.1"

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "interfaz.h"
+#include "gui.h"
 #include "datamanipulation.h"
 #include "traceparser.h"
 #include "datastore.h"

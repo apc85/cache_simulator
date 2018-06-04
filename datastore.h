@@ -1,26 +1,12 @@
-#ifndef DATOS_PROGRAMA_H
-#define DATOS_PROGRAMA_H
+#ifndef DATASTORE_H
+#define DATASTORE_H
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <ctype.h>
-#include "iniparser.h"
-#include <gtk/gtk.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 #include "confparser.h"
-#include "traceparser.h"
-#include "dataInterface.h"
+#include <gtk/gtk.h>
 
-struct cacheLEVEL{
-
+struct cacheLEVEL {
   GtkListStore *modelData;//estructura de data
   GtkListStore *modelInstruction;//estructura de data
-
 };
 
 GtkListStore *modelMEMORY;//estructura de data
@@ -36,6 +22,7 @@ enum {
     USER_CONTENT=3,
     N_COLUMNS=4
 };
+
 enum {
     LINE=0,
     SET=1,
@@ -50,13 +37,11 @@ enum {
     N_COLUMNS_CACHE=10
 };
 
-enum
-{
+enum {
   COMPONET_OR_PROPERTY = 0,
   VALUE=1,
   NUM_COLS=2
-} ;
-
+};
 
 void createMemoryModel();
 void createCacheModel(int level);
@@ -67,6 +52,5 @@ void contentStringToArray(long* array, char* content, int level);
 void insertTextInBuffer(char* text, GtkTextBuffer *buffer);
 GtkTreeModel *create_model_statistics(void);
 void generateDataStorage();
-
 
 #endif

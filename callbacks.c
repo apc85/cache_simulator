@@ -1,9 +1,7 @@
 #include "callbacks.h"
-
-
+#include "datainterface.h"
 
 //CALLBACKS//////////////////////////////////////////////////////////////
-
 
 /**
  * Callback function for setting simulation to its initial state.
