@@ -276,3 +276,37 @@ long parseAddress(const char* page_base_address){
         // provisional TODO
 	return 33;
 }
+
+/**
+ * Funcion para comprobar si el number hexadecimal representado por el string es correcto.
+ */
+int isCorrectHexadecimal(char * number){
+   if(strlen(number)<2){
+      return 0;
+   }
+   if(number[0]!='0'){
+      return 0;
+   }
+   if(number[1]!='x'&&number[1]!='X'){
+      return 0;
+   }
+
+   for(int i=2; i<strlen(number); i++){
+      if(number[i]<'0'||(number[i]>'9'&&number[i]<'A')||(number[i]>'F'&&number[i]<'a')||number[i]>'f'){
+         return 0;
+      }
+   }
+   return 1;
+}
+
+/**
+ * Funcion para comprobar si el number decimal representado por el string es correcto.
+ */
+int isCorrectDecimal(char * number){
+   for(int i=0; i<number[i]!='\0'; i++){
+      if(number[i]<'0'||number[i]>'9'){
+         return 0;
+      }
+   }
+   return 1;
+}

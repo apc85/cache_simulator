@@ -1,541 +1,241 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "interfaz.h"
+#include "datamanipulation.h"
 #include "traceparser.h"
+#include "datastore.h"
+
+struct memOperation* memoryOperations = NULL;
 
 /**
- * Funcion para parsear una line. REcibe por parametro el String de la line, la position de la line y la la operation de
- * memory que se va a almacenar.
+ * Parse a trace line. It receives a string with the trace line and its line number in the trace file.
+ * It returns a by reference a structure with the parsed information.
  */
-int parseLine(char* line, struct memOperation (*dirOperationGenerar), int indexLine){
+int parseLine(char* line, int lineNumber, struct memOperation *operation){
+#if DEBUG
+   fprintf(stderr,"Parsing trace line --%s--\n", line);
+#endif
+   // Set default values for optional fields
+   operation->hasBreakPoint=0;
+   operation->size=DEFAULT_SIZE;
+   operation->data=DEFAULT_DATA;
 
-          
+   // Check wether it is a breakpoint line
+   if(line[0] == '!') {
+      operation->hasBreakPoint = 1;
+      // Skip to begining of first field
+      line++;
+   }
 
-          char* campos[6];
-
-	  char * pch;
-
-	  pch = strtok (line," ");
-	
-          int cont=0;
-	  while (pch != NULL)
-	  {
-            if(cont==7){
-		 printf("trace file error: too many fields . line %d\n", indexLine);
-                 return -1;
-	    }
-
-            //printf("EEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-            
-            if((campos[cont]=malloc(sizeof(char)*strlen(pch)+1))==0){
-            	return -1;
-	    }
-
-	    strcpy(campos[cont],pch);
-	    
-     
-	    pch = strtok (NULL, " ");  
-            cont++;
-
-
-	  }
-
-	  if(cont <3){
-		 printf("trace file error: missing fields. line %d\n", indexLine);
-                 return -1;
-	  }
-	
-
-
-		if(strcmp(campos[0], "!")==0){
-			(*dirOperationGenerar).hasBreakPoint=1;
-
-
-			if(strcmp(campos[1],"I")==0){
-				(*dirOperationGenerar).instructionOrData=INSTRUCTION;
-				if (!isCorrectHexadecimal(campos[2])){
-					printf("trace file error: invalid address. line %d\n", indexLine+1);
-					return -1;
-				}
-				long dir=strtol(campos[2], NULL, 16);
-				
-			        (*dirOperationGenerar).address=dir;
-				if(strcmp(campos[3], "L")==0){
-					(*dirOperationGenerar).operationType=LOAD;
-				}else if(strcmp(campos[3], "S")==0){
-					(*dirOperationGenerar).operationType=STORE;
-				}else{
-					printf("trace file error: Invalid operation type. line %d\n", indexLine+1);
-					return -1;
-				}
-				
-				if(cont>4){
-					int size=atoi(campos[4]);
-
-					if(!isCorrectDecimal(campos[4])){
-						printf("trace file error: Invalid size. line %d\n", indexLine+1);
-						return -1;
-					}
-					if(!isPowerOf2(size)){
-						printf("trace file error: Size must be power of 2. line %d\n", indexLine+1);
-						return -1;
-					}
-					(*dirOperationGenerar).size=size;
-				}
-				
-				if(cont>5){
-					long data=atoi(campos[5]);
-					if(!isCorrectDecimal(campos[3])){
-						printf("trace file error: Invalid data. line %d\n", indexLine+1);
-						return -1;					
-					}
-					(*dirOperationGenerar).data=data;
-				}
-		
-			}else if(strcmp(campos[1], "D")==0){
-
-				(*dirOperationGenerar).instructionOrData=DATA;
-
-				
-				if (!isCorrectHexadecimal(campos[2])){
-					printf("trace file error: invalid address. line %d\n", indexLine+1);
-					return -1;
-				}
-
-				long dir=strtol(campos[2], NULL, 16);
-				
-				(*dirOperationGenerar).address=dir;
-				if(strcmp(campos[3], "L")==0){
-					(*dirOperationGenerar).operationType=LOAD;
-				}else if(strcmp(campos[3], "S")==0){
-					(*dirOperationGenerar).operationType=STORE;
-				}else{
-					printf("trace file error: Invalid operation type. line %d\n", indexLine+1);
-					return -1;
-				}
-				
-				if(cont>4){
-					int size=atoi(campos[4]);
-
-					if(!isCorrectDecimal(campos[4])){
-						printf("trace file error: Invalid size. line %d\n", indexLine+1);
-						return -1;
-					}
-					if(!isPowerOf2(size)){
-						printf("trace file error: Size must be power of 2. line %d\n", indexLine+1);
-						return -1;
-					}
-					(*dirOperationGenerar).size=size;
-				}
-				
-				if(cont>5){
-					long data=atoi(campos[5]);
-					if(!isCorrectDecimal(campos[5])){
-						printf("trace file error: Invalid data. line %d\n", indexLine+1);
-						return -1;					
-					}
-					(*dirOperationGenerar).data=data;
-				}
-			}else{
-				printf("trace file error: It must be data or instruction. line. line %d\n", indexLine+1);
-				return -1;
-			}
-
-
-		}else if(strcmp(campos[0],"I")==0){
-				(*dirOperationGenerar).hasBreakPoint=0;
-				(*dirOperationGenerar).instructionOrData=INSTRUCTION;
-				
-
-				if (!isCorrectHexadecimal(campos[1])){
-					printf("trace file error: invalid address. line %d\n", indexLine+1);
-					return -1;
-				}
-
-				long dir=strtol(campos[1], NULL, 16);
-				(*dirOperationGenerar).address=dir;
-			
-				if(strcmp(campos[2],"L")==0){
-					(*dirOperationGenerar).operationType=LOAD;
-				}else if(strcmp(campos[2], "S")==0){
-					(*dirOperationGenerar).operationType=STORE;
-				}else{
-					printf("trace file error: Invalid operation type. line %d\n", indexLine+1);
-					return -1;
-				}
-				
-				if(cont>3){
-					int size=atoi(campos[3]);
-
-					if(!isCorrectDecimal(campos[3])){
-						printf("trace file error: Invalid size. line %d\n", indexLine+1);
-						return -1;
-					}
-
-					if(!isPowerOf2(size)){
-						printf("trace file error: Size must be power of 2. line %d\n", indexLine+1);
-						return -1;
-					}
-					(*dirOperationGenerar).size=size;
-				}
-				
-				if(cont>4){
-					long data=atoi(campos[4]);
-					if(!isCorrectDecimal(campos[4])){
-						printf("trace file error: Invalid data. line %d\n", indexLine+1);
-						return -1;
-					}
-					(*dirOperationGenerar).data=data;
-				}	
-
-		}else if(strcmp(campos[0], "D")==0){
-				(*dirOperationGenerar).hasBreakPoint=0;
-				(*dirOperationGenerar).instructionOrData=DATA;
-				
-				if (!isCorrectHexadecimal(campos[1])){
-					printf("trace file error: invalid address. line %d\n", indexLine+1);
-					
-					return -1;
-				}
-
-				long dir=strtol(campos[1], NULL, 16);
-
-				(*dirOperationGenerar).address=dir;
-			
-				if(strcmp(campos[2], "L") ==0){
-					(*dirOperationGenerar).operationType=LOAD;
-				}else if(strcmp(campos[2], "S")==0){
-					(*dirOperationGenerar).operationType=STORE;
-				}else{
-					printf("trace file error: Invalid operation type. line %d\n", indexLine+1);
-					return -1;
-				}
-				
-				if(cont>3){
-					int size=atoi(campos[3]);
-
-					if(!isCorrectDecimal(campos[3])){
-						printf("trace file error: Invalid size. line %d\n", indexLine+1);
-						return -1;
-					}
-					if(!isPowerOf2(size)){
-						printf("trace file error: Size must be power of 2. line %d\n", indexLine+1);
-						return -1;
-					}
-					(*dirOperationGenerar).size=size;
-				}
-				
-				if(cont>4){
-					long data=atoi(campos[4]);
-					if(!isCorrectDecimal(campos[4])){
-						printf("trace file error: Invalid data. line %d\n", indexLine+1);
-						return -1;
-					}
-					(*dirOperationGenerar).data=data;
-				}	
-
-		}else{
-			//compruebo si el campo IstruccionOrData en realidad es el siguiente. Si no lo es debería ser este.
-			if(strcmp(campos[1],"D")!=0&&strcmp(campos[1],"I")!=0){
-
-				printf("trace file error: It must be data or instruction. line %d\n", indexLine+1);
-
-			//si el campo es el siguiente entonces se trata de user_use type de error de formato.
-			}else{
-			
-				printf("trace file error: Wrong format. line %d\n", indexLine+1);
-			}
-			return -1;
-
-		}
-
-
-
-	return 0;
-
-  
+   int fieldId = 0;
+   char * pch = strtok (line," ");
+   while (pch != NULL)
+   {
+      // Current field
+      switch(fieldId) {
+         case 0: // Instruction or Data (One character)
+            if(strlen(pch) != 1 || ( *pch != 'I' && *pch != 'D')) {
+               fprintf(stderr,"memory operation must be Intruction (I) or Data (D). Line %d\n", lineNumber);
+               return -1;
+            }
+            operation->instructionOrData = *pch == 'I' ? INSTRUCTION : DATA;
+            break;
+         case 1: // Address (Must be hexadecimal)
+            if(!isCorrectHexadecimal(pch)){
+               fprintf(stderr,"invalid address. line %d\n", lineNumber);
+               return -1;
+            }
+            operation->address = strtol(pch, NULL, 16);
+            break;
+         case 2: // Load/Fetch or Store (One character)
+            if(strlen(pch) != 1 || ( *pch != 'L' && *pch != 'S')) {
+               fprintf(stderr,"memory operation must be Load/Fetch (L) or Store (S). Line %d\n", lineNumber);
+               return -1;
+            }
+            operation->operationType = *pch == 'L' ? LOAD : STORE;
+            break;
+         case 3: // Size (Must be number of bytes and power of two)
+            if(!isCorrectDecimal(pch)){
+               fprintf(stderr,"invalid size. Line %d\n", lineNumber);
+               return -1;
+            }
+            operation->size = atoi(pch);
+            if(!isPowerOf2(operation->size)){
+               fprintf(stderr,"size must be power of 2. Line %d\n", lineNumber);
+               return -1;
+            }
+            break;
+         case 4: // Data (Must be a number)
+            if(!isCorrectDecimal(pch)){
+               fprintf(stderr,"invalid data. Line %d\n", lineNumber);
+               return -1;					
+            }
+            operation->data = atoi(pch);
+            break;
+         default: // Too many fields
+            fprintf(stderr,"too many fields. Line %d\n", lineNumber);
+            return -1;
+      }
+      // Get next field
+      fieldId++;
+      pch = strtok (NULL, " ");
+   }
+   if(fieldId < 3) {
+      fprintf(stderr,"too few fields. Line %d\n", lineNumber);
+      return -1;
+   }
+   return 0;
 }
-
 
 /**
  * Funcion para mostrar por consola los valores de la trace que se han almacenado en memory.
  */
 void showOperations(){
+   fprintf(stderr,"\n");
+   for(int i=0; i<numberOfOperations; i++){
+      if(memoryOperations[i].hasBreakPoint){
+         fprintf(stderr," ! ");
+         if(memoryOperations[i].instructionOrData==INSTRUCTION){
+            fprintf(stderr,"I ");
+         }
+         if(memoryOperations[i].instructionOrData==DATA){
+            fprintf(stderr,"D ");
+         }
+      }else{
+         if(memoryOperations[i].instructionOrData==INSTRUCTION){
+            fprintf(stderr,"   I ");
+         }
+         if(memoryOperations[i].instructionOrData==DATA){
+            fprintf(stderr,"   D ");
+         }
+      }
+      char number[20];
+      sprintf(number, "0x%lx",memoryOperations[i].address);
+      int len= strlen(number);
+      int numEspacios=16-len;
+      fprintf(stderr," %s ", number);
+      for(int j=0; j<numEspacios; j++){
+         fprintf(stderr," ");
+      }
+      if(memoryOperations[i].operationType==LOAD){
+         fprintf(stderr," L ");
+      }
+      if(memoryOperations[i].operationType==STORE){
+         fprintf(stderr," S ");
+      }
+      char number2[20];
+      sprintf(number2, " %d ", memoryOperations[i].size);
+      len=strlen(number2);
+      numEspacios=10-len;
+      fprintf(stderr," %s ", number2);
+      for(int j=0; j<numEspacios; j++){
+         fprintf(stderr," ");
+      }
 
-    printf("\n");
-    for(int i=0; i<numOperations; i++){
-
-       if(operationsDeMemory[i].hasBreakPoint){
-	   printf(" ! ");
-
-		if(operationsDeMemory[i].instructionOrData==INSTRUCTION){
-		   printf("I ");
-		}
-
-		if(operationsDeMemory[i].instructionOrData==DATA){
-		   printf("D ");
-		}
-        }else{
-
-		if(operationsDeMemory[i].instructionOrData==INSTRUCTION){
-		   printf("   I ");
-		}
-
-		if(operationsDeMemory[i].instructionOrData==DATA){
-		   printf("   D ");
-		}
-	}
-
-	char number[20];
-	sprintf(number, "0x%lx",operationsDeMemory[i].address);
-	int len= strlen(number);
-
-	int numEspacios=16-len;
-	printf(" %s ", number);
-	for(int j=0; j<numEspacios; j++){
-		printf(" ");
-	}
-
-        if(operationsDeMemory[i].operationType==LOAD){
-	   printf(" L ");
-        }
-
-        if(operationsDeMemory[i].operationType==STORE){
-	   printf(" S ");
-        }
-
-	char number2[20];
-        sprintf(number2, " %d ", operationsDeMemory[i].size);
-	len=strlen(number2);
-	numEspacios=10-len;
-
-	printf(" %s ", number2);
-	for(int j=0; j<numEspacios; j++){
-		printf(" ");
-	}
-	
-
-        printf(" %ld ", operationsDeMemory[i].data);
-
-	printf("\n");
-
-
-    }
-
-
-
-
+      fprintf(stderr," %ld ", memoryOperations[i].data);
+      fprintf(stderr,"\n");
+   }
 }
 
-
-
-
-
-
 /**
- * Funcion que carga la informacion del file en el programa. Si se produce algun error retorna -1.
+ * Function to load the trace file information in the program. It returns -1 when it encounters errors.
+ * It allocates memory, freeMemory() should be called when the memory operations read are no longer necessary.
  */
+int readTraceFile(char * filename){
+   numberOfOperations = 0;
+   int errors = 0;
+   int numberOfLines = countLines(filename);
+   if(numberOfLines == -1){
+      return -1;
+   }
+   FILE *file;
+   char *currentLine = NULL;
+   size_t len = 0;
+   size_t read;
 
-int readFileTrace(char * filename){
+   file=fopen(filename, "r");
+   if (file == NULL){
+      fprintf(stderr,"Error: can not open file %s.\n",filename);
+      return -1;
+   }
+   
+   if((memoryOperations = malloc(sizeof(struct memOperation)*numberOfLines)) == NULL){
+      fprintf(stderr,"Execution failure: It was not possible to allocate memory.\n");
+      return -1;
+   }
 
+   int currentLineNumber=0;
+   // TODO What if we do not have a GUI???
+   buffer = gtk_text_buffer_new (NULL);
+   // Read all the lines in the file
+   while ((read = getline(&currentLine, &len, file)) != -1) {
+      currentLineNumber++;
 
-    printf("\n");
+      insertTextInBuffer(currentLine, buffer);
+      int emptyLine=1;
+      for(int i=0; currentLine[i]!='\0'; i++){
+         // Replace tabs with spaces
+         if(currentLine[i]=='\t'){
+            currentLine[i]=' ';
+         }
+         // Trim lines at comment characters
+         if(currentLine[i]=='#'||currentLine[i]=='\n'){
+            currentLine[i]='\0';
+           break;
+         }
+         // Check if there are any non-space characters
+         if(currentLine[i] != ' '){
+            emptyLine=0;
+         }
+      }
+      // Skip empty lines
+      if(emptyLine){
+         continue;
+      }
 
-    numLines=0;
-    numOperations=0;
-    mallocated=1;
-    int errors=0;
-    int numLines= countLines(filename);
-    if(numLines==-1){
-	return -1;
-    }
-    numLines=numLines;
+      // Read memory operation from current line
+      if(parseLine(currentLine, currentLineNumber, &memoryOperations[numberOfOperations]) == -1){
+         errors++;
+      }
+      // Increment the number of memory operations read from the file
+      numberOfOperations++;
+   }
 
-    FILE *file;
-    char *line = NULL;
-    size_t len = 0;
-    char read;
-    file=fopen(filename, "r");
-
-    if (file == NULL){
-	  printf("Error: file de trace no encontrado\n");
-  	  return -1;
-    }
-
-    //printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-
-    operationsDeMemory=malloc(sizeof(struct memOperation)*numLines);
-    if(operationsDeMemory==NULL){
-	printf("Execution failure: It was not possible to allocate memory. line\n");
-	//printf("lines numbers: %d\n", (int)operationsDeMemory);
-	mallocated=0;
-	return -1;
-    }
-    
-    int indexLineCurrent=-1;
-    int OperationCurrent=0;
-
-    GtkTextBuffer *buffer = gtk_text_buffer_new (NULL);
-    //leo todas las lines del file
-    while ((read = getline(&line, &len, file)) != -1) {
-	indexLineCurrent++;
-	int lenLine=strlen(line);
-	char lineCurrent[lenLine+1];
-	strcpy(lineCurrent, line);
-
-        
-        insertTextInBuffer(line, buffer);
-
-	//elimino tabuladores, comentarios y saltos de line. 
-	for(int i=0; lineCurrent[i]!='\0'; i++){
-
-		if(lineCurrent[i]=='\t'){
-			lineCurrent[i]=' ';
-		}
-
-		if(lineCurrent[i]=='#'||lineCurrent[i]=='\n'){
-			lineCurrent[i]='\0';
-			break;
-		}
-
-	}
-
-	
-	int estaInBlanco=1;
-	//Compruebo si la line esta en blanco 
-	for(int i=0; lineCurrent[i]!='\0'; i++){
-
-		if(lineCurrent[i]!=' '){
-			estaInBlanco=0;
-			break;
-		}
-	}
-	
-
-
-	if(estaInBlanco){
-		continue;
-	}
-
-	//establezco valores por defecto
-	operationsDeMemory[OperationCurrent].hasBreakPoint=0;
-	operationsDeMemory[OperationCurrent].instructionOrData=INSTRUCTION;
-        operationsDeMemory[OperationCurrent].address=0;
-        operationsDeMemory[OperationCurrent].operationType=LOAD;
-        operationsDeMemory[OperationCurrent].size=DEFAULT_SIZE;
-        operationsDeMemory[OperationCurrent].data=DEFAULT_DATA;
-
-	
-	//parseo lines current
-
-        if(parseLine(lineCurrent, &operationsDeMemory[OperationCurrent], indexLineCurrent)==-1){
-		errors++;
-		
-
-	}
-
-	OperationCurrent++;
-    }
-	numOperations=OperationCurrent;
-
-
-    if(errors==0){
-
-	showOperations();
-	printf("\nTracefile was loaded correctly\n");
-	return 0;
-    }
-
-    printf("\n");
-
-    return -1;
-
+   if(errors==0){
+      showOperations();
+      fprintf(stderr,"\nTracefile was loaded correctly\n");
+      return 0;
+   }
+   fprintf(stderr,"\n");
+   return -1;
 }
 
-
 /**
- * Funcion para contar lines de un file. si el file no existe retorna -1.
+ * Count the number of lines in the file. Returns -1 on errors.
  */
-
 int countLines(char* filename){
+   FILE *fp;
+   int count = 0;
+   char c;
 
+   if ((fp = fopen(filename, "r")) == NULL)
+      return -1;
 
-    FILE *fp;
-    int count = 0;
-    char c;
- 
-
-    fp = fopen(filename, "r");
- 
-    if (fp == NULL)
-    {
-        return -1;
-    }
- 
-    for (c = getc(fp); c != EOF; c = getc(fp))
-        if (c == '\n')
-            count = count + 1;
- 
-    fclose(fp);
- 
- 
-    return count;
-
-
+   for (c = getc(fp); c != EOF; c = getc(fp))
+      if (c == '\n')
+         count = count + 1;
+   fclose(fp);
+   return count;
 }
 
-
 /**
- * Funcion para freer la memory reservada por el programa.
+ * Free memory allocated by this module.
  */
 void freeMemory(){
-	if(operationsDeMemory!=NULL){
-		//printf("%ld\n",(long)operationsDeMemory);
-		free(operationsDeMemory);
-		operationsDeMemory=NULL;
-	}
-
+   if(memoryOperations != NULL){
+      free(memoryOperations);
+      memoryOperations=NULL;
+   }
 }
-
-
-
-
-/**
- * Funcion para comprobar si el number hexadecimal representado por el string es correcto.
- */
-int isCorrectHexadecimal(char * number){
-
-	if(strlen(number)<2){
-		return 0;
-	}
-	if(number[0]!='0'){
-		return 0;
-	}
-	if(number[1]!='x'&&number[1]!='X'){
-		return 0;
-	}
-	
-	for(int i=2; i<strlen(number); i++){
-		if(number[i]<'0'||(number[i]>'9'&&number[i]<'A')||(number[i]>'F'&&number[i]<'a')||number[i]>'f'){
-			return 0;
-
-		}
-	}
-
-	return 1;
-
-}
-
-/**
- * Funcion para comprobar si el number decimal representado por el string es correcto.
- */
-int isCorrectDecimal(char * number){
-
-	for(int i=0; i<number[i]!='\0'; i++){
-		if(number[i]<'0'||number[i]>'9'){
-			return 0;
-		}
-	}
-
-	return 1;
-}
-
-
 

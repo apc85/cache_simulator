@@ -1,15 +1,7 @@
 #ifndef TRACEPARSER_H
 #define TRACEPARSER_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "interfaz.h"
-#include "datamanipulation.h"
-
-int numLines;
-int numOperations;
-int mallocated;
+int numberOfOperations;
 
 enum instructionOrData {DATA=1, INSTRUCTION=2};
 enum loadOrStore {LOAD=3, STORE=4};
@@ -27,13 +19,11 @@ struct memOperation{
 };
 
 //array que almacena las operations de memory leidas del file de trace
-struct memOperation* operationsDeMemory;
+extern struct memOperation* memoryOperations;
 
-int readFileTrace(char * filename);
+int readTraceFile(char * filename);
 int countLines(char* filename);
 void freeMemory();
 void showOperations();
-int parseLine(char* line, struct memOperation (*dirOperationGenerar), int indexLine);
-int isCorrectHexadecimal(char * number);
-int isCorrectDecimal(char * number);
+int parseLine(char* line, int lineNumber, struct memOperation *dirOperationGenerar);
 #endif

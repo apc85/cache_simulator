@@ -14,7 +14,7 @@
 #include "confparser.h"
 #include "traceparser.h"
 #include "dataInterface.h"
-#include "datos.h"
+#include "datastore.h"
 #include "callbacks.h"
 
 /* GtkWidget is the storage type for widgets */
@@ -82,7 +82,6 @@ void createPanelCache(int level);
 GtkWidget *create_view_statistics(void);
 void wordHexadecimal(char * returned, int number);
 void insertTextInPanel(char* text);
-void insertTextInBuffer(char* text, GtkTextBuffer *buffer);
 void nextLineTrace();
 void wordHexadecimalN(char * returned, int number, int totalDigitos);
 void addressHexadecimal(char * returned, int number);

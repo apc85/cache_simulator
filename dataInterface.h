@@ -2,7 +2,7 @@
 #define DATOS_H
 
 #include "interfaz.h"
-#include "datos.h"
+#include "datastore.h"
 
 
 enum {

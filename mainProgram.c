@@ -3,6 +3,7 @@
 
 #include "confparser.h"
 #include "traceparser.h"
+#include "datastore.h"
 
 #define PROGRAM_NAME "cache_simulator"
 #define VERSION "0.1"
@@ -25,7 +26,7 @@ void printUsage() {
 int main(int argc, char *argv[]) {
    int c;
 
-   /* Parse command line arguments */
+   // Parse command line arguments
    opterr = 0;
    while ((c = getopt (argc, argv, "vh")) != -1)
     switch (c)
@@ -50,13 +51,13 @@ int main(int argc, char *argv[]) {
         abort();
       }
 
-    /* Check that there is at leas one configuration file */
+    // Check that there is at leas one configuration file 
     if(optind == argc) {
        fprintf (stderr, "Must supply a <file>.ini on the command line.\n");
        return 1;
     }
 
-    /* Read configuration file */
+    // Read configuration file
     dictionary *ini;
     if((ini = readConfigurationFile(argv[optind])) == NULL) {
        return 1;
@@ -65,16 +66,19 @@ int main(int argc, char *argv[]) {
     if(parseConfiguration(ini) != 0) {
        return 1;
     }
-    /* Load trace file specified in the configuration file */
-    if(readFileTrace((char *)cpu.trace_file) != 0) {
+    // Load trace file specified in the configuration file
+    if(readTraceFile((char *)cpu.trace_file) != 0) {
        return 1;
     }
 
-    /* Create simulator data structures */
+    // Create simulator data structures
     generateDataStorage();
 
-    /* Start GUI */
+    // Start GUI
     generateInterface(argc, argv);
+
+    // Free memory allocated by readTraceFile()
+    freeMemory();
 
     return 0;
 }

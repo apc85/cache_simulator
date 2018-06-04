@@ -25,5 +25,7 @@ int isPowerOf2(long number);
 int isCorrectBinary(const char * cadena);
 double parseDouble(const char * cadena);
 long parseAddress(const char* page_base_address);
+int isCorrectHexadecimal(char * number);
+int isCorrectDecimal(char * number);
 
 #endif

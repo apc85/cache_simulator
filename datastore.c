@@ -1,4 +1,4 @@
-#include "datos.h"
+#include "datastore.h"
 
 
 void contentArrayToString(long* array, char* content, int level){
@@ -209,7 +209,6 @@ void insertTextInBuffer(char* text, GtkTextBuffer *buffer){
         GtkTextIter iter;
 	mark = gtk_text_buffer_get_insert (buffer);
 	gtk_text_buffer_get_iter_at_mark (buffer, &iter, mark);
-
 	gtk_text_buffer_insert (buffer, &iter, text, -1);
 }
 

@@ -1,5 +1,5 @@
 
-MODULES = interfaz.c dataInterface.c datamanipulation.c confparser.c iniparser.c datos.c callbacks.c traceparser.c dictionary.c
+MODULES = interfaz.c dataInterface.c datamanipulation.c confparser.c iniparser.c datastore.c callbacks.c traceparser.c dictionary.c
 
 DEBUG=0
 CFLAGS += -DDEBUG=${DEBUG}
