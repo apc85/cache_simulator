@@ -13,7 +13,7 @@
 #include <string.h>
 #include <math.h>
 #include "parser.h"
-#include "trazaParser.h"
+#include "traceparser.h"
 #include "dataInterface.h"
 
 struct cacheLEVEL{

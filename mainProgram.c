@@ -1,17 +1,17 @@
-#include "interfaz.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <ctype.h>
 #include "iniparser.h"
-#include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <getopt.h>
 #include "parser.h"
-#include "trazaParser.h"
+#include "traceparser.h"
+
+#include "interfaz.h"
 #include "dataInterface.h"
 #include "datos.h"
 #include "callbacks.h"

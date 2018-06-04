@@ -1,18 +1,4 @@
-#include "trazaParser.h"
-
-
-
-/*
-
-int main(){
-    readFileTrace("/home/agustin/Escritorio/traza.vca");
-    if(mallocated){
-	//freeMemory();
-    }
-}
-
-*/
-
+#include "traceparser.h"
 
 /**
  * Funcion para parsear una line. REcibe por parametro el String de la line, la position de la line y la la operation de
@@ -386,7 +372,7 @@ int readFileTrace(char * filename){
     int indexLineCurrent=-1;
     int OperationCurrent=0;
 
-    buffer = gtk_text_buffer_new (NULL);
+    GtkTextBuffer *buffer = gtk_text_buffer_new (NULL);
     //leo todas las lines del file
     while ((read = getline(&line, &len, file)) != -1) {
 	indexLineCurrent++;

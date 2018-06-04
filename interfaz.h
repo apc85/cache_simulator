@@ -12,7 +12,7 @@
 #include <string.h>
 #include <math.h>
 #include "parser.h"
-#include "trazaParser.h"
+#include "traceparser.h"
 #include "dataInterface.h"
 #include "datos.h"
 #include "callbacks.h"

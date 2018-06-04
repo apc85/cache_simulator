@@ -8,6 +8,7 @@
 #include <ctype.h>
 
 #include "iniparser.h"
+#include "datamanipulation.h"
 
 
   struct structCpu
@@ -29,7 +30,6 @@
       double access_time_burst;
       long page_size;
       long page_base_address;
-
   };
 
   struct structCache
@@ -43,26 +43,12 @@
       const char* column_bit_mask;  //Esto indica que columnas se muestran y cuales se ocultan. Mascara en binario
   };
 
-  #define N_REPLACEMENT 4
-  char* str_replacementPolicy[4];
-  enum replacement {LRU=0, LFU=1, RANDOM=2, FIFO=3};
-
-  #define N_WRITE 2
-  char* str_writePolicy[2];
-  enum write_policy {WRITE_THROUGH=0, WRITE_BACK=1};
-
-
   #define NCLAVES_CPU 4
   char* keysCPU[NCLAVES_CPU];
   #define NCLAVES_MEMORY 5
   char* keysMEMORY[NCLAVES_MEMORY];
   #define NCLAVES_CACHE 7
   char* keysCACHE[NCLAVES_CACHE];
-
-  #define N_TRUES 3
-  char* str_true[3];
-  #define N_FALSES 3
-  char* str_false[3];
 
   #define MAX_CACHES 10
   int numberCaches;
@@ -76,16 +62,6 @@
   dictionary *readConfigurationFile(char * file);
   int parseConfiguration(dictionary *ini);
   void checkSectionKeys(dictionary *ini, const char *section, int numberOfValidKeys, char *validKeys[], int *errors);
-  void showState();
-  long parseLongK1000(const char * cadena);
-  long parseLongK1024(const char * cadena);
-  int parseBoolean(const char * cadena);
-  int parseInt(const char * cadena);
-  int parseReplacementPolicy(const char * cadena);
-  int parseWritePolicy(const char * cadena);
-  int isPowerOf2(long number);
-  int isCorrectBinary(const char * cadena);
-  double parseDouble(const char * cadena);
-  long parseAddress(const char* page_base_address);
+  void showConfiguration();
 
 #endif
