@@ -74,7 +74,8 @@
   struct structCache caches[MAX_CACHES];
 
 
-  int readFile(char * file);
+  int readConfigurationFile(char * file);
+  void checkSectionKeys(dictionary *ini, const char *section, int numberOfValidKeys, char *validKeys[], int *errors);
   void showState();
   long parselongK1000(const char * cadena);
   long parselongK1024(const char * cadena);

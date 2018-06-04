@@ -8,221 +8,111 @@ char* keysCACHE[]= {"line_size", "size","asociativity", "write_policy", "replace
 char* str_true[]= {"1", "yes", "true"};
 char* str_false[]= {"0","no","false"};
 
-
-
 /**
  * This functions read the simulator configuration file.
  * @param ini_name the file name
  *
  */
-int readFile(char * ini_name) {
+int readConfigurationFile(char * ini_name) {
+    numberCaches = 0;
+    int errors = 0;
+    dictionary *ini ;
 
-
-    numberCaches=0;
-    int errors=0;
-
-    dictionary  *   ini ;
-
-    ini = iniparser_load(ini_name);
-
-    //load the file
-    if (ini==NULL) {
+    if((ini = iniparser_load(ini_name))==NULL) {
         fprintf(stderr, "Error loading file: %s\n", ini_name);
         return -1 ;
     }
 
+#if DEBUG
     iniparser_dump(ini, stderr);
+    fprintf(stderr,"\n");
+#endif
 
-    int numSections=iniparser_getnsec(ini);
+    int numberSections = iniparser_getnsec(ini);
 
-    int ncpu=0;
-    int nmem=0;
-    int ncaches=0;
+    int numberCPUs = 0;
+    int numberMemories = 0;
 
-    printf("\n");
-
-    //check all the file sections are correct. No missing sections. No unknown sections.
-
-
-    for(int i=0; i<numSections; i++) {
+    /* Check that all the configuration file sections are correct.
+     * No missing sections. No unknown sections. */
+    for(int i=0; i<numberSections; i++) {
         const char * section=iniparser_getsecname(ini, i);
 
-        //if the name of the section is cpu es cpu
+        // if the name of the section is cpu
         if(strcmp(section, "cpu")==0) {
-            //count cpu sections. There must be only one cpu section
-            ncpu++;
-            //If the name of the section is memory
+            // count cpu sections. There can be only one cpu section
+            numberCPUs++;
+        // If the name of the section is memory
         } else if(strcmp(section, "memory")==0) {
-            //Count memory sections. There must be only one memory section
-            nmem++;
-            //If the name of the section is like "cache..."
+            // Count memory sections. There can be only one memory section
+            numberMemories++;
+        // If the name of the section is like "cache..."
         } else if(strncmp(section, "cache", 5)==0) {
-
-
-            int len=strlen(section)-5;
-            int numCorrecto=1;
-
-            //Error if section length is 5. It must have a number at the end. cacheN
-            if(len==0) {
-                printf("Error: Invalid [cache] section. It must contain the cache level number. [cacheN]\n");
-                numCorrecto=0;
+            int correctNum=1;
+            // Get the length of the section name
+            int len = strlen(section);
+            // Error if there is no characters following 'cache'
+            if(len <= 5) {
+                fprintf(stderr,"Error: Invalid [cache] section. It must contain the cache level number. [cacheN]\n");
+                correctNum=0;
                 errors++;
             }
 
-
-
-
-            //If number value is not valid.
-            char num[len+1];
-            for(int j=0; j<len && numCorrecto; j++) {
-                num[j]=section[j+5];
-                if(num[j]<'0'||num[j]>'9') {
-                    numCorrecto=0;
-                    printf("Error: Invalid cache section name [%s]\n", section);
+            // Check that the string following 'cache' is a number 
+            const char *cacheNumberStr = section+5;
+            for(int j=0; cacheNumberStr[j] && correctNum; j++) {
+                if(!isdigit(cacheNumberStr[j])) {
+                    correctNum = 0;
+                    fprintf(stderr,"Error: Invalid cache section name [%s]\n", section);
                     errors++;
                 }
-
             }
 
-            //If the number is correct I check its internal sections
-            if(numCorrecto) {
-
-                //Highest cache level must be equal to the total amount of caches.
-                int Ncache=atoi(num);
-                if(Ncache>ncaches) {
-                    ncaches=Ncache;
+            // Parse the contents of the section if the number is correct
+            if(correctNum) {
+                int cacheNumber = atoi(cacheNumberStr);
+                // Remember the highest cache level
+                if(cacheNumber > numberCaches) {
+                    numberCaches = cacheNumber;
                 }
-
-
-                int nkeys=iniparser_getsecnkeys(ini, section);
-                const char * keys[nkeys];
-                iniparser_getseckeys(ini, section, keys);
-
-
-                //Look for unknown keys in every cache section.
-                for(int i=0; i<nkeys; i++) {
-
-                    //Para eso comparo conn todas las keys posibles.
-                    int correcto=0;
-                    for(int j=0; j<NCLAVES_CACHE; j++) {
-                        char key[200];
-                        sprintf(key, "%s:%s", section, keysCACHE[j]);
-                        if(strcmp(keys[i], key)==0) {
-                            correcto=1;
-                            break;
-                        }
-                    }
-                    /* error key */
-                    if(correcto==0) {
-                        printf("Error: unknown key %s\n", keys[i]);
-                        errors++;
-                    }
-
-                }
-
+                checkSectionKeys(ini, section, NCLAVES_CACHE, keysCACHE, &errors);
             }
-
-            //if section name isn't "cpu" and section name isn't "memory" and section name isn't like "cache..." then error.
+        // If the section name isn't "cpu" or "memory" and section name isn't like "cache..." then error.
         } else {
             printf("Error: Unknown section name [%s]\n", section);
             errors++;
         }
     }
 
-    //error if zero cpu sections where read
-    if(ncpu==0) {
+    // Check the mandatory [cpu] section
+    if(numberCPUs==0) {
         printf("Error: Missing mandatory section [cpu]\n");
         errors++;
-
-        //look for unknown keys in [cpu] section
+    // Look for unknown keys in [cpu] section
     } else {
-        int nkeys=iniparser_getsecnkeys(ini, "cpu");
-        const char * keys[nkeys];
-        iniparser_getseckeys(ini, "cpu", keys);
-
-        //I compare each key with all the possible valid keys to ensure it is correct.
-        for(int i=0; i<nkeys; i++) {
-
-            int correcto=0;
-            for(int j=0; j<NCLAVES_CPU; j++) {
-
-                char key[200];
-                sprintf(key, "cpu:%s", keysCPU[j]);
-                if(strcmp(key, keys[i])==0) {
-                    correcto=1;
-                    break;
-                }
-
-
-
-            }
-
-            /* error key */
-            if(correcto==0) {
-                printf("Error: Unknown key %s\n", keys[i]);
-                errors++;
-            }
-
-        }
-
-
+        checkSectionKeys(ini, "cpu", NCLAVES_CPU, keysCPU, &errors);
     }
 
-    //error if zero memory section where read.
-    if(nmem==0) {
+    // Check the mandatory [memory] section
+    if(numberMemories==0) {
         printf("Error: Missing mandatory section [memory]\n");
         errors++;
+    // Look for unknown keys in [memory] section
     } else {
-        int nkeys=iniparser_getsecnkeys(ini, "memory");
-        const char * keys[nkeys];
-        iniparser_getseckeys(ini, "memory", keys);
-
-        //I compare each key with all the possible valid keys to ensure it is correct.
-        for(int i=0; i<nkeys; i++) {
-
-            int correcto=0;
-            for(int j=0; j<NCLAVES_MEMORY; j++) {
-
-                char key[200];
-                sprintf(key, "memory:%s", keysMEMORY[j]);
-                if(strcmp(key, keys[i])==0) {
-                    correcto=1;
-                    break;
-                }
-
-
-
-            }
-            /* error key */
-            if(correcto==0) {
-                printf("Error: Unknown key %s\n", keys[i]);
-                errors++;
-            }
-
-        }
-
-
+        checkSectionKeys(ini, "memory", NCLAVES_MEMORY, keysMEMORY, &errors);
     }
 
-
-
-    //error if the number of caches is higher than maximun amount of caches allowed
-    if(ncaches>MAX_CACHES) {
+    // Check that the number of cache levels is within range
+    if(numberCaches>MAX_CACHES) {
         printf("Error: The number of caches is excesive.\n");
         errors++;
         printf("\nTotal errors: %d\n", errors);
         return -1;
     }
 
-    numberCaches=ncaches;
+    // READING CPU CONFIGURATION///////////////////////////////////////////////
 
-
-
-
-
-    //READING CPU CONFIGURATION///////////////////////////////////////////////
-
-    //reading key cpu:address_width
+    // reading key cpu:address_width
     const char * cpu_address_width= iniparser_getstring(ini, "cpu:address_width", NULL);
     long long_cpu_address_width= parseInt(cpu_address_width);
 
@@ -238,7 +128,7 @@ int readFile(char * ini_name) {
 
 
 
-    //reading key cpu:word_width
+    // reading key cpu:word_width
     const char * cpu_word_width= iniparser_getstring(ini, "cpu:word_width", NULL);
     long long_cpu_word_width= parseInt(cpu_word_width);
 
@@ -252,7 +142,7 @@ int readFile(char * ini_name) {
         cpu.word_width=long_cpu_word_width;
     }
 
-    //reading key cpu:frequency
+    // reading key cpu:frequency
     const char * cpu_frequency= iniparser_getstring(ini, "cpu:frequency", NULL);
     long long_cpu_frequency= parselongK1000(cpu_frequency);
 
@@ -268,7 +158,7 @@ int readFile(char * ini_name) {
     }
 
 
-    //reading key cpu:trace_file
+    // reading key cpu:trace_file
     const char * cpu_trace_file=          iniparser_getstring(ini, "cpu:trace_file", NULL);
     if(cpu_trace_file==NULL) {
         printf("Error: Missing value cpu:trace_file\n");
@@ -282,9 +172,9 @@ int readFile(char * ini_name) {
 
 
 
-    //READING MEMORY CONFIGURATION//////////////////////////////////////
+    // READING MEMORY CONFIGURATION//////////////////////////////////////
 
-    //reading key memory:size
+    // reading key memory:size
     const char * mem_size= iniparser_getstring(ini, "memory:size", NULL);
     long long_mem_size= parselongK1024(mem_size);
 
@@ -298,7 +188,7 @@ int readFile(char * ini_name) {
         memory.size=long_mem_size;
     }
 
-    //reading key memory:access_time_1
+    // reading key memory:access_time_1
     const char * mem_access_time_1=           iniparser_getstring(ini, "memory:access_time_1", NULL);
     double double_mem_access_time_1=            parseDouble(mem_access_time_1);
 
@@ -313,7 +203,7 @@ int readFile(char * ini_name) {
     }
 
 
-    //reading key memory:access_time_burst
+    // reading key memory:access_time_burst
     const char * mem_access_time_burst=           iniparser_getstring(ini, "memory:access_time_burst", NULL);
     double double_mem_access_time_burst=            parseDouble(mem_access_time_burst);
 
@@ -327,7 +217,7 @@ int readFile(char * ini_name) {
         memory.access_time_burst=double_mem_access_time_burst;
     }
 
-    //reading key memory:page_size
+    // reading key memory:page_size
     const char * page_size= iniparser_getstring(ini, "memory:page_size", NULL);
     long long_page_size= parselongK1024(page_size);
 
@@ -341,7 +231,7 @@ int readFile(char * ini_name) {
         memory.page_size=long_page_size;
     }
 
-    //reading key memory:page_base_address
+    // reading key memory:page_base_address
     const char * page_base_address= iniparser_getstring(ini, "memory:page_base_address", NULL);
     long long_page_base_address= parseAddress(page_base_address);
 
@@ -359,8 +249,8 @@ int readFile(char * ini_name) {
 
 
 
-    //READING ALL THE CACHES CONFIGURATION /////////////////////////////////////////
-    //Browse the cache array and check the configuration of each cache.
+    // READING ALL THE CACHES CONFIGURATION /////////////////////////////////////////
+    // Browse the cache array and check the configuration of each cache.
 
     for(int i=0; i<numberCaches; i++) {
 
@@ -371,7 +261,7 @@ int readFile(char * ini_name) {
         char param[50];
 
 
-        //reading key cache:line_size
+        // reading key cache:line_size
         sprintf(param, "%s:line_size", cache);
 
         const char * cache_line_size=iniparser_getstring(ini, param, NULL);
@@ -389,7 +279,7 @@ int readFile(char * ini_name) {
 
 
 
-        //reading key cache:size
+        // reading key cache:size
         sprintf(param, "%s:size", cache);
 
         const char * cache_size=iniparser_getstring(ini, param, NULL);
@@ -404,7 +294,7 @@ int readFile(char * ini_name) {
             caches[i].size=long_size;
         }
 
-        //reading key cache:column_bit_mask
+        // reading key cache:column_bit_mask
         sprintf(param, "%s:column_bit_mask", cache);
 
         const char * column_bit_mask=iniparser_getstring(ini, param, NULL);
@@ -422,11 +312,11 @@ int readFile(char * ini_name) {
             caches[i].column_bit_mask=column_bit_mask;
         }
 
-        //reading key cache:asocitivity
+        // reading key cache:asocitivity
         sprintf(param, "%s:asociativity", cache);
 
         const char * cache_asociativity=iniparser_getstring(ini, param, NULL);
-        //si es F es de compleatamente asociativa. Un solo set. Tantas lines/set como lines totales.
+        // si es F es de compleatamente asociativa. Un solo set. Tantas lines/set como lines totales.
         if(cache_asociativity!=NULL&&strcmp(cache_asociativity, "F")==0) {
             caches[i].asociativity=caches[i].size/caches[i].line_size;
         } else {
@@ -449,7 +339,7 @@ int readFile(char * ini_name) {
         }
 
 
-        //reading key cache:write_policy
+        // reading key cache:write_policy
         sprintf(param, "%s:write_policy", cache);
         const char * cache_write_policy=iniparser_getstring(ini, param, NULL);
         long long_write_policy=parseWritePolicy(cache_write_policy);
@@ -463,7 +353,7 @@ int readFile(char * ini_name) {
             caches[i].write_policy=long_write_policy;
         }
 
-        //reading key cache:replacement
+        // reading key cache:replacement
         sprintf(param, "%s:replacement", cache);
 
         const char * cache_replacement=iniparser_getstring(ini, param, NULL);
@@ -480,7 +370,7 @@ int readFile(char * ini_name) {
 
 
 
-        //reading key cache:separated
+        // reading key cache:separated
         sprintf(param, "%s:separated", cache);
 
         const char * cache_separated=iniparser_getstring(ini, param, NULL);
@@ -496,7 +386,7 @@ int readFile(char * ini_name) {
         }
     }
 
-    //checking all the caches have the same line_size
+    // checking all the caches have the same line_size
     if(numberCaches>0){
             int previous=caches[0].line_size;
 	    for(int i=1; i<numberCaches; i++) {
@@ -525,7 +415,32 @@ int readFile(char * ini_name) {
 }
 
 
+/*
+ * Checks that all the keys in a section are valid
+ */
+void checkSectionKeys(dictionary *ini, const char *section, int numberOfValidKeys, char *validKeys[], int *errors) {
+   int nkeys = iniparser_getsecnkeys(ini, section);
+   const char * keys[nkeys];
+   iniparser_getseckeys(ini, section, keys);
 
+   // Make sure that the section does not have unknown keys
+   for(int i=0; i<nkeys; i++) {
+      // By comparing each one with the known keys of a cache section
+      for(int j=0; j<numberOfValidKeys; j++) {
+         // TODO Possible buffer overflow: section is a string that comes from the user. It could be longer than 200.
+         char key[200];
+         sprintf(key, "%s:%s", section, validKeys[j]);
+         if(strcmp(keys[i], key)==0) {
+            // This key is known. Go to the next one.
+            goto nextKey;
+         }
+      }
+      // This key matches none of the known keys of a cache section
+      fprintf(stderr,"Error: unknown key %s\n", keys[i]);
+      (*errors)++;
+      nextKey:;
+   }
+}
 
 
 
@@ -536,7 +451,7 @@ int readFile(char * ini_name) {
 
 void showState() {
 
-    //show cpu info
+    // show cpu info
     printf("\nCPU\n");
 
     printf("word_width:         [%ld bits] \n", cpu.word_width);
@@ -547,7 +462,7 @@ void showState() {
     printf("trace_file:         [%s]\n", cpu.trace_file);
 
 
-    //show memory info
+    // show memory info
     printf("\nMEMORY\n");
 
     printf("size:               [%ld bytes] \n",  memory.size);
@@ -560,7 +475,7 @@ void showState() {
 
 
 
-    //show each cache info
+    // show each cache info
     for(long i=0; i<numberCaches; i++) {
         printf("\nCACHE L%ld\n", i+1);
 
@@ -588,7 +503,7 @@ long parselongK1000(const char * cadena) {
     if(cadena==NULL) {
         return -2;
     }
-    //Obtain the multiplier k, M, or G. Else error
+    // Obtain the multiplier k, M, or G. Else error
     long len=strlen(cadena);
     long multiplicador=1;
     if(cadena[len-1]=='K'||cadena[len-1]=='k') {
@@ -602,7 +517,7 @@ long parselongK1000(const char * cadena) {
 
     }
 
-    //if something not numeric or multiplier. error return -1
+    // if something not numeric or multiplier. error return -1
     for(long i=0; i<len-1; i++) {
 
         if(cadena[i]>'9'||cadena[i]<'0') {
@@ -629,7 +544,7 @@ long parselongK1024(const char * cadena) {
         return -2;
     }
 
-    //Obtain the multiplier k, M, or G. Else error
+    // Obtain the multiplier k, M, or G. Else error
     long len=strlen(cadena);
     long multiplicador=1;
     if(cadena[len-1]=='K'||cadena[len-1]=='k') {
@@ -643,7 +558,7 @@ long parselongK1024(const char * cadena) {
 
     }
 
-    //if something not numeric or multiplier. error return -1
+    // if something not numeric or multiplier. error return -1
     for(long i=0; i<len-1; i++) {
 
         if(cadena[i]>'9'||cadena[i]<'0') {
@@ -671,10 +586,10 @@ int parseInt(const char * cadena) {
     if(cadena==NULL) {
         return -2;
     }
-    //Obtain the multiplier k, M, or G. Else error.
+    // Obtain the multiplier k, M, or G. Else error.
     int len=strlen(cadena);
 
-    //if something not numeric or multiplier. error return -1
+    // if something not numeric or multiplier. error return -1
     for(long i=0; i<len; i++) {
 
         if(cadena[i]>'9'||cadena[i]<'0') {
@@ -694,12 +609,12 @@ int parseInt(const char * cadena) {
  */
 int parseBoolean(const char * cadena) {
 
-    //if null return error -2
+    // if null return error -2
     if(cadena==NULL) {
         return -2;
     }
 
-    //turn into lower case
+    // turn into lower case
     char cadenaMin[10];
     int i;
     for( i= 0; cadena[i]; i++) {
@@ -709,7 +624,7 @@ int parseBoolean(const char * cadena) {
 
 
 
-    //check string content and retun equivalent boolean value.
+    // check string content and retun equivalent boolean value.
     for(int i=0; i<N_TRUES; i++) {
         if(strcmp(str_true[i], cadenaMin)==0) {
             return 1;
@@ -766,7 +681,7 @@ int parseReplacementPolicy(const char * cadena) {
  */
 int parseWritePolicy(const char * cadena) {
 
-    //if null pointer retun error -2
+    // if null pointer retun error -2
     if(cadena==NULL) {
         return -2;
     }
@@ -802,7 +717,7 @@ int isPowerOf2(long number) {
  */
 int isCorrectBinary(const char * cadena) {
 
-    //if null return error -2
+    // if null return error -2
     if(cadena==NULL) {
         return -2;
     }
@@ -831,7 +746,7 @@ double parseDouble(const char * cadena) {
     if(cadena==NULL) {
         return -2;
     }
-    //Obtain the multiplier p, n, u, or m. Else error
+    // Obtain the multiplier p, n, u, or m. Else error
     long len=strlen(cadena);
     double multiplicador=1;
     if(cadena[len-1]=='m') {
@@ -847,7 +762,7 @@ double parseDouble(const char * cadena) {
 
     }
 
-    //if something not numeric or multiplier. error return -1
+    // if something not numeric or multiplier. error return -1
     for(long i=0; i<len-1; i++) {
 
         if(cadena[i]>'9'||cadena[i]<'0') {
@@ -872,7 +787,7 @@ long parseAddress(const char* page_base_address){
 
         long toReturn= strtol(page_base_address, NULL, 16);
 	return toReturn;
-        //provisional TODO
+        // provisional TODO
 	return 33;
 
 

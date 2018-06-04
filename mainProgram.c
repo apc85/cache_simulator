@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Load configuration file */
-    if(readFile(argv[optind]) != 0) {
+    if(readConfigurationFile(argv[optind]) != 0) {
        return 1;
     }
     /* Load trace file specified in the configuration file */
