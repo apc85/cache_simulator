@@ -1,51 +1,9 @@
 #include <ctype.h>
 
+#include "datamanipulation.h"
 #include "datastore.h"
 #include "gui.h"
 #include "datainterface.h"
-
-void contentArrayToString(long* array, char* content, int level){
-   int numLines=caches[level].size/caches[level].line_size;
-   int asociativity=caches[level].asociativity;
-   int numsets=numLines/asociativity;
-   int numWords=(caches[level].line_size*8)/cpu.word_width;
-   int wordSize=cpu.word_width;
-   int numChars=wordSize/4;
-   content[0]='\0';        
-   for(int i=0; i<numWords; i++){
-      char num[50];
-      wordHexadecimalN(num, array[i], numChars);
-      strcat(content, num);
-      strcat(content, " ");
-   }
-}
-
-void contentStringToArray(long* array, char* content, int level){
-   int numLines=caches[level].size/caches[level].line_size;
-   int asociativity=caches[level].asociativity;
-   int numsets=numLines/asociativity;
-   int numWords=(caches[level].line_size*8)/cpu.word_width;
-   int wordSize=cpu.word_width;
-   int numChars=wordSize/4;
-   for(int i=0; i<numWords; i++){
-      array[i]=0;
-   }
-   int len=strlen(content);
-   int lineIndex=0;
-   char num[100];
-   int j=0;
-   for(int i=0; i<len; i++){
-      if(content[i]!=' '){
-         num[j]=toupper(content[i]);
-         j++;
-      }else{
-         j=0;
-         array[lineIndex]=strtol(num, NULL, 16);
-         num[0]='\0';
-         lineIndex++;
-      }
-   }
-}
 
 void createMemoryModel(){
    modelMEMORY = gtk_list_store_new(N_COLUMNS,
@@ -59,8 +17,8 @@ void createMemoryModel(){
       gtk_list_store_append(modelMEMORY, &iter);
       char address[50];
       char content[50];
-      addressHexadecimal(address, i);
-      wordHexadecimal(content, 0);
+      sprintf(address, "%0*x", (int)cpu.address_width/4, i);
+      sprintf(content, "%0*x", (int)cpu.word_width/4, 0);
       /* Fill fields with some data */
       gtk_list_store_set (modelMEMORY, &iter,
             CONTENT, content,

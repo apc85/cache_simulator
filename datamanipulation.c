@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "datamanipulation.h"
 
@@ -299,8 +300,8 @@ int isCorrectHexadecimal(char * number){
    return 1;
 }
 
-/**
- * Funcion para comprobar si el number decimal representado por el string es correcto.
+/*
+ * Funcion para comprobar si el number decimal representado por el string es correcto
  */
 int isCorrectDecimal(char * number){
    for(int i=0; i<number[i]!='\0'; i++){
@@ -310,3 +311,49 @@ int isCorrectDecimal(char * number){
    }
    return 1;
 }
+
+/*
+ * Convert an array of integers to a string
+ */
+void contentArrayToString(long* array, char* content, int count, int width){
+   char num[50];
+   content[0]='\0';        
+   for(int i=0; i<count; i++) {
+      sprintf(num, "%s%0*lx", i>0 ? " " : "", width, array[i]);
+      strcat(content, num);
+   }
+}
+
+/*
+ * Convert a space separated string of hex numbers into an array of longs
+ */
+void contentStringToArray(long* array, char* content, int count){
+   char *pch;
+   pch = strtok (content," ");
+   for(int i=0; pch != NULL || i < count; i++, pch = strtok (NULL, " ")) {
+      array[i] = strtol(pch, NULL, 16);
+   }
+}
+
+/*void contentStringToArray(long* array, char* content, int level){
+   int numWords=(caches[level].line_size*8)/cpu.word_width;
+   int wordSize=cpu.word_width;
+   for(int i=0; i<numWords; i++){
+      array[i]=0;
+   }
+   int len=strlen(content);
+   int lineIndex=0;
+   char num[100];
+   int j=0;
+   for(int i=0; i<len; i++){
+      if(content[i]!=' '){
+         num[j]=toupper(content[i]);
+         j++;
+      }else{
+         j=0;
+         array[lineIndex]=strtol(num, NULL, 16);
+         num[0]='\0';
+         lineIndex++;
+      }
+   }
+}*/

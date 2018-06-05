@@ -441,53 +441,6 @@ GtkWidget *create_view_statistics(void) {
    return view;
 }
 
-void wordHexadecimal(char * returned, int number) {
-   int numDigitos=0;
-   if(number!=0) {
-      numDigitos=(log(number)/log(16));
-   }
-   int totalDigitos=cpu.word_width/4;
-   int numCeros=totalDigitos-numDigitos-1;
-   char cadena[50]="";
-   int i;
-   for(i=0; i<numCeros; i++) {
-      cadena[i]='0';
-   }
-   cadena[i+2]='\0';
-   sprintf(returned, "%s%x", cadena, number);
-}
-
-void addressHexadecimal(char * returned, int number) {
-   int numDigitos=0;
-   if(number!=0) {
-      numDigitos=(log(number)/log(16));
-   }
-   int totalDigitos=cpu.address_width/4;
-   int numCeros=totalDigitos-numDigitos-1;
-   char cadena[50]="";
-   int i;
-   for(i=0; i<numCeros; i++) {
-      cadena[i]='0';
-   }
-   cadena[i+2]='\0';
-   sprintf(returned, "%s%x", cadena, number);
-}
-
-void wordHexadecimalN(char * returned, int number, int totalDigitos) {
-   int numDigitos=0;
-   if(number!=0) {
-      numDigitos=(log(number)/log(16));
-   }
-   int numCeros=totalDigitos-numDigitos-1;
-   char cadena[50]="";
-   int i;
-   for(i=0; i<numCeros; i++) {
-      cadena[i]='0';
-   }
-   cadena[i+2]='\0';
-   sprintf(returned, "%s%x", cadena, number);
-}
-
 void insertTextInPanel(char* text) {
    GtkTextBuffer *buffer;
    GtkTextMark *mark;

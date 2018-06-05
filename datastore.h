@@ -46,9 +46,7 @@ enum {
 void createMemoryModel();
 void createCacheModel(int level);
 void writeBlankLine(int level, long line);
-void contentArrayToString(long* array, char* content, int level);
 void writeBlankMemoryPosition(long positionIndex);
-void contentStringToArray(long* array, char* content, int level);
 void insertTextInBuffer(char* text, GtkTextBuffer *buffer);
 GtkTreeModel *create_model_statistics(void);
 void generateDataStorage();
