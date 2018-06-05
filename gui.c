@@ -48,6 +48,7 @@ int generateInterface(int argc, char *argv[]) {
    button2= gtk_button_new_with_label ("Simulate all");
    button3= gtk_button_new_with_label ("Restart");
    g_signal_connect (button1, "clicked", G_CALLBACK (callbackNextStep), (gpointer) NULL);
+   g_signal_connect (button2, "clicked", G_CALLBACK (callbackSimulateAll), (gpointer) NULL);
    g_signal_connect (button3, "clicked", G_CALLBACK (callbackRestart), (gpointer) NULL);
    //gtk_container_add (GTK_CONTAINER (buttonBox), button1);
    //gtk_container_add (GTK_CONTAINER (buttonBox), button2);
@@ -126,6 +127,10 @@ int generateInterface(int argc, char *argv[]) {
    return 1;
 }
 
+/*
+ *  Get the next line from the trace file stored in the text widget.
+ *  TODO: Return null when there are no more lines
+ */
 char *nextLineTrace() {
    GtkTextIter lineIterCurrent;
    gtk_text_buffer_get_iter_at_mark (buffer, &lineIterCurrent, marcaLineCurrent);

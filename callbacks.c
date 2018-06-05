@@ -51,6 +51,21 @@ void callbackRestart( GtkWidget *widget, gpointer   data){
 }
 
 /**
+ * Callback fuction to perform the complete simulation
+ */
+void callbackSimulateAll( GtkWidget *widget, gpointer   data)
+{
+   char *currentLine;
+   while(currentLine = nextLineTrace()) {
+      if(preprocessTraceLine(currentLine)) {
+         struct memOperation operation;
+         parseLine(currentLine, -1, &operation);
+         simulate_step(&operation);
+      }
+   }
+}
+
+/**
  * Callback fuction for advancing one step on simulation
  */
 void callbackNextStep( GtkWidget *widget, gpointer   data)
