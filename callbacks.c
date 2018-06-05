@@ -8,19 +8,19 @@
  * Callback function for setting simulation to its initial state.
  */
 void callbackRestart( GtkWidget *widget, gpointer   data){
-   //reset each cache
+   // Reset each cache
    for(int i=0; i<numberCaches; i++){
-      //if divided cache I must reset both
+      // If it is a divided cache, both parts must be reset
       if(caches[i].separated){
-         cacheDataReset(i);
-         cacheInstructionReset(i);
-      }else{
-         cacheReset(i);
+         resetDataCache(i);
+         resetInstructionCache(i);
+      } else {
+         resetCache(i);
       }
    }
-   //reset memory
-   memoryReset();
-   /* In trace panel go back to first instruction. */
+   resetMemory();
+
+   // Go to the first line in the trace panel */
    GtkTextIter lineIterCurrent;
    gtk_text_buffer_get_iter_at_mark (buffer, &lineIterCurrent, marcaLineCurrent);
    GtkTextIter start;
@@ -28,7 +28,7 @@ void callbackRestart( GtkWidget *widget, gpointer   data){
    GtkTextIter end=lineIterCurrent;
    GtkTextIter lineIterSiguiente=lineIterCurrent;
    gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterSiguiente);
-   //remove all tags for removing colour.
+   // Remove all tags for removing colour.
    gtk_text_buffer_remove_all_tags (buffer,
          &start,
          &end);
@@ -37,7 +37,7 @@ void callbackRestart( GtkWidget *widget, gpointer   data){
    gtk_text_buffer_add_mark (buffer,
          marcaLineCurrent,
          &lineIterInicial);
-   //Scroll each panel to initial line
+   // Scroll each panel to first line
    scrollMemoryToPos(0);
    scrollTextViewToLine(0);
    for(int i=0; i<numberCaches; i++){
@@ -70,7 +70,6 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
  */
 void callbackNextStep( GtkWidget *widget, gpointer   data)
 {
-   //get the next line
    char *currentLine = nextLineTrace();
    if(preprocessTraceLine(currentLine)) {
       struct memOperation operation;
@@ -79,18 +78,18 @@ void callbackNextStep( GtkWidget *widget, gpointer   data)
    }
 
    //////pruebas
-   set_estatistics("Cache L2", "Fault rate", "tres");
-   set_estatistics("CPU", "Fault rate", "tres");
-   set_estatistics("Cache L3", "nueva categoria", "cuatro");
-   set_estatistics("Cache NUEVA", "nueva categoria2", "cuatro2");
+   setStatistics("Cache L2", "Fault rate", "tres");
+   setStatistics("CPU", "Fault rate", "tres");
+   setStatistics("Cache L3", "nueva categoria", "cuatro");
+   setStatistics("Cache NUEVA", "nueva categoria2", "cuatro2");
    char *value;
-   value=get_estatistics("Cache L1", "Fault rate");
+   value=getStatistics("Cache L1", "Fault rate");
    //printf("valor: %s\n", value);
-   value=get_estatistics("Cache NUEVA", "nueva categoria2");
+   value=getStatistics("Cache NUEVA", "nueva categoria2");
    //printf("valor: %s\n", value);
-   value=get_estatistics("Cache NUEVA", "ia2");
+   value=getStatistics("Cache NUEVA", "ia2");
    //printf("valor: %s\n", value);
-   value=get_estatistics("CaUEVA", "ia2");
+   value=getStatistics("CaUEVA", "ia2");
    //printf("valor: %s\n", value);
    struct memoryPosition pos;
    pos.address=256;

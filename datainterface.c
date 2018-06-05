@@ -8,7 +8,7 @@ const char* const colores[]={"blue", "black", "yellow", "green", "red", "grey", 
 /**
  * This function sets memory to its initial state.
  */
-void memoryReset() {
+void resetMemory() {
    GtkTreeIter iter;	
    //get iterator at position 0
    gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(modelMEMORY),
@@ -40,15 +40,15 @@ void memoryReset() {
  * This function resets a unified cache. Sets the data cache to its initial state.
  * @param level where the cache is located. 
  */
-void cacheReset(int level){
+void resetCache(int level){
    //I reset data cache as I had defined unified caches as divided caches which don't have instruction cache. Just to make it easier.
-   cacheDataReset(level);
+   resetDataCache(level);
 }
 /**
  * This function resets a Data cache. Sets the data cache to its initial state.
  * @param cache level where the cache is located. 
  */
-void cacheDataReset(int level){
+void resetDataCache(int level){
    //some memory hierarchy properties that will be used later
    int numLines=caches[level].size/caches[level].line_size;
    int lineSize=caches[level].line_size;
@@ -110,7 +110,7 @@ void cacheDataReset(int level){
  * This function resets a Instruction cache. Sets the data cache to its initial state.
  * @param level where the cache is located. 
  */
-void cacheInstructionReset(int level){
+void resetInstructionCache(int level){
    //some memory hierarchy properties that will be used later
    int numLines=caches[level].size/caches[level].line_size;
    int lineSize=caches[level].line_size;
@@ -697,7 +697,7 @@ void writeBlankInstructionCacheLine(int level, long line){
  * @param property String containig the name of the component's property
  * @param value String containing the value which that property will be setted to.
  */
-void set_estatistics(char* component, char* property, char* value){
+void setStatistics(char* component, char* property, char* value){
    GtkTreeModel *tree_model=estatistics_model;
    GtkTreeIter iter;
    int isntEmpty=gtk_tree_model_get_iter_first (tree_model, &iter);
@@ -772,7 +772,7 @@ void set_estatistics(char* component, char* property, char* value){
  * @param property String containig the name of the component's property
  * @return String containing th value
  */
-char* get_estatistics(char* component, char* property){
+char* getStatistics(char* component, char* property){
    GtkTreeModel *tree_model=estatistics_model;
    GtkTreeIter iter;
    gtk_tree_model_get_iter_first (tree_model, &iter);

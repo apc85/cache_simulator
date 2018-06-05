@@ -44,7 +44,7 @@ void showCacheLine(int level, int i);
 void readLineCache(int level, struct cacheLine* line, int i);
 void writeLineCache(int level, struct cacheLine* line, int i);
 void setColorCacheLine(int level, int i, int color);
-void cacheReset(int level);
+void resetCache(int level);
 void writeBlankCacheLine(int level, long line);
 
 //para caches divididas
@@ -52,14 +52,14 @@ void showCacheLineData(int level, int i);
 void readLineCacheData(int level, struct cacheLine* line, int i);
 void writeLineCacheData(int level, struct cacheLine* line, int i);
 void setColorDataCacheLine(int level, int i, int color);
-void cacheDataReset(int level);
+void resetDataCache(int level);
 void writeBlankDataCacheLine(int level, long line);
 
 void showCacheLineInstructions(int level, int i);
 void readLineCacheInstructions(int level, struct cacheLine* line, int i);
 void writeLineCacheInstructions(int level, struct cacheLine* line, int i);
 void setColorInstructionsCacheLine(int level, int i, int color);
-void cacheInstructionReset(int level);
+void resetInstructionCache(int level);
 void writeBlankInstructionCacheLine(int level, long line);
 
 //para la memory
@@ -67,11 +67,11 @@ int showPosicionMemory(int i);
 int readPosicionMemory(struct memoryPosition *pos, int i);
 int writePosicionMemory(struct memoryPosition *pos, int i);
 int setColorMemoryPosition(int i, int color);
-void memoryReset();
+void resetMemory();
 void writeBlankMemoryPosition(long positionIndex);
 
 //para las estadisticas
-void set_estatistics(char* component, char* property, char* value);
-char* get_estatistics(char* component, char* property);
+void setStatistics(char* component, char* property, char* value);
+char* getStatistics(char* component, char* property);
 
 #endif
