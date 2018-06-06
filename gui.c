@@ -6,6 +6,9 @@
 
 int useGUI=1;
 
+/**
+ * Function to create the GUI. Data structures for the gui tables must have been created previously.
+ */
 int generateGUI(int argc, char *argv[]) {
    if(!useGUI) {
       return 0;
@@ -145,13 +148,13 @@ char *nextLineTrace() {
       &start,
       &end);
     */
-   //coloreo de negro la line anterior
+   //coloreo de negro la linea anterior
    gtk_text_buffer_apply_tag (buffer, tagBlack, &start, &end);
    //coloreo de azul la line current
    gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterCurrent, &lineIterSiguiente);
-   //scroll hasta que la nueva line es visible
+   //scroll until new line is visible
    gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(text_view), &lineIterCurrent, 0.0, 0, 0.0, 0.0);
-   //Almaceno la line Current
+   //Store the current line
    char *currentLine = gtk_text_buffer_get_text (buffer, &lineIterCurrent, &lineIterSiguiente, 1);
    //printf("%s", lineCurrent);
    gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterCurrent);
@@ -160,6 +163,9 @@ char *nextLineTrace() {
    return currentLine;
 }
 
+/*
+ * Funtion to create the Memory Panel for the GUI. Memory data structure must have been created previously.
+ */
 GtkWidget * createPanelMemory() {
    GtkTreeIter   iter;
    GtkTreeViewColumn* column;
@@ -191,6 +197,11 @@ GtkWidget * createPanelMemory() {
    return vboxMEMORY;
 }
 
+/**
+ * Function to create the GUI panels of a cache level. Cache data structure must have been created previously.
+ * @param level whose GUI panel will be generated.
+ *
+ */
 void createPanelCache(int level) {
    //char* mask="11000011";
    const char* mask= caches[level].column_bit_mask;
@@ -282,7 +293,7 @@ void createPanelCache(int level) {
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scwin), GTK_POLICY_AUTOMATIC,
          GTK_POLICY_ALWAYS);
    GtkWidget *label;
-   //si es no es una cache dividida pongo el titulo y return de la funcion
+   //si no es una cache dividida pongo el titulo y return de la funcion
    if(!caches[level].separated) {
       char cadena[50];
       sprintf(cadena, "CACHE L%d", level+1);
@@ -398,6 +409,9 @@ void createPanelCache(int level) {
    }
 }
 
+/**
+ * Function to create statistic panel in the gui. The statistics data structure must ghave been created previously.
+ */
 GtkWidget *create_view_statistics(void) {
    GtkTreeViewColumn   *col;
    GtkCellRenderer     *renderer;
@@ -441,6 +455,10 @@ GtkWidget *create_view_statistics(void) {
    return view;
 }
 
+/**
+ * This function inserts text into the panel (actually it is being inserted into the buffer).
+ * @param text to be added
+ */
 void insertTextInPanel(char* text) {
    GtkTextBuffer *buffer;
    GtkTextMark *mark;
@@ -454,6 +472,10 @@ void insertTextInPanel(char* text) {
    gtk_text_buffer_insert (buffer, &iter, text, -1);
 }
 
+/**
+ * Function for scrolling the panel to a text line
+ * @param line which the panel will be scrolled to.
+ */
 void scrollTextViewToLine(long line) {
    GtkTextIter iter;
    gtk_text_buffer_get_iter_at_line (buffer,
@@ -464,6 +486,10 @@ void scrollTextViewToLine(long line) {
    return;
 }
 
+/**
+ * Function for scrolling the memory panel to an address
+ * @param address which the memory panel will be scrolled to.
+ */
 int scrollMemoryToPos(long address) {
    char rowChar[50];
    //if not word address return error
@@ -482,10 +508,20 @@ int scrollMemoryToPos(long address) {
          path, NULL, TRUE, 0.5, 0);
 }
 
+/**
+ * Function for scrolling the cache panel to a row
+ * @param level which will be scrolled.
+ * @param row cache line which the cache panel will be scrolled to.
+ */
 void scrollCacheToRow(int level, long row) {
    scrollDataCacheToRow(level, row);
 }
 
+/**
+ * Function for scrolling the data cache panel to a row
+ * @param level which will be scrolled.
+ * @param row cache line which the data cache panel will be scrolled to.
+ */
 void scrollDataCacheToRow(int level, long row) {
    char rowChar[50];
    sprintf(rowChar, "%ld", row);
@@ -494,6 +530,11 @@ void scrollDataCacheToRow(int level, long row) {
          path, NULL, TRUE, 0.5, 0);
 }
 
+/**
+ * Function for scrolling the instruction cache panel to a row
+ * @param level which will be scrolled.
+ * @param row cache line which the instruction cache panel will be scrolled to.
+ */
 void scrollInstructionCacheToRow(int level, long row) {
    char rowChar[50];
    sprintf(rowChar, "%ld", row);
