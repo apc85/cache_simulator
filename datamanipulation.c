@@ -275,11 +275,12 @@ long parseAddress(const char* page_base_address){
         long toReturn= strtol(page_base_address, NULL, 16);
 	return toReturn;
         // provisional TODO
-	return 33;
+	//faltan comprobaciones sobre tamano y rango de la direccion
 }
 
 /**
- * Funcion para comprobar si el number hexadecimal representado por el string es correcto.
+ * function for checking if hex format is correct
+ * @param number hex number with string format to be checked
  */
 int isCorrectHexadecimal(char * number){
    if(strlen(number)<2){
@@ -301,7 +302,8 @@ int isCorrectHexadecimal(char * number){
 }
 
 /*
- * Funcion para comprobar si el number decimal representado por el string es correcto
+ * function for checking if dec format is correct
+ * @param number dec number with string format to be checked
  */
 int isCorrectDecimal(char * number){
    for(int i=0; i<number[i]!='\0'; i++){

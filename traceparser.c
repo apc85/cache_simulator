@@ -89,7 +89,7 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
 }
 
 /**
- * Funcion para mostrar por consola los valores de la trace que se han almacenado en memory.
+ * function for showing all values loaded from tracefile
  */
 void showOperations(){
    fprintf(stderr,"\n");
@@ -192,6 +192,9 @@ int readTraceFile(char * filename){
 
    int currentLineNumber=0;
    // TODO What if we do not have a GUI???
+     //buffer is a data structure for text storage from GTK library. It can be used without GUI.
+     //in fact, when this line is being executed GUI hasn't been create yet.
+     //To show buffer content int the gui it must be linked to a textView widget.
    buffer = gtk_text_buffer_new (NULL);
    // Read all the lines in the file
    while ((read = getline(&currentLine, &len, file)) != -1) {
