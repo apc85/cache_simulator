@@ -122,7 +122,7 @@ void generateDataStorage(){
 }
 
 /**
- * Function that inserts text into buffer.
+ * Function that inserts text into the buffer.
  * @param text to be inserted.
  * @param buffer in which th etext will be inserted.
  */

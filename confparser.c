@@ -12,6 +12,14 @@ char* keysCACHE[]= {"line_size", "size","asociativity", "write_policy", "replace
 char* str_true[]= {"1", "yes", "true"};
 char* str_false[]= {"0","no","false"};
 
+/**
+ * parse integer configuration field.
+ * @param ini dictionary from read ini file
+ * @param key which is being parsed
+ * @param confVariable return param where the parsed value will be placed
+ * @param errors In case of error this variable will have its value incremented by 1.
+ */
+
 void parseConfInt(dictionary *ini, const char *key, long int *confVariable, int *errors) {
     const char * confString = iniparser_getstring(ini, key, NULL);
     long value = parseInt(confString);
@@ -27,6 +35,13 @@ void parseConfInt(dictionary *ini, const char *key, long int *confVariable, int 
     }
 }
 
+/**
+ * parse long decimal configuration field.
+ * @param ini dictionary from read ini file
+ * @param key which is being parsed
+ * @param confVariable return param where the parsed value will be placed
+ * @param errors In case of error this variable will have its value incremented by 1.
+ */
 void parseConfLongK1000(dictionary *ini, const char *key, long int *confVariable, int *errors) {
     const char * confString = iniparser_getstring(ini, key, NULL);
     long value = parseLongK1000(confString);
@@ -42,6 +57,13 @@ void parseConfLongK1000(dictionary *ini, const char *key, long int *confVariable
     }
 }
 
+/**
+ * parse long configuration field.
+ * @param ini dictionary from read ini file
+ * @param key which is being parsed
+ * @param confVariable return param where the parsed value will be placed
+ * @param errors In case of error this variable will have its value incremented by 1.
+ */
 void parseConfLongK1024(dictionary *ini, const char *key, long int *confVariable, int *errors) {
     const char * confString = iniparser_getstring(ini, key, NULL);
     long value = parseLongK1024(confString);
@@ -57,6 +79,13 @@ void parseConfLongK1024(dictionary *ini, const char *key, long int *confVariable
     }
 }
 
+/**
+ * parse double configuration field.
+ * @param ini dictionary from read ini file
+ * @param key which is being parsed
+ * @param confVariable return param where the parsed value will be placed
+ * @param errors In case of error this variable will have its value incremented by 1.
+ */
 void parseConfDouble(dictionary *ini, const char *key, double *confVariable, int *errors) {
     const char * confString = iniparser_getstring(ini, key, NULL);
     double value = parseDouble(confString);
@@ -72,6 +101,13 @@ void parseConfDouble(dictionary *ini, const char *key, double *confVariable, int
     }
 }
 
+/**
+ * parse memory address configuration field.
+ * @param ini dictionary from read ini file
+ * @param key which is being parsed
+ * @param confVariable return param where the parsed value will be placed
+ * @param errors In case of error this variable will have its value incremented by 1.
+ */
 void parseConfAddress(dictionary *ini, const char *key, long int *confVariable, int *errors) {
     const char * confString = iniparser_getstring(ini, key, NULL);
     long value = parseAddress(confString);
@@ -197,6 +233,10 @@ dictionary *readConfigurationFile(char * ini_name) {
 }
 
 
+/**
+ * This function parses all the configuration.
+ * @param ini dictionary from read ini file.
+ */
 int parseConfiguration(dictionary *ini) {
     int errors = 0;
 
