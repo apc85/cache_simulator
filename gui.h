@@ -35,16 +35,12 @@ extern int useGUI;
    GtkTreeIter iter;
 
    struct cacheLevelPanel{
-     //GtkListStore *modelData;//estructura de data
      GtkWidget *vboxData;//container de la tabla
      GtkWidget *viewData;//widget tabla
-
-     //GtkListStore *modelInstruction;//estructura de data
      GtkWidget *vboxInstruction;//container de la tabla
      GtkWidget *viewInstruction;//widget tabla
    };
 
-   //GtkListStore *modelMEMORY;//estructura de data
    GtkWidget *vboxMEMORY;//container de la tabla
    GtkWidget *viewMEMORY;//widget tabla
 

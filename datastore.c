@@ -5,6 +5,10 @@
 #include "gui.h"
 #include "datainterface.h"
 
+/**
+ * Funcntion that creates the data structures for memory data storage.
+ *
+ */
 void createMemoryModel(){
    modelMEMORY = gtk_list_store_new(N_COLUMNS,
          G_TYPE_STRING,   /* ADDRESS */
@@ -28,6 +32,10 @@ void createMemoryModel(){
    }
 }
 
+/**
+ * Function that creates the data structures for a cache level.
+ * @level whose data structure will be created.
+ */
 void createCacheModel(int level){
    //Creo la cache. en caso de que sea dividia esta será la parte de data
    GtkTreeIter   iter;
@@ -101,6 +109,10 @@ void createCacheModel(int level){
    }
 }
 
+/**
+ * Function that generates all data structures for the program.
+ *
+ */
 void generateDataStorage(){
    createMemoryModel();
    for(int i=0; i< numberCaches; i++){
@@ -109,6 +121,11 @@ void generateDataStorage(){
    create_model_statistics();
 }
 
+/**
+ * Function that inserts text into buffer.
+ * @param text to be inserted.
+ * @param buffer in which th etext will be inserted.
+ */
 void insertTextInBuffer(char* text, GtkTextBuffer *buffer){
    GtkTextMark *mark;
    GtkTextIter iter;
@@ -117,6 +134,9 @@ void insertTextInBuffer(char* text, GtkTextBuffer *buffer){
    gtk_text_buffer_insert (buffer, &iter, text, -1);
 }
 
+/**
+ * Function that creates the data structure for simulation statistics.
+ */
 GtkTreeModel *create_model_statistics(void){
    GtkTreeIter    toplevel, child;
    GtkTreeModel *model = GTK_TREE_MODEL(gtk_tree_store_new(NUM_COLS,
