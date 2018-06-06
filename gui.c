@@ -6,7 +6,7 @@
 
 int useGUI=1;
 
-int generateInterface(int argc, char *argv[]) {
+int generateGUI(int argc, char *argv[]) {
    if(!useGUI) {
       return 0;
    }

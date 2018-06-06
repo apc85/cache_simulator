@@ -52,7 +52,7 @@ extern int useGUI;
 
    GtkWidget *estatistics_view;
 
-   int generateInterface();
+   int generateGUI();
    GtkWidget * createPanelMemory();
    void createPanelCache(int level);
    GtkWidget *create_view_statistics(void);

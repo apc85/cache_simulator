@@ -18,10 +18,10 @@ void parseConfInt(dictionary *ini, const char *key, long int *confVariable, int 
 
     if(value == -1) {
         fprintf(stderr,"Error: %s value is not valid\n", key);
-        errors++;
+        (*errors)++;
     } else if(value == -2) {
         fprintf(stderr,"Error: Missing mandatory key %s\n", key);
-        errors++;
+        (*errors)++;
     } else {
         *confVariable = value;
     }
@@ -33,10 +33,10 @@ void parseConfLongK1000(dictionary *ini, const char *key, long int *confVariable
 
     if(value == -1) {
         fprintf(stderr,"Error: %s value is not valid\n", key);
-        errors++;
+        (*errors)++;
     } else if(value == -2) {
         fprintf(stderr,"Error: Missing mandatory key %s\n", key);
-        errors++;
+        (*errors)++;
     } else {
         *confVariable = value;
     }
@@ -48,10 +48,10 @@ void parseConfLongK1024(dictionary *ini, const char *key, long int *confVariable
 
     if(value == -1) {
         fprintf(stderr,"Error: %s value is not valid\n", key);
-        errors++;
+        (*errors)++;
     } else if(value == -2) {
         fprintf(stderr,"Error: Missing mandatory key %s\n", key);
-        errors++;
+        (*errors)++;
     } else {
         *confVariable = value;
     }
@@ -63,10 +63,10 @@ void parseConfDouble(dictionary *ini, const char *key, double *confVariable, int
 
     if(value == -1) {
         fprintf(stderr,"Error: %s value is not valid\n", key);
-        errors++;
+        (*errors)++;
     } else if(value == -2) {
         fprintf(stderr,"Error: Missing mandatory key %s\n", key);
-        errors++;
+        (*errors)++;
     } else {
         *confVariable = value;
     }
@@ -78,10 +78,10 @@ void parseConfAddress(dictionary *ini, const char *key, long int *confVariable, 
 
     if(value == -1) {
         fprintf(stderr,"Error: %s value is not valid\n", key);
-        errors++;
+        (*errors)++;
     } else if(value == -2) {
         fprintf(stderr,"Error: Missing mandatory key %s\n", key);
-        errors++;
+        (*errors)++;
     } else {
         *confVariable = value;
     }

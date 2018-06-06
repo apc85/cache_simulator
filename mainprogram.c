@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 
     // Start GUI...
     if(useGUI) {
-       generateInterface(argc, argv);
+       generateGUI(argc, argv);
     // ... or run batch simulation
     } else {
        simulate();
