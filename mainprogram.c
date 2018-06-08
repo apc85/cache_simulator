@@ -58,6 +58,7 @@ int main(int argc, char *argv[]) {
         abort();
       }
 
+
     // Check that there is at leas one configuration file 
     if(optind == argc) {
        fprintf (stderr, "Must supply a <file>.ini on the command line.\n");
@@ -69,10 +70,12 @@ int main(int argc, char *argv[]) {
     if((ini = readConfigurationFile(argv[optind])) == NULL) {
        return 1;
     }
+
     // Parse read configuration and populate global configuration variables.
     if(parseConfiguration(ini) != 0) {
        return 1;
     }
+
     // Load trace file specified in the configuration file
     if(readTraceFile((char *)cpu.trace_file) != 0) {
        return 1;

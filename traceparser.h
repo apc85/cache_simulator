@@ -8,6 +8,10 @@ enum loadOrStore { LOAD=3, STORE=4 };
 
 #define DEFAULT_SIZE 0;
 #define DEFAULT_DATA 0;
+#define DEFAULT_HAS_BREAK_POINT 0;
+#define DEFAULT_INSTRUCTION_OR_DATA 0;
+#define DEFAULT_OPERATION_TYPE 0;
+#define DEFAULT_ADDRESS 0;
 
 struct memOperation{
   int hasBreakPoint;
