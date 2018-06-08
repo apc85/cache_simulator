@@ -1,6 +1,8 @@
 #ifndef DATAMANIPULATION_H
 #define DATAMANIPULATION_H
 
+#include "confparser.h"
+
 #define N_TRUES 3
 char* str_true[3];
 

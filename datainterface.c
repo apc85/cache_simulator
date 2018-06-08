@@ -145,7 +145,7 @@ void resetInstructionCache(int level){
       cache_content[i]=0;
    }
    //this converts form long array to string representation.
-   contentArrayToString(cache_content, cache_content_char, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
+   contentArrayToString(cache_content, cache_content_char, (caches[level].line_size)/(cpu.word_width/8), cpu.word_width/4);
    //I write the all the reseted fields in each cache line
    for(int i=0; i<numLines; i++){ 
       sprintf(cache_line, "%0*x", hexDigsLine, i);

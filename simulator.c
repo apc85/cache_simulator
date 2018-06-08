@@ -4,7 +4,7 @@
 #include "simulator.h"
 
 void simulate_step(struct memOperation *operation) {
-   printf("Simulating operation\n");
+   //printf("Simulating operation\n");
 }
 
 void simulate() {
@@ -12,3 +12,4 @@ void simulate() {
       simulate_step(&memoryOperations[i]);
    }
 }
+

@@ -314,6 +314,7 @@ int isCorrectDecimal(char * number){
    return 1;
 }
 
+
 /*
  * Convert an array of integers to a string
  */
@@ -337,25 +338,44 @@ void contentStringToArray(long* array, char* content, int count){
    }
 }
 
-/*void contentStringToArray(long* array, char* content, int level){
-   int numWords=(caches[level].line_size*8)/cpu.word_width;
-   int wordSize=cpu.word_width;
-   for(int i=0; i<numWords; i++){
-      array[i]=0;
-   }
-   int len=strlen(content);
-   int lineIndex=0;
-   char num[100];
-   int j=0;
-   for(int i=0; i<len; i++){
-      if(content[i]!=' '){
-         num[j]=toupper(content[i]);
-         j++;
-      }else{
-         j=0;
-         array[lineIndex]=strtol(num, NULL, 16);
-         num[0]='\0';
-         lineIndex++;
-      }
-   }
+
+
+/*void contentArrayToString(long* array, char* content, int count, int width){
+
+        content[0]='\0';        
+
+        for(int i=0; i<count; i++){
+
+          char num[50];
+          sprintf(num, "%0*lx", width, array[i]);
+	  strcat(content, num);
+          strcat(content, " ");
+	}
 }*/
+
+/*
+void contentStringToArray(long* array, char* content, int count){
+        
+
+	for(int i=0; i<count; i++){
+		array[i]=0;
+	}
+
+        int len=strlen(content);
+        int lineIndex=0;
+        char num[100];
+	int j=0;
+        for(int i=0; i<len; i++){
+	     if(content[i]!=' '){
+                  num[j]=toupper(content[i]);
+             	  j++;
+             }else{
+	          j=0;
+		  array[lineIndex]=strtol(num, NULL, 16);
+         	  num[0]='\0';
+        	  lineIndex++;
+             }
+
+        }
+}*/
+

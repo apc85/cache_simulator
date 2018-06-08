@@ -57,6 +57,7 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 {
    char *currentLine;
    while(currentLine = nextLineTrace()) {
+      printf("%s", currentLine);
       if(preprocessTraceLine(currentLine)) {
          struct memOperation operation;
          parseLine(currentLine, -1, &operation);
@@ -71,11 +72,14 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 void callbackNextStep( GtkWidget *widget, gpointer   data)
 {
    char *currentLine = nextLineTrace();
-   if(preprocessTraceLine(currentLine)) {
+   printf("%s", currentLine);
+   if(currentLine!=NULL&&preprocessTraceLine(currentLine)) {
       struct memOperation operation;
       parseLine(currentLine, -1, &operation);
       simulate_step(&operation);
    }
+
+   
 
    //////pruebas
    setStatistics("Cache L2", "Fault rate", "tres");
@@ -111,13 +115,13 @@ void callbackNextStep( GtkWidget *widget, gpointer   data)
    line.times_accessed=4;
    line.content=(long[]){1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
    void * user_use;
-   writeLineCacheInstructions(0, &line, 7);
+   //writeLineCacheInstructions(0, &line, 7);
    line.content=(long[]){1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
    writeLineCacheData(0, &line, 7);
    line.content=(long[]){1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
    writeLineCache(1, &line, 7);
-   //showCacheLineInstructions(0, 7);
-   //showCacheLineData(0, 7);
+   showCacheLineInstructions(0, 7);
+   showCacheLineData(0, 7);
    //showCacheLine(1, 7);
    //showCacheLine(1, 6);
    setColorMemoryPosition(134217732, 5);

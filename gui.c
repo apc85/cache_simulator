@@ -132,7 +132,7 @@ int generateGUI(int argc, char *argv[]) {
 
 /*
  *  Get the next line from the trace file stored in the text widget.
- *  TODO: Return null when there are no more lines
+ *  
  */
 char *nextLineTrace() {
    GtkTextIter lineIterCurrent;
@@ -160,6 +160,11 @@ char *nextLineTrace() {
    gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterCurrent);
    gtk_text_buffer_move_mark (buffer, marcaLineCurrent, &lineIterCurrent);
    //gtk_text_buffer_add_mark (buffer, marcaLineCurrent, &lineIterCurrent);
+
+   if(currentLine[0]=='\0'){
+       return NULL;
+   }
+    
    return currentLine;
 }
 

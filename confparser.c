@@ -397,9 +397,8 @@ void checkSectionKeys(dictionary *ini, const char *section, int numberOfValidKey
    for(int i=0; i<nkeys; i++) {
       // By comparing each one with the known keys of a cache section
       for(int j=0; j<numberOfValidKeys; j++) {
-         // TODO Possible buffer overflow: section is a string that comes from the user. It could be longer than 200.
-         char key[200];
-         sprintf(key, "%s:%s", section, validKeys[j]);
+         char key[300];
+         snprintf(key, 300, "%s:%s", section, validKeys[j]);
          if(strcmp(keys[i], key)==0) {
             // This key is known. Go to the next one.
             goto nextKey;
