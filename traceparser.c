@@ -224,18 +224,15 @@ int readTraceFile(char * filename){
          continue;
       }
 
-      //if theere is gui no data will be stored. Lines will be parsed at execution time
-      if(useGUI){
-      	  // Read memory operation from current line
-      	  if(parseLine(currentLine, currentLineNumber, NULL) == -1){
-      	      errors++;
-      	  }
-      //if there is not gui I store the memoperations from the parsed lines
-      }else{
+      struct memOperation *currentMemOperation=NULL;
+      
+      //if there is not gui data will be stored. I there is gui thre is not need to store as lines will be parsed at execution time
+      if(!useGUI){
+           currentMemOperation=&memoryOperations[numberOfOperations];
+      }
 
-          if(parseLine(currentLine, currentLineNumber, &memoryOperations[numberOfOperations]) == -1){
+      if(parseLine(currentLine, currentLineNumber, currentMemOperation) == -1){
       	      errors++;
-      	  }
       }
 
       // Increment the number of memory operations read from the file
@@ -245,12 +242,15 @@ int readTraceFile(char * filename){
 
    if(errors==0){
 #if DEBUG
-      showOperations();
+      if(!useGUI){
+      	   showOperations();
+      }
       fprintf(stderr,"\nTracefile was loaded correctly\n");
 #endif
       return 0;
    }
    fprintf(stderr,"\n");
+
    return -1;
 }
 
@@ -260,7 +260,7 @@ int readTraceFile(char * filename){
 int countLines(char* filename){
    FILE *fp;
    int count = 0;
-   char c;
+   char c; 
 
    if ((fp = fopen(filename, "r")) == NULL)
       return -1;
