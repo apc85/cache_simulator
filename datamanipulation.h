@@ -24,6 +24,7 @@ int parseInt(const char * cadena);
 int parseReplacementPolicy(const char * cadena);
 int parseWritePolicy(const char * cadena);
 int isPowerOf2(long number);
+int isAMultipleOf8(long number);
 int isCorrectBinary(const char * cadena);
 double parseDouble(const char * cadena);
 long parseAddress(const char* page_base_address);

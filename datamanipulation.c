@@ -204,6 +204,17 @@ int isPowerOf2(long number) {
 }
 
 /*
+ * Check if a number is a multiple of 8
+ * @param number to check
+ * @return boolean
+ */
+int isAMultipleOf8(long number) {
+
+    return !number%8;
+
+}
+
+/*
  * Checks if a string has binary value inside.
  * @param  cadena String to be checked
  * @return 1 if it is binary. -1 if it is not binary. -2 if NULL char* param
