@@ -269,6 +269,7 @@ int parseConfiguration(dictionary *ini) {
 
     parseConfLongK1024(ini,"memory:size",&memory.size,&errors);
     parseConfDouble(ini,"memory:access_time_1",&memory.access_time_1,&errors);
+    parseConfDouble(ini,"memory:access_time_burst",&memory.access_time_burst, &errors);
     parseConfLongK1024(ini,"memory:page_size",&memory.page_size,&errors);
     parseConfAddress(ini,"memory:page_base_address",&memory.page_base_address,&errors);
 
@@ -286,6 +287,7 @@ int parseConfiguration(dictionary *ini) {
         parseConfLongK1024(ini, param, &caches[cacheNumber].line_size,&errors);
         if(!isPowerOf2(caches[cacheNumber].line_size)){
 	    fprintf(stderr,"Error: cache%d:line_size must be power of 2\n", cacheNumber+1);
+            errors++;
 	}
 
         // reading key cache:size
