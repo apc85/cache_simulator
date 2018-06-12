@@ -246,11 +246,14 @@ int parseConfiguration(dictionary *ini) {
     parseConfInt(ini,"cpu:word_width",&cpu.word_width,&errors);
     parseConfLongK1000(ini,"cpu:frequency",&cpu.frequency,&errors);
 
+    //checking some errors
     if(!isPowerOf2(cpu.address_width)){
          fprintf(stderr,"Error: cpu:address_width must be power of 2\n");
+         errors++;
     }
     if(!isPowerOf2(cpu.word_width)){
          fprintf(stderr,"Error: cpu:word_width must be power of 2\n");
+         errors++;
     }
 
     // reading key cpu:trace_file
@@ -276,9 +279,14 @@ int parseConfiguration(dictionary *ini) {
 
         // This is for creating the string format in which the ini library receives the params.
         // Each value must be refered as section:key
+
+        // reading key cache:line_size
         char param[50];
         sprintf(param, "cache%d:line_size", cacheNumber+1);
         parseConfLongK1024(ini, param, &caches[cacheNumber].line_size,&errors);
+        if(!isPowerOf2(caches[cacheNumber].line_size)){
+	    fprintf(stderr,"Error: cache%d:line_size must be power of 2\n", cacheNumber+1);
+	}
 
         // reading key cache:size
         sprintf(param, "cache%d:size", cacheNumber+1);
