@@ -1,7 +1,7 @@
         -:    0:Source:confparser.c
         -:    0:Graph:confparser.gcno
         -:    0:Data:confparser.gcda
-        -:    0:Runs:7
+        -:    0:Runs:17
         -:    0:Programs:1
         -:    1:﻿#include <stdio.h>
         -:    2:#include <ctype.h>
@@ -25,20 +25,20 @@
         -:   20: * @param errors In case of error this variable will have its value incremented by 1.
         -:   21: */
         -:   22:
-        8:   23:void parseConfInt(dictionary *ini, const char *key, long int *confVariable, int *errors) {
-        8:   24:    const char * confString = iniparser_getstring(ini, key, NULL);
-        8:   25:    long value = parseInt(confString);
+       12:   23:void parseConfInt(dictionary *ini, const char *key, long int *confVariable, int *errors) {
+       12:   24:    const char * confString = iniparser_getstring(ini, key, NULL);
+       12:   25:    long value = parseInt(confString);
         -:   26:
-        8:   27:    if(value == -1) {
+       12:   27:    if(value == -1) {
     #####:   28:        fprintf(stderr,"Error: %s value is not valid\n", key);
     #####:   29:        (*errors)++;
-        8:   30:    } else if(value == -2) {
+       12:   30:    } else if(value == -2) {
     #####:   31:        fprintf(stderr,"Error: Missing mandatory key %s\n", key);
     #####:   32:        (*errors)++;
         -:   33:    } else {
-        8:   34:        *confVariable = value;
+       12:   34:        *confVariable = value;
         -:   35:    }
-        8:   36:}
+       12:   36:}
         -:   37:
         -:   38:/**
         -:   39: * parse long decimal configuration field.
@@ -47,20 +47,20 @@
         -:   42: * @param confVariable return param where the parsed value will be placed
         -:   43: * @param errors In case of error this variable will have its value incremented by 1.
         -:   44: */
-        4:   45:void parseConfLongK1000(dictionary *ini, const char *key, long int *confVariable, int *errors) {
-        4:   46:    const char * confString = iniparser_getstring(ini, key, NULL);
-        4:   47:    long value = parseLongK1000(confString);
+        6:   45:void parseConfLongK1000(dictionary *ini, const char *key, long int *confVariable, int *errors) {
+        6:   46:    const char * confString = iniparser_getstring(ini, key, NULL);
+        6:   47:    long value = parseLongK1000(confString);
         -:   48:
-        4:   49:    if(value == -1) {
+        6:   49:    if(value == -1) {
     #####:   50:        fprintf(stderr,"Error: %s value is not valid\n", key);
     #####:   51:        (*errors)++;
-        4:   52:    } else if(value == -2) {
+        6:   52:    } else if(value == -2) {
     #####:   53:        fprintf(stderr,"Error: Missing mandatory key %s\n", key);
     #####:   54:        (*errors)++;
         -:   55:    } else {
-        4:   56:        *confVariable = value;
+        6:   56:        *confVariable = value;
         -:   57:    }
-        4:   58:}
+        6:   58:}
         -:   59:
         -:   60:/**
         -:   61: * parse long configuration field.
@@ -69,20 +69,20 @@
         -:   64: * @param confVariable return param where the parsed value will be placed
         -:   65: * @param errors In case of error this variable will have its value incremented by 1.
         -:   66: */
-       24:   67:void parseConfLongK1024(dictionary *ini, const char *key, long int *confVariable, int *errors) {
-       24:   68:    const char * confString = iniparser_getstring(ini, key, NULL);
-       24:   69:    long value = parseLongK1024(confString);
+       36:   67:void parseConfLongK1024(dictionary *ini, const char *key, long int *confVariable, int *errors) {
+       36:   68:    const char * confString = iniparser_getstring(ini, key, NULL);
+       36:   69:    long value = parseLongK1024(confString);
         -:   70:
-       24:   71:    if(value == -1) {
+       36:   71:    if(value == -1) {
     #####:   72:        fprintf(stderr,"Error: %s value is not valid\n", key);
     #####:   73:        (*errors)++;
-       24:   74:    } else if(value == -2) {
+       36:   74:    } else if(value == -2) {
     #####:   75:        fprintf(stderr,"Error: Missing mandatory key %s\n", key);
     #####:   76:        (*errors)++;
         -:   77:    } else {
-       24:   78:        *confVariable = value;
+       36:   78:        *confVariable = value;
         -:   79:    }
-       24:   80:}
+       36:   80:}
         -:   81:
         -:   82:/**
         -:   83: * parse double configuration field.
@@ -91,20 +91,20 @@
         -:   86: * @param confVariable return param where the parsed value will be placed
         -:   87: * @param errors In case of error this variable will have its value incremented by 1.
         -:   88: */
-       16:   89:void parseConfDouble(dictionary *ini, const char *key, double *confVariable, int *errors) {
-       16:   90:    const char * confString = iniparser_getstring(ini, key, NULL);
-       16:   91:    double value = parseDouble(confString);
+       24:   89:void parseConfDouble(dictionary *ini, const char *key, double *confVariable, int *errors) {
+       24:   90:    const char * confString = iniparser_getstring(ini, key, NULL);
+       24:   91:    double value = parseDouble(confString);
         -:   92:
-       16:   93:    if(value == -1) {
+       24:   93:    if(value == -1) {
     #####:   94:        fprintf(stderr,"Error: %s value is not valid\n", key);
     #####:   95:        (*errors)++;
-       16:   96:    } else if(value == -2) {
+       24:   96:    } else if(value == -2) {
     #####:   97:        fprintf(stderr,"Error: Missing mandatory key %s\n", key);
     #####:   98:        (*errors)++;
         -:   99:    } else {
-       16:  100:        *confVariable = value;
+       24:  100:        *confVariable = value;
         -:  101:    }
-       16:  102:}
+       24:  102:}
         -:  103:
         -:  104:/**
         -:  105: * parse memory address configuration field.
@@ -113,20 +113,20 @@
         -:  108: * @param confVariable return param where the parsed value will be placed
         -:  109: * @param errors In case of error this variable will have its value incremented by 1.
         -:  110: */
-        4:  111:void parseConfAddress(dictionary *ini, const char *key, long int *confVariable, int *errors) {
-        4:  112:    const char * confString = iniparser_getstring(ini, key, NULL);
-        4:  113:    long value = parseAddress(confString);
+        6:  111:void parseConfAddress(dictionary *ini, const char *key, long int *confVariable, int *errors) {
+        6:  112:    const char * confString = iniparser_getstring(ini, key, NULL);
+        6:  113:    long value = parseAddress(confString);
         -:  114:
-        4:  115:    if(value == -1) {
+        6:  115:    if(value == -1) {
     #####:  116:        fprintf(stderr,"Error: %s value is not valid\n", key);
     #####:  117:        (*errors)++;
-        4:  118:    } else if(value == -2) {
+        6:  118:    } else if(value == -2) {
     #####:  119:        fprintf(stderr,"Error: Missing mandatory key %s\n", key);
     #####:  120:        (*errors)++;
         -:  121:    } else {
-        4:  122:        *confVariable = value;
+        6:  122:        *confVariable = value;
         -:  123:    }
-        4:  124:}
+        6:  124:}
         -:  125:
         -:  126:
         -:  127:/**
@@ -134,55 +134,55 @@
         -:  129: * @param ini_name the file name
         -:  130: *
         -:  131: */
-        6:  132:dictionary *readConfigurationFile(char * ini_name) {
-        6:  133:    numberCaches = 0;
-        6:  134:    int errors = 0;
+       14:  132:dictionary *readConfigurationFile(char * ini_name) {
+       14:  133:    numberCaches = 0;
+       14:  134:    int errors = 0;
         -:  135:    dictionary *ini;
         -:  136:
-        6:  137:    if((ini = iniparser_load(ini_name))==NULL) {
-        2:  138:        fprintf(stderr, "Error loading file: %s\n", ini_name);
-        2:  139:        return NULL;
+       14:  137:    if((ini = iniparser_load(ini_name))==NULL) {
+        8:  138:        fprintf(stderr, "Error loading file: %s\n", ini_name);
+        8:  139:        return NULL;
         -:  140:    }
         -:  141:
         -:  142:#if DEBUG
-        4:  143:    iniparser_dump(ini, stderr);
-        4:  144:    fprintf(stderr,"\n");
+        6:  143:    iniparser_dump(ini, stderr);
+        6:  144:    fprintf(stderr,"\n");
         -:  145:#endif
         -:  146:
-        4:  147:    int numberSections = iniparser_getnsec(ini);
+        6:  147:    int numberSections = iniparser_getnsec(ini);
         -:  148:
-        4:  149:    int numberCPUs = 0;
-        4:  150:    int numberMemories = 0;
+        6:  149:    int numberCPUs = 0;
+        6:  150:    int numberMemories = 0;
         -:  151:
         -:  152:    /* Check that all the configuration file sections are correct.
         -:  153:     * No missing sections. No unknown sections. */
-       20:  154:    for(int i=0; i<numberSections; i++) {
-       16:  155:        const char * section=iniparser_getsecname(ini, i);
+       30:  154:    for(int i=0; i<numberSections; i++) {
+       24:  155:        const char * section=iniparser_getsecname(ini, i);
         -:  156:
         -:  157:        // if the name of the section is cpu
-       16:  158:        if(strcmp(section, "cpu")==0) {
+       24:  158:        if(strcmp(section, "cpu")==0) {
         -:  159:            // count cpu sections. There can be only one cpu section
-        4:  160:            numberCPUs++;
+        6:  160:            numberCPUs++;
         -:  161:        // If the name of the section is memory
-       12:  162:        } else if(strcmp(section, "memory")==0) {
+       18:  162:        } else if(strcmp(section, "memory")==0) {
         -:  163:            // Count memory sections. There can be only one memory section
-        4:  164:            numberMemories++;
+        6:  164:            numberMemories++;
         -:  165:        // If the name of the section is like "cache..."
-        8:  166:        } else if(strncmp(section, "cache", 5)==0) {
-        8:  167:            int correctNum=1;
+       12:  166:        } else if(strncmp(section, "cache", 5)==0) {
+       12:  167:            int correctNum=1;
         -:  168:            // Get the length of the section name
-        8:  169:            int len = strlen(section);
+       12:  169:            int len = strlen(section);
         -:  170:            // Error if there is no characters following 'cache'
-        8:  171:            if(len <= 5) {
+       12:  171:            if(len <= 5) {
     #####:  172:                fprintf(stderr,"Error: Invalid [cache] section. It must contain the cache level number. [cacheN]\n");
     #####:  173:                correctNum=0;
     #####:  174:                errors++;
         -:  175:            }
         -:  176:
         -:  177:            // Check that the string following 'cache' is a number 
-        8:  178:            const char *cacheNumberStr = section+5;
-       16:  179:            for(int j=0; cacheNumberStr[j] && correctNum; j++) {
-        8:  180:                if(!isdigit(cacheNumberStr[j])) {
+       12:  178:            const char *cacheNumberStr = section+5;
+       24:  179:            for(int j=0; cacheNumberStr[j] && correctNum; j++) {
+       12:  180:                if(!isdigit(cacheNumberStr[j])) {
     #####:  181:                    correctNum = 0;
     #####:  182:                    fprintf(stderr,"Error: Invalid cache section name [%s]\n", section);
     #####:  183:                    errors++;
@@ -190,13 +190,13 @@
         -:  185:            }
         -:  186:
         -:  187:            // Parse the contents of the section if the number is correct
-        8:  188:            if(correctNum) {
-        8:  189:                int cacheNumber = atoi(cacheNumberStr);
+       12:  188:            if(correctNum) {
+       12:  189:                int cacheNumber = atoi(cacheNumberStr);
         -:  190:                // Remember the highest cache level
-        8:  191:                if(cacheNumber > numberCaches) {
-        4:  192:                    numberCaches = cacheNumber;
+       12:  191:                if(cacheNumber > numberCaches) {
+        6:  192:                    numberCaches = cacheNumber;
         -:  193:                }
-        8:  194:                checkSectionKeys(ini, section, NCLAVES_CACHE, keysCACHE, &errors);
+       12:  194:                checkSectionKeys(ini, section, NCLAVES_CACHE, keysCACHE, &errors);
         -:  195:            }
         -:  196:        // If the section name isn't "cpu" or "memory" and section name isn't like "cache..." then error.
         -:  197:        } else {
@@ -206,35 +206,35 @@
         -:  201:    }
         -:  202:
         -:  203:    // Check the mandatory [cpu] section
-        4:  204:    if(numberCPUs==0) {
+        6:  204:    if(numberCPUs==0) {
     #####:  205:        fprintf(stderr,"Error: Missing mandatory section [cpu]\n");
     #####:  206:        errors++;
         -:  207:    // Look for unknown keys in [cpu] section
         -:  208:    } else {
-        4:  209:        checkSectionKeys(ini, "cpu", NCLAVES_CPU, keysCPU, &errors);
+        6:  209:        checkSectionKeys(ini, "cpu", NCLAVES_CPU, keysCPU, &errors);
         -:  210:    }
         -:  211:
         -:  212:    // Check the mandatory [memory] section
-        4:  213:    if(numberMemories==0) {
+        6:  213:    if(numberMemories==0) {
     #####:  214:        fprintf(stderr,"Error: Missing mandatory section [memory]\n");
     #####:  215:        errors++;
         -:  216:    // Look for unknown keys in [memory] section
         -:  217:    } else {
-        4:  218:        checkSectionKeys(ini, "memory", NCLAVES_MEMORY, keysMEMORY, &errors);
+        6:  218:        checkSectionKeys(ini, "memory", NCLAVES_MEMORY, keysMEMORY, &errors);
         -:  219:    }
         -:  220:
         -:  221:    // Check that the number of cache levels is within range
-        4:  222:    if(numberCaches>MAX_CACHES) {
+        6:  222:    if(numberCaches>MAX_CACHES) {
     #####:  223:        fprintf(stderr,"Error: The number of caches is excesive.\n");
     #####:  224:        errors++;
         -:  225:    }
         -:  226:
         -:  227:    // End with error message if there has been any errors
-        4:  228:    if(errors > 0) {
+        6:  228:    if(errors > 0) {
     #####:  229:        fprintf(stderr,"\nTotal errors: %d\n", errors);
     #####:  230:        return NULL;
         -:  231:    }
-        4:  232:    return ini;
+        6:  232:    return ini;
         -:  233:}
         -:  234:
         -:  235:
@@ -242,158 +242,158 @@
         -:  237: * This function parses all the configuration.
         -:  238: * @param ini dictionary from read ini file.
         -:  239: */
-        4:  240:int parseConfiguration(dictionary *ini) {
-        4:  241:    int errors = 0;
+        6:  240:int parseConfiguration(dictionary *ini) {
+        6:  241:    int errors = 0;
         -:  242:
         -:  243:    // READING CPU CONFIGURATION///////////////////////////////////////////////
         -:  244:
-        4:  245:    parseConfInt(ini,"cpu:address_width",&cpu.address_width,&errors);
-        4:  246:    parseConfInt(ini,"cpu:word_width",&cpu.word_width,&errors);
-        4:  247:    parseConfLongK1000(ini,"cpu:frequency",&cpu.frequency,&errors);
+        6:  245:    parseConfInt(ini,"cpu:address_width",&cpu.address_width,&errors);
+        6:  246:    parseConfInt(ini,"cpu:word_width",&cpu.word_width,&errors);
+        6:  247:    parseConfLongK1000(ini,"cpu:frequency",&cpu.frequency,&errors);
         -:  248:
         -:  249:    //checking some errors
-        4:  250:    if(!isPowerOf2(cpu.address_width)){
+        6:  250:    if(!isPowerOf2(cpu.address_width)){
     #####:  251:         fprintf(stderr,"Error: cpu:address_width must be power of 2\n");
     #####:  252:         errors++;
         -:  253:    }
-        4:  254:    if(!isPowerOf2(cpu.word_width)){
+        6:  254:    if(!isPowerOf2(cpu.word_width)){
     #####:  255:         fprintf(stderr,"Error: cpu:word_width must be power of 2\n");
     #####:  256:         errors++;
         -:  257:    }
         -:  258:
         -:  259:    // reading key cpu:trace_file
-        4:  260:    const char * cpu_trace_file= iniparser_getstring(ini, "cpu:trace_file", NULL);
-        4:  261:    if(cpu_trace_file==NULL) {
+        6:  260:    const char * cpu_trace_file= iniparser_getstring(ini, "cpu:trace_file", NULL);
+        6:  261:    if(cpu_trace_file==NULL) {
     #####:  262:        fprintf(stderr,"Error: Missing value cpu:trace_file\n");
     #####:  263:        errors++;
         -:  264:    } else {
-        4:  265:        cpu.trace_file=cpu_trace_file;
+        6:  265:        cpu.trace_file=cpu_trace_file;
         -:  266:    }
         -:  267:
         -:  268:    // READING MEMORY CONFIGURATION//////////////////////////////////////
         -:  269:
-        4:  270:    parseConfLongK1024(ini,"memory:size",&memory.size,&errors);
-        4:  271:    parseConfDouble(ini,"memory:access_time_1",&memory.access_time_1,&errors);
-        4:  272:    parseConfDouble(ini,"memory:access_time_burst",&memory.access_time_burst, &errors);
-        4:  273:    parseConfLongK1024(ini,"memory:page_size",&memory.page_size,&errors);
-        4:  274:    parseConfAddress(ini,"memory:page_base_address",&memory.page_base_address,&errors);
+        6:  270:    parseConfLongK1024(ini,"memory:size",&memory.size,&errors);
+        6:  271:    parseConfDouble(ini,"memory:access_time_1",&memory.access_time_1,&errors);
+        6:  272:    parseConfDouble(ini,"memory:access_time_burst",&memory.access_time_burst, &errors);
+        6:  273:    parseConfLongK1024(ini,"memory:page_size",&memory.page_size,&errors);
+        6:  274:    parseConfAddress(ini,"memory:page_base_address",&memory.page_base_address,&errors);
         -:  275:
         -:  276:    // READING ALL THE CACHES CONFIGURATION /////////////////////////////////////////
         -:  277:    // Browse the cache array and check the configuration of each cache.
         -:  278:
-       12:  279:    for(int cacheNumber=0; cacheNumber<numberCaches; cacheNumber++) {
+       18:  279:    for(int cacheNumber=0; cacheNumber<numberCaches; cacheNumber++) {
         -:  280:
         -:  281:        // This is for creating the string format in which the ini library receives the params.
         -:  282:        // Each value must be refered as section:key
         -:  283:
         -:  284:        // reading key cache:line_size
         -:  285:        char param[50];
-        8:  286:        sprintf(param, "cache%d:line_size", cacheNumber+1);
-        8:  287:        parseConfLongK1024(ini, param, &caches[cacheNumber].line_size,&errors);
-        8:  288:        if(!isPowerOf2(caches[cacheNumber].line_size)){
+       12:  286:        sprintf(param, "cache%d:line_size", cacheNumber+1);
+       12:  287:        parseConfLongK1024(ini, param, &caches[cacheNumber].line_size,&errors);
+       12:  288:        if(!isPowerOf2(caches[cacheNumber].line_size)){
     #####:  289:	    fprintf(stderr,"Error: cache%d:line_size must be power of 2\n", cacheNumber+1);
     #####:  290:            errors++;
         -:  291:	}
         -:  292:
         -:  293:        // reading key cache:size
-        8:  294:        sprintf(param, "cache%d:size", cacheNumber+1);
-        8:  295:        parseConfLongK1024(ini, param, &caches[cacheNumber].size,&errors);
+       12:  294:        sprintf(param, "cache%d:size", cacheNumber+1);
+       12:  295:        parseConfLongK1024(ini, param, &caches[cacheNumber].size,&errors);
         -:  296:
         -:  297:        // reading key cache:column_bit_mask
-        8:  298:        sprintf(param, "cache%d:column_bit_mask", cacheNumber+1);
-        8:  299:        const char * column_bit_mask=iniparser_getstring(ini, param, NULL);
-        8:  300:        int isBinary=isCorrectBinary(column_bit_mask);
-        8:  301:        if(isBinary==-1) {
+       12:  298:        sprintf(param, "cache%d:column_bit_mask", cacheNumber+1);
+       12:  299:        const char * column_bit_mask=iniparser_getstring(ini, param, NULL);
+       12:  300:        int isBinary=isCorrectBinary(column_bit_mask);
+       12:  301:        if(isBinary==-1) {
     #####:  302:            fprintf(stderr,"Error: cache%d:column_bit_mask value is not valid\n", cacheNumber+1);
     #####:  303:            errors++;
-        8:  304:        } else if(isBinary==-2) {
+       12:  304:        } else if(isBinary==-2) {
     #####:  305:            fprintf(stderr,"Error: Missing value cache%d:column_bit_mask\n", cacheNumber+1);
     #####:  306:            errors++;
-        8:  307:        } else if(strlen(column_bit_mask)<N_BITS_MASK){
+       12:  307:        } else if(strlen(column_bit_mask)<N_BITS_MASK){
     #####:  308:            fprintf(stderr,"Error: Bit mask is to small cache%d:column_bit_mask\n", cacheNumber+1);
     #####:  309:            errors++;
         -:  310:        } else {
-        8:  311:            caches[cacheNumber].column_bit_mask=column_bit_mask;
+       12:  311:            caches[cacheNumber].column_bit_mask=column_bit_mask;
         -:  312:        }
         -:  313:
         -:  314:        // reading key cache:asocitivity
-        8:  315:        sprintf(param, "cache%d:asociativity", cacheNumber+1);
-        8:  316:        const char * cache_asociativity=iniparser_getstring(ini, param, NULL);
+       12:  315:        sprintf(param, "cache%d:asociativity", cacheNumber+1);
+       12:  316:        const char * cache_asociativity=iniparser_getstring(ini, param, NULL);
         -:  317:        // si es F es de compleatamente asociativa. Un solo set. Tantas lines/set como lines totales.
-        8:  318:        if(cache_asociativity!=NULL&&strcmp(cache_asociativity, "F")==0) {
-        4:  319:            caches[cacheNumber].asociativity=caches[cacheNumber].size/caches[cacheNumber].line_size;
+       12:  318:        if(cache_asociativity!=NULL&&strcmp(cache_asociativity, "F")==0) {
+        6:  319:            caches[cacheNumber].asociativity=caches[cacheNumber].size/caches[cacheNumber].line_size;
         -:  320:        } else {
-        4:  321:            long long_asociativity=parseInt(cache_asociativity);
-        4:  322:            if(long_asociativity==-1) {
+        6:  321:            long long_asociativity=parseInt(cache_asociativity);
+        6:  322:            if(long_asociativity==-1) {
     #####:  323:                fprintf(stderr,"Error: cache%d:asociativity value is not valid\n", cacheNumber+1);
     #####:  324:                errors++;
-        4:  325:            } else if(long_asociativity==-2) {
+        6:  325:            } else if(long_asociativity==-2) {
     #####:  326:                fprintf(stderr,"Error: Missing value cache%d:asociativity\n", cacheNumber+1);
     #####:  327:                errors++;
-        4:  328:            } else if(!isPowerOf2(long_asociativity)) {
+        6:  328:            } else if(!isPowerOf2(long_asociativity)) {
     #####:  329:                fprintf(stderr,"Error: The value of cache%d:asociativity must be power of 2\n", cacheNumber+1);
     #####:  330:                errors++;
         -:  331:            } else {
-        4:  332:                caches[cacheNumber].asociativity=long_asociativity;
+        6:  332:                caches[cacheNumber].asociativity=long_asociativity;
         -:  333:            }
         -:  334:        }
         -:  335:
         -:  336:        // reading key cache:write_policy
-        8:  337:        sprintf(param, "cache%d:write_policy", cacheNumber+1);
-        8:  338:        const char * cache_write_policy=iniparser_getstring(ini, param, NULL);
-        8:  339:        long long_write_policy=parseWritePolicy(cache_write_policy);
-        8:  340:        if(long_write_policy==-1) {
+       12:  337:        sprintf(param, "cache%d:write_policy", cacheNumber+1);
+       12:  338:        const char * cache_write_policy=iniparser_getstring(ini, param, NULL);
+       12:  339:        long long_write_policy=parseWritePolicy(cache_write_policy);
+       12:  340:        if(long_write_policy==-1) {
     #####:  341:            fprintf(stderr,"Error: cache%d:write_policy value is not valid\n", cacheNumber+1);
     #####:  342:            errors++;
-        8:  343:        } else if(long_write_policy==-2) {
+       12:  343:        } else if(long_write_policy==-2) {
     #####:  344:            fprintf(stderr,"Error: Missing value cache%d:write_policy\n", cacheNumber+1);
     #####:  345:            errors++;
         -:  346:        } else {
-        8:  347:            caches[cacheNumber].write_policy=long_write_policy;
+       12:  347:            caches[cacheNumber].write_policy=long_write_policy;
         -:  348:        }
         -:  349:
         -:  350:        // reading key cache:replacement
-        8:  351:        sprintf(param, "cache%d:replacement", cacheNumber+1);
+       12:  351:        sprintf(param, "cache%d:replacement", cacheNumber+1);
         -:  352:
-        8:  353:        const char * cache_replacement=iniparser_getstring(ini, param, NULL);
-        8:  354:        long long_replacement=parseReplacementPolicy(cache_replacement);
-        8:  355:        if(long_replacement==-1) {
+       12:  353:        const char * cache_replacement=iniparser_getstring(ini, param, NULL);
+       12:  354:        long long_replacement=parseReplacementPolicy(cache_replacement);
+       12:  355:        if(long_replacement==-1) {
     #####:  356:            fprintf(stderr,"Error: cache%d:replacement value is not valid\n", cacheNumber+1);
     #####:  357:            errors++;
-        8:  358:        } else if(long_replacement==-2) {
+       12:  358:        } else if(long_replacement==-2) {
     #####:  359:            fprintf(stderr,"Error: Missing value cache%d:replacement\n", cacheNumber+1);
     #####:  360:            errors++;
         -:  361:        } else {
-        8:  362:            caches[cacheNumber].replacement=long_replacement;
+       12:  362:            caches[cacheNumber].replacement=long_replacement;
         -:  363:        }
         -:  364:
         -:  365:        // reading key cache:separated
-        8:  366:        sprintf(param, "cache%d:separated", cacheNumber+1);
+       12:  366:        sprintf(param, "cache%d:separated", cacheNumber+1);
         -:  367:
-        8:  368:        const char * cache_separated=iniparser_getstring(ini, param, NULL);
-        8:  369:        long long_separated=parseBoolean(cache_separated);
-        8:  370:        if(long_separated==-1) {
+       12:  368:        const char * cache_separated=iniparser_getstring(ini, param, NULL);
+       12:  369:        long long_separated=parseBoolean(cache_separated);
+       12:  370:        if(long_separated==-1) {
     #####:  371:            fprintf(stderr,"Error: cache%d:separated value is not valid\n", cacheNumber+1);
     #####:  372:            errors++;
-        8:  373:        } else if(long_separated==-2) {
+       12:  373:        } else if(long_separated==-2) {
     #####:  374:            fprintf(stderr,"Error: Missing value cache%d:separated\n", cacheNumber+1);
     #####:  375:            errors++;
         -:  376:        } else {
-        8:  377:            caches[cacheNumber].separated=long_separated;
+       12:  377:            caches[cacheNumber].separated=long_separated;
         -:  378:        }
         -:  379:
         -:  380:        // reading key cache:access_time
-        8:  381:        sprintf(param, "cache%d:access_time", cacheNumber+1);
-        8:  382:        parseConfDouble(ini, param, &caches[cacheNumber].access_time, &errors);
+       12:  381:        sprintf(param, "cache%d:access_time", cacheNumber+1);
+       12:  382:        parseConfDouble(ini, param, &caches[cacheNumber].access_time, &errors);
         -:  383:
         -:  384:
         -:  385:    }
         -:  386:
         -:  387:    // checking all the caches have the same line_size
-        4:  388:    if(numberCaches>0){
-        4:  389:       int previous=caches[0].line_size;
-        8:  390:       for(int cacheNumber=1; cacheNumber<numberCaches; cacheNumber++) {
-        4:  391:          if(caches[cacheNumber].line_size!=previous){
+        6:  388:    if(numberCaches>0){
+        6:  389:       int previous=caches[0].line_size;
+       12:  390:       for(int cacheNumber=1; cacheNumber<numberCaches; cacheNumber++) {
+        6:  391:          if(caches[cacheNumber].line_size!=previous){
     #####:  392:             fprintf(stderr,"Error: All the caches must have the same line_size.\n");
     #####:  393:             errors++;
     #####:  394:             break;
@@ -401,35 +401,35 @@
         -:  396:       }
         -:  397:    }
         -:  398:
-        4:  399:    if(errors>0) {
+        6:  399:    if(errors>0) {
     #####:  400:        fprintf(stderr,"\nTotal errors: %d\n", errors);
     #####:  401:        return -1;
         -:  402:    }
         -:  403:#if DEBUG
-        4:  404:    showConfiguration();
-        4:  405:    fprintf(stderr,"\nConfiguration file loaded correctly\n");
+        6:  404:    showConfiguration();
+        6:  405:    fprintf(stderr,"\nConfiguration file loaded correctly\n");
         -:  406:#endif
-        4:  407:    return 0;
+        6:  407:    return 0;
         -:  408:}
         -:  409:
         -:  410:
         -:  411:/*
         -:  412: * Checks that all the keys in a section are valid
         -:  413: */
-       16:  414:void checkSectionKeys(dictionary *ini, const char *section, int numberOfValidKeys, char *validKeys[], int *errors) {
-       16:  415:   int nkeys = iniparser_getsecnkeys(ini, section);
-       16:  416:   const char * keys[nkeys];
-       16:  417:   iniparser_getseckeys(ini, section, keys);
+       24:  414:void checkSectionKeys(dictionary *ini, const char *section, int numberOfValidKeys, char *validKeys[], int *errors) {
+       24:  415:   int nkeys = iniparser_getsecnkeys(ini, section);
+       24:  416:   const char * keys[nkeys];
+       24:  417:   iniparser_getseckeys(ini, section, keys);
         -:  418:
         -:  419:   // Make sure that the section does not have unknown keys
-      116:  420:   for(int i=0; i<nkeys; i++) {
+      174:  420:   for(int i=0; i<nkeys; i++) {
         -:  421:      // By comparing each one with the known keys of a cache section
-      388:  422:      for(int j=0; j<numberOfValidKeys; j++) {
+      582:  422:      for(int j=0; j<numberOfValidKeys; j++) {
         -:  423:         char key[300];
-      388:  424:         snprintf(key, 300, "%s:%s", section, validKeys[j]);
-      388:  425:         if(strcmp(keys[i], key)==0) {
+      582:  424:         snprintf(key, 300, "%s:%s", section, validKeys[j]);
+      582:  425:         if(strcmp(keys[i], key)==0) {
         -:  426:            // This key is known. Go to the next one.
-      100:  427:            goto nextKey;
+      150:  427:            goto nextKey;
         -:  428:         }
         -:  429:      }
         -:  430:      // This key matches none of the known keys of a cache section
@@ -437,46 +437,46 @@
     #####:  432:      (*errors)++;
         -:  433:      nextKey:;
         -:  434:   }
-       16:  435:}
+       24:  435:}
         -:  436:
         -:  437:/*
         -:  438: * shows the current state of read data
         -:  439: */
-        4:  440:void showConfiguration(){
+        6:  440:void showConfiguration(){
         -:  441:
         -:  442:    // show cpu info 
-        4:  443:    fprintf(stderr,"\nCPU\n");
+        6:  443:    fprintf(stderr,"\nCPU\n");
         -:  444:
-        4:  445:    fprintf(stderr,"word_width:         [%ld bits] \n", cpu.word_width);
-        4:  446:    fprintf(stderr,"address_width:      [%ld bits] \n", cpu.address_width);
-        4:  447:    fprintf(stderr,"frecuency:          [%ld Hz] \n", cpu.frequency);
-        4:  448:    fprintf(stderr,"bus_frequency:      [%ld Hz] \n", cpu.bus_frequency);
-        4:  449:    fprintf(stderr,"mem_bus_frequency:  [%ld Hz] \n", cpu.mem_bus_frequency);
-        4:  450:    fprintf(stderr,"trace_file:         [%s]\n", cpu.trace_file);
+        6:  445:    fprintf(stderr,"word_width:         [%ld bits] \n", cpu.word_width);
+        6:  446:    fprintf(stderr,"address_width:      [%ld bits] \n", cpu.address_width);
+        6:  447:    fprintf(stderr,"frecuency:          [%ld Hz] \n", cpu.frequency);
+        6:  448:    fprintf(stderr,"bus_frequency:      [%ld Hz] \n", cpu.bus_frequency);
+        6:  449:    fprintf(stderr,"mem_bus_frequency:  [%ld Hz] \n", cpu.mem_bus_frequency);
+        6:  450:    fprintf(stderr,"trace_file:         [%s]\n", cpu.trace_file);
         -:  451:
         -:  452:    // show memory info
-        4:  453:    fprintf(stderr,"\nMEMORY\n");
+        6:  453:    fprintf(stderr,"\nMEMORY\n");
         -:  454:
-        4:  455:    fprintf(stderr,"size:               [%ld bytes] \n",  memory.size);
-        4:  456:    fprintf(stderr,"bus_width:          [%ld bits] \n", memory.bus_width);
-        4:  457:    fprintf(stderr,"bus_frequency:      [%ld Hz] \n", memory.bus_frequency);
-        4:  458:    fprintf(stderr,"access_time_1:      [%lf ns] \n", memory.access_time_1*1000000000);
-        4:  459:    fprintf(stderr,"access_time_burst:  [%lf ns] \n", memory.access_time_burst*1000000000);
-        4:  460:    fprintf(stderr,"page_size:          [%ld bytes] \n", memory.page_size);
-        4:  461:    fprintf(stderr,"page_base_address:  [0x%lx] \n", memory.page_base_address);
+        6:  455:    fprintf(stderr,"size:               [%ld bytes] \n",  memory.size);
+        6:  456:    fprintf(stderr,"bus_width:          [%ld bits] \n", memory.bus_width);
+        6:  457:    fprintf(stderr,"bus_frequency:      [%ld Hz] \n", memory.bus_frequency);
+        6:  458:    fprintf(stderr,"access_time_1:      [%lf ns] \n", memory.access_time_1*1000000000);
+        6:  459:    fprintf(stderr,"access_time_burst:  [%lf ns] \n", memory.access_time_burst*1000000000);
+        6:  460:    fprintf(stderr,"page_size:          [%ld bytes] \n", memory.page_size);
+        6:  461:    fprintf(stderr,"page_base_address:  [0x%lx] \n", memory.page_base_address);
         -:  462:
         -:  463:
         -:  464:    // show each cache info
-       12:  465:    for(long i=0; i<numberCaches; i++) {
-        8:  466:        fprintf(stderr,"\nCACHE L%ld\n", i+1);
+       18:  465:    for(long i=0; i<numberCaches; i++) {
+       12:  466:        fprintf(stderr,"\nCACHE L%ld\n", i+1);
         -:  467:
-        8:  468:        fprintf(stderr,"line_size:          [%ld bits] \n",  caches[i].line_size);
-        8:  469:        fprintf(stderr,"size:               [%ld bytes] \n",  caches[i].size);
-        8:  470:        fprintf(stderr,"access_time:        [%lf ns]\n",   caches[i].access_time*1000000000);
-        8:  471:        fprintf(stderr,"asociativity:       [%ld]\n",  caches[i].asociativity);
-        8:  472:        fprintf(stderr,"write_policy:       [%s]\n",   str_writePolicy[caches[i].write_policy]);
-        8:  473:        fprintf(stderr,"replacement:        [%s]\n",   str_replacementPolicy[caches[i].replacement]);
-        8:  474:        fprintf(stderr,"separated:          [%d]\n",   caches[i].separated);
+       12:  468:        fprintf(stderr,"line_size:          [%ld bits] \n",  caches[i].line_size);
+       12:  469:        fprintf(stderr,"size:               [%ld bytes] \n",  caches[i].size);
+       12:  470:        fprintf(stderr,"access_time:        [%lf ns]\n",   caches[i].access_time*1000000000);
+       12:  471:        fprintf(stderr,"asociativity:       [%ld]\n",  caches[i].asociativity);
+       12:  472:        fprintf(stderr,"write_policy:       [%s]\n",   str_writePolicy[caches[i].write_policy]);
+       12:  473:        fprintf(stderr,"replacement:        [%s]\n",   str_replacementPolicy[caches[i].replacement]);
+       12:  474:        fprintf(stderr,"separated:          [%d]\n",   caches[i].separated);
         -:  475:
         -:  476:    }
-        4:  477:}
+        6:  477:}

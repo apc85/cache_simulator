@@ -1,7 +1,7 @@
         -:    0:Source:datainterface.c
         -:    0:Graph:datainterface.gcno
         -:    0:Data:datainterface.gcda
-        -:    0:Runs:7
+        -:    0:Runs:17
         -:    0:Programs:1
         -:    1:#include <math.h>
         -:    2:#include "datamanipulation.h"
@@ -13,89 +13,89 @@
         -:    8:/**
         -:    9: * This function sets memory to its initial state.
         -:   10: */
-        8:   11:void resetMemory() {
+        3:   11:void resetMemory() {
         -:   12:   GtkTreeIter iter;	
         -:   13:   //get iterator at position 0
-        8:   14:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(modelMEMORY),
+        3:   14:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(modelMEMORY),
         -:   15:         &iter,
         -:   16:         "0");
         -:   17:   //this is the number of words in the whole memory
-        8:   18:   int numWords=memory.size/(cpu.word_width/8);
+        3:   18:   int numWords=memory.size/(cpu.word_width/8);
         -:   19:   //for the n words in the mory
-     4104:   20:   for(int i=memory.page_base_address; i<memory.page_base_address+memory.page_size; i+=(cpu.word_width/8)){
+     1539:   20:   for(int i=memory.page_base_address; i<memory.page_base_address+memory.page_size; i+=(cpu.word_width/8)){
         -:   21:      char address[50];
         -:   22:      char content[50];
         -:   23:      //obtain adrress in string format
-     4096:   24:      sprintf(address, "%0*x", (int)cpu.address_width/4, i);
+     1536:   24:      sprintf(address, "%0*x", (int)cpu.address_width/4, i);
         -:   25:      //set initial content to 0 
-     4096:   26:      sprintf(content, "%0*x", (int)cpu.word_width/4, 0);
+     1536:   26:      sprintf(content, "%0*x", (int)cpu.word_width/4, 0);
         -:   27:      /* Fill fields with data */
-     4096:   28:      gtk_list_store_set (modelMEMORY, &iter,
+     1536:   28:      gtk_list_store_set (modelMEMORY, &iter,
         -:   29:            CONTENT, content,
         -:   30:            ADDRESS, address,
         -:   31:            COLOR, "white",
         -:   32:            USER_CONTENT, NULL,
         -:   33:            -1);
         -:   34:      //move iter to next position to write the next memory word
-     4096:   35:      gtk_tree_model_iter_next (GTK_TREE_MODEL(modelMEMORY),
+     1536:   35:      gtk_tree_model_iter_next (GTK_TREE_MODEL(modelMEMORY),
         -:   36:            &iter);
         -:   37:   }
-        8:   38:}
+        3:   38:}
         -:   39:/**
         -:   40: * This function resets a unified cache. Sets the data cache to its initial state.
         -:   41: * @param level where the cache is located. 
         -:   42: */
-        8:   43:void resetCache(int level){
+        3:   43:void resetCache(int level){
         -:   44:   //I reset data cache as I had defined unified caches as divided caches which don't have instruction cache. Just to make it easier.
-        8:   45:   resetDataCache(level);
-        8:   46:}
+        3:   45:   resetDataCache(level);
+        3:   46:}
         -:   47:/**
         -:   48: * This function resets a Data cache. Sets the data cache to its initial state.
         -:   49: * @param cache level where the cache is located. 
         -:   50: */
-       16:   51:void resetDataCache(int level){
+        6:   51:void resetDataCache(int level){
         -:   52:   //some memory hierarchy properties that will be used later
-       16:   53:   int numLines=caches[level].size/caches[level].line_size;
-       16:   54:   int lineSize=caches[level].line_size;
-       16:   55:   int asociativity=caches[level].asociativity;
-       16:   56:   int numsets=numLines/asociativity;
-       16:   57:   int numWords=(caches[level].line_size*8)/cpu.word_width;
+        6:   53:   int numLines=caches[level].size/caches[level].line_size;
+        6:   54:   int lineSize=caches[level].line_size;
+        6:   55:   int asociativity=caches[level].asociativity;
+        6:   56:   int numsets=numLines/asociativity;
+        6:   57:   int numWords=(caches[level].line_size*8)/cpu.word_width;
         -:   58:   //if cache is divided cache size is half
-       16:   59:   if(caches[level].separated){
-        8:   60:      numLines/=2;
+        6:   59:   if(caches[level].separated){
+        3:   60:      numLines/=2;
         -:   61:   }
         -:   62:   //this is for filling each field with the correct amount of bits it must be represented with.
-       16:   63:   int hexDigsSet=ceil(log(numsets)/log(16));
-       16:   64:   int hexDigsLine=ceil(log(numLines)/log(16));
-       16:   65:   int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
+        6:   63:   int hexDigsSet=ceil(log(numsets)/log(16));
+        6:   64:   int hexDigsLine=ceil(log(numLines)/log(16));
+        6:   65:   int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
         -:   66:   struct cacheLine* line;
-       16:   67:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+        6:   67:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
         -:   68:   GtkTreeIter iter;
         -:   69:   //get iter at first position
-       16:   70:   gtk_tree_model_get_iter_first (model, &iter);
+        6:   70:   gtk_tree_model_get_iter_first (model, &iter);
         -:   71:   //set each field to its initial value
         -:   72:   char cache_line[100];
         -:   73:   char cache_tag[100];
         -:   74:   char cache_set[100];
-       16:   75:   void *user_content=NULL;
-       16:   76:   int valid=0;
-       16:   77:   int dirty=0;
-       16:   78:   int times_accessed=0;
-       16:   79:   int last_accessed=0;
-       16:   80:   long cache_content[numWords];
+        6:   75:   void *user_content=NULL;
+        6:   76:   int valid=0;
+        6:   77:   int dirty=0;
+        6:   78:   int times_accessed=0;
+        6:   79:   int last_accessed=0;
+        6:   80:   long cache_content[numWords];
         -:   81:   char cache_content_char[2000];
-      272:   82:   for(int i=0; i<numWords; i++){
-      256:   83:      cache_content[i]=0;
+      102:   82:   for(int i=0; i<numWords; i++){
+       96:   83:      cache_content[i]=0;
         -:   84:   }
         -:   85:   //this converts form long array to string representation.
         -:   86:
-       16:   87:   contentArrayToString(cache_content, cache_content_char, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
+        6:   87:   contentArrayToString(cache_content, cache_content_char, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
         -:   88:   //I write all the reseted fields in each cache line
-     1552:   89:   for(int i=0; i<numLines; i++){ 
-     1536:   90:      sprintf(cache_line, "%0*x", hexDigsLine, i);
-     1536:   91:      sprintf(cache_tag, "%0*x", hexDigsTag, 0);
-     1536:   92:      sprintf(cache_set, "%0*x", hexDigsSet, i/asociativity);
-     1536:   93:      gtk_list_store_set (GTK_LIST_STORE(model), &iter,
+      582:   89:   for(int i=0; i<numLines; i++){ 
+      576:   90:      sprintf(cache_line, "%0*x", hexDigsLine, i);
+      576:   91:      sprintf(cache_tag, "%0*x", hexDigsTag, 0);
+      576:   92:      sprintf(cache_set, "%0*x", hexDigsSet, i/asociativity);
+      576:   93:      gtk_list_store_set (GTK_LIST_STORE(model), &iter,
         -:   94:            LINE, &cache_line,
         -:   95:            TAG, &cache_tag,
         -:   96:            SET, &cache_set,
@@ -108,55 +108,55 @@
         -:  103:            COLOR_CACHE, colores[WHITE],
         -:  104:            -1);
         -:  105:      //move iter to next position
-     1536:  106:      gtk_tree_model_iter_next (GTK_TREE_MODEL(model), &iter);
+      576:  106:      gtk_tree_model_iter_next (GTK_TREE_MODEL(model), &iter);
         -:  107:   }
-       16:  108:} 
+        6:  108:} 
         -:  109:/**
         -:  110: * This function resets a Instruction cache. Sets the data cache to its initial state.
         -:  111: * @param level where the cache is located. 
         -:  112: */
-        8:  113:void resetInstructionCache(int level){
+        3:  113:void resetInstructionCache(int level){
         -:  114:   //some memory hierarchy properties that will be used later
-        8:  115:   int numLines=caches[level].size/caches[level].line_size;
-        8:  116:   int lineSize=caches[level].line_size;
-        8:  117:   int asociativity=caches[level].asociativity;
-        8:  118:   int numsets=numLines/asociativity;
-        8:  119:   int numWords=(caches[level].line_size*8)/cpu.word_width;
+        3:  115:   int numLines=caches[level].size/caches[level].line_size;
+        3:  116:   int lineSize=caches[level].line_size;
+        3:  117:   int asociativity=caches[level].asociativity;
+        3:  118:   int numsets=numLines/asociativity;
+        3:  119:   int numWords=(caches[level].line_size*8)/cpu.word_width;
         -:  120:   //if cache is divided cache size is half
-        8:  121:   if(caches[level].separated){
-        8:  122:      numLines/=2;
+        3:  121:   if(caches[level].separated){
+        3:  122:      numLines/=2;
         -:  123:   }
         -:  124:   //this is for filling each field with the correct amount of bits it must be represented with.
-        8:  125:   int hexDigsSet=ceil(log(numsets)/log(16));
-        8:  126:   int hexDigsLine=ceil(log(numLines)/log(16));
-        8:  127:   int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
+        3:  125:   int hexDigsSet=ceil(log(numsets)/log(16));
+        3:  126:   int hexDigsLine=ceil(log(numLines)/log(16));
+        3:  127:   int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
         -:  128:   struct cacheLine* line;
-        8:  129:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
+        3:  129:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
         -:  130:   GtkTreeIter iter;
         -:  131:   //get iter at first position
-        8:  132:   gtk_tree_model_get_iter_first (model, &iter);
+        3:  132:   gtk_tree_model_get_iter_first (model, &iter);
         -:  133:   //set each field to its initial value
         -:  134:   char cache_line[100];
         -:  135:   char cache_tag[100];
         -:  136:   char cache_set[100];
-        8:  137:   void *user_content=NULL;
-        8:  138:   int valid=0;
-        8:  139:   int dirty=0;
-        8:  140:   int times_accessed=0;
-        8:  141:   int last_accessed=0;
-        8:  142:   long cache_content[numWords];
+        3:  137:   void *user_content=NULL;
+        3:  138:   int valid=0;
+        3:  139:   int dirty=0;
+        3:  140:   int times_accessed=0;
+        3:  141:   int last_accessed=0;
+        3:  142:   long cache_content[numWords];
         -:  143:   char cache_content_char[2000];
-      136:  144:   for(int i=0; i<numWords; i++){
-      128:  145:      cache_content[i]=0;
+       51:  144:   for(int i=0; i<numWords; i++){
+       48:  145:      cache_content[i]=0;
         -:  146:   }
         -:  147:   //this converts form long array to string representation.
-        8:  148:   contentArrayToString(cache_content, cache_content_char, (caches[level].line_size)/(cpu.word_width/8), cpu.word_width/4);
+        3:  148:   contentArrayToString(cache_content, cache_content_char, (caches[level].line_size)/(cpu.word_width/8), cpu.word_width/4);
         -:  149:   //I write the all the reseted fields in each cache line
-     1032:  150:   for(int i=0; i<numLines; i++){ 
-     1024:  151:      sprintf(cache_line, "%0*x", hexDigsLine, i);
-     1024:  152:      sprintf(cache_tag, "%0*x", hexDigsTag, 0);
-     1024:  153:      sprintf(cache_set, "%0*x", hexDigsSet, i/asociativity);
-     1024:  154:      gtk_list_store_set (GTK_LIST_STORE(model), &iter,
+      387:  150:   for(int i=0; i<numLines; i++){ 
+      384:  151:      sprintf(cache_line, "%0*x", hexDigsLine, i);
+      384:  152:      sprintf(cache_tag, "%0*x", hexDigsTag, 0);
+      384:  153:      sprintf(cache_set, "%0*x", hexDigsSet, i/asociativity);
+      384:  154:      gtk_list_store_set (GTK_LIST_STORE(model), &iter,
         -:  155:            LINE, &cache_line,
         -:  156:            TAG, &cache_tag,
         -:  157:            SET, &cache_set,
@@ -169,9 +169,9 @@
         -:  164:            COLOR_CACHE, colores[WHITE],
         -:  165:            -1);
         -:  166:      //move iter to next position
-     1024:  167:      gtk_tree_model_iter_next (GTK_TREE_MODEL(model), &iter);
+      384:  167:      gtk_tree_model_iter_next (GTK_TREE_MODEL(model), &iter);
         -:  168:   }
-        8:  169:} 
+        3:  169:} 
         -:  170:/**
         -:  171: * This function shows all the values contained in the fields of a unified cache line
         -:  172: * @param level which will be shown
@@ -196,35 +196,35 @@
         -:  191: * @param level which will be shown
         -:  192: * @param i line index
         -:  193: */
-        7:  194:void showCacheLineData(int level, int i){
+        3:  194:void showCacheLineData(int level, int i){
         -:  195:   struct cacheLine line;
         -:  196:   //first I read it
-        7:  197:   readLineCacheData(level, &line, i);
+        3:  197:   readLineCacheData(level, &line, i);
         -:  198:   char contentString[2000];
-        7:  199:   contentArrayToString((line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
+        3:  199:   contentArrayToString((line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
         -:  200:   //I print the values.
-        7:  201:   printf("------------------------------------------------------\n");
-        7:  202:   printf("line: %lx     tag: %lx    set: %lx\n", line.line, line.tag, line.set);
-        7:  203:   printf("content: %s\n", contentString);
-        7:  204:   printf("user content: %s\n", (char*)line.user_content);
-        7:  205:   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d\n", line.valid, line.dirty, line.last_accessed, line.times_accessed);
-        7:  206:   printf("------------------------------------------------------\n");
-        7:  207:   free(line.content);
-        7:  208:}
+        3:  201:   printf("------------------------------------------------------\n");
+        3:  202:   printf("line: %lx     tag: %lx    set: %lx\n", line.line, line.tag, line.set);
+        3:  203:   printf("content: %s\n", contentString);
+        3:  204:   printf("user content: %s\n", (char*)line.user_content);
+        3:  205:   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d\n", line.valid, line.dirty, line.last_accessed, line.times_accessed);
+        3:  206:   printf("------------------------------------------------------\n");
+        3:  207:   free(line.content);
+        3:  208:}
         -:  209:/**
         -:  210: * This function reads a data cache line.
         -:  211: * @param level which will be read
         -:  212: * @param line. A pointer to a struct cacheLine were data will be placed. User must free line.content after calling the function. 
         -:  213: * @param i line index
         -:  214: */
-        7:  215:void readLineCacheData(int level, struct cacheLine* line, int i){
-        7:  216:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+        3:  215:void readLineCacheData(int level, struct cacheLine* line, int i){
+        3:  216:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
         -:  217:   GtkTreeIter iter;
         -:  218:   char iterstring[50];
         -:  219:   //this is the line index in string format
-        7:  220:   sprintf(iterstring, "%d", i);	
+        3:  220:   sprintf(iterstring, "%d", i);	
         -:  221:   //I get an iter pointing to the line which will be read
-        7:  222:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
+        3:  222:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
         -:  223:         &iter,
         -:  224:         iterstring);
         -:  225:   //this is for temporally storing read values 
@@ -238,7 +238,7 @@
         -:  233:   int h;
         -:  234:   int j;
         -:  235:   //read the values from data sruct
-        7:  236:   gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
+        3:  236:   gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
         -:  237:         LINE, &a,
         -:  238:         TAG, &b,
         -:  239:         SET, &c,
@@ -250,37 +250,37 @@
         -:  245:         LAST_ACCESSED, &j,
         -:  246:         -1);
         -:  247:   //number of words in a cache line
-        7:  248:   int numWords = (caches[level].line_size*8)/cpu.word_width;
+        3:  248:   int numWords = (caches[level].line_size*8)/cpu.word_width;
         -:  249:   long *array;
-        7:  250:   array = malloc((sizeof(long))*numWords);
+        3:  250:   array = malloc((sizeof(long))*numWords);
         -:  251:   //turn String format to long array.
         -:  252:   //contentStringToArray(array, d, level);
-        7:  253:   contentStringToArray(array, d, numWords);
+        3:  253:   contentStringToArray(array, d, numWords);
         -:  254:   //place values in struct return param so that caller user can get them
-        7:  255:   line->line = strtol(a, NULL, 16);
-        7:  256:   line->tag = strtol(b, NULL, 16);
-        7:  257:   line->set = strtol(c, NULL, 16);
-        7:  258:   line->content = array;
-        7:  259:   line->user_content = e;
-        7:  260:   line->valid = f;
-        7:  261:   line->dirty = g;
-        7:  262:   line->times_accessed = h;
-        7:  263:   line->last_accessed = j;
-        7:  264:}
+        3:  255:   line->line = strtol(a, NULL, 16);
+        3:  256:   line->tag = strtol(b, NULL, 16);
+        3:  257:   line->set = strtol(c, NULL, 16);
+        3:  258:   line->content = array;
+        3:  259:   line->user_content = e;
+        3:  260:   line->valid = f;
+        3:  261:   line->dirty = g;
+        3:  262:   line->times_accessed = h;
+        3:  263:   line->last_accessed = j;
+        3:  264:}
         -:  265:/**
         -:  266: * This function reads a instruction cache line.
         -:  267: * @param level which will be read
         -:  268: * @param line A pointer to a struct cacheLine were data will be placed. User must free line.content after calling the function. 
         -:  269: * @param i line index
         -:  270: */
-        7:  271:void readLineCacheInstructions(int level, struct cacheLine* line, int i){
-        7:  272:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
+        3:  271:void readLineCacheInstructions(int level, struct cacheLine* line, int i){
+        3:  272:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
         -:  273:   GtkTreeIter iter;
         -:  274:   char iterstring[50];
         -:  275:   //this is the line index in string format
-        7:  276:   sprintf(iterstring, "%d", i);	
+        3:  276:   sprintf(iterstring, "%d", i);	
         -:  277:   //I get an iter pointing to the line which will be read
-        7:  278:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
+        3:  278:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
         -:  279:         &iter,
         -:  280:         iterstring);
         -:  281:   //this is for temporally storing read values 
@@ -294,7 +294,7 @@
         -:  289:   int h;
         -:  290:   int j;
         -:  291:   //read the values from data sruct
-        7:  292:   gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
+        3:  292:   gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
         -:  293:         LINE, &a,
         -:  294:         TAG, &b,
         -:  295:         SET, &c,
@@ -306,63 +306,63 @@
         -:  301:         LAST_ACCESSED, &j,
         -:  302:         -1);
         -:  303:   //number of words in a cache line
-        7:  304:   int numWords=(caches[level].line_size*8)/cpu.word_width;
+        3:  304:   int numWords=(caches[level].line_size*8)/cpu.word_width;
         -:  305:   long *array;
-        7:  306:   array=malloc((sizeof(long))*numWords);
+        3:  306:   array=malloc((sizeof(long))*numWords);
         -:  307:   //turn String format to long array.
-        7:  308:   contentStringToArray(array, d, level);
+        3:  308:   contentStringToArray(array, d, level);
         -:  309:   //place values in struct return param so that caller user can get them
-        7:  310:   (*line).line=strtol(a, NULL, 16);
-        7:  311:   (*line).tag=strtol(b, NULL, 16);
-        7:  312:   (*line).set=strtol(c, NULL, 16);
-        7:  313:   (*line).content=array;
-        7:  314:   (*line).user_content=e;
-        7:  315:   (*line).valid=f;
-        7:  316:   (*line).dirty=g;
-        7:  317:   (*line).times_accessed=h;
-        7:  318:   (*line).last_accessed=j;
-        7:  319:}
+        3:  310:   (*line).line=strtol(a, NULL, 16);
+        3:  311:   (*line).tag=strtol(b, NULL, 16);
+        3:  312:   (*line).set=strtol(c, NULL, 16);
+        3:  313:   (*line).content=array;
+        3:  314:   (*line).user_content=e;
+        3:  315:   (*line).valid=f;
+        3:  316:   (*line).dirty=g;
+        3:  317:   (*line).times_accessed=h;
+        3:  318:   (*line).last_accessed=j;
+        3:  319:}
         -:  320:/**
         -:  321: * This function reads a Instruction cache line.
         -:  322: * @param level which will be read
         -:  323: * @param cacheLine. A pointer to a struct cacheLine were data will be placed. User must free line.content after calling the function. 
         -:  324: * @param i line index
         -:  325: */
-        7:  326:void showCacheLineInstructions(int level, int i){
+        3:  326:void showCacheLineInstructions(int level, int i){
         -:  327:   struct cacheLine line;
         -:  328:   //I read the cache line
-        7:  329:   readLineCacheInstructions(level, &line, i);
+        3:  329:   readLineCacheInstructions(level, &line, i);
         -:  330:   char contentString[2000];
-        7:  331:   contentArrayToString((line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
+        3:  331:   contentArrayToString((line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
         -:  332:   //I print the values of each field
-        7:  333:   printf("------------------------------------------------------\n");
-        7:  334:   printf("line: %lx     tag: %lx    set: %lx\n", line.line, line.tag, line.set);
-        7:  335:   printf("content:%s\n", contentString);
-        7:  336:   printf("user content: %s\n", (char*)line.user_content);
-        7:  337:   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d\n", line.valid, line.dirty, line.last_accessed, line.times_accessed);
-        7:  338:   printf("------------------------------------------------------\n");
-        7:  339:   free(line.content);
-        7:  340:}
+        3:  333:   printf("------------------------------------------------------\n");
+        3:  334:   printf("line: %lx     tag: %lx    set: %lx\n", line.line, line.tag, line.set);
+        3:  335:   printf("content:%s\n", contentString);
+        3:  336:   printf("user content: %s\n", (char*)line.user_content);
+        3:  337:   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d\n", line.valid, line.dirty, line.last_accessed, line.times_accessed);
+        3:  338:   printf("------------------------------------------------------\n");
+        3:  339:   free(line.content);
+        3:  340:}
         -:  341:/**
         -:  342: * This function writes a cache line.
         -:  343: * @param level which will be written
         -:  344: * @param line. A pointer to a struct cacheLine containing the data to be written.
         -:  345: * @param i line index
         -:  346: */
-        7:  347:void writeLineCache(int level, struct cacheLine* line, int i){
-        7:  348:   writeLineCacheData(level, line, i);
-        7:  349:}
+        3:  347:void writeLineCache(int level, struct cacheLine* line, int i){
+        3:  348:   writeLineCacheData(level, line, i);
+        3:  349:}
         -:  350:/**
         -:  351: * This function writes a data cache line.
         -:  352: * @param level which will be written
         -:  353: * @param cacheLine. A pointer to a struct cacheLine containing the data to be written.
         -:  354: * @param i line index
         -:  355: */
-      782:  356:void writeLineCacheData(int level, struct cacheLine* line, int i){
-      782:  357:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+     1158:  356:void writeLineCacheData(int level, struct cacheLine* line, int i){
+     1158:  357:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
         -:  358:   GtkTreeIter iter;
         -:  359:   char iterstring[50];
-      782:  360:   sprintf(iterstring, "%d", i);	
+     1158:  360:   sprintf(iterstring, "%d", i);	
         -:  361:   char a[100];
         -:  362:   char b[100];
         -:  363:   char c[100];
@@ -371,28 +371,28 @@
         -:  366:   int g;
         -:  367:   int h;
         -:  368:   int j;
-      782:  369:   int numLines=caches[level].size/caches[level].line_size;
-      782:  370:   int lineSize=caches[level].line_size;
-      782:  371:   int asociativity=caches[level].asociativity;
-      782:  372:   int numsets=numLines/asociativity;
-      782:  373:   int numWords=(caches[level].line_size*8)/cpu.word_width;
-      782:  374:   int hexDigsSet=ceil(log(numsets)/log(16));
-      782:  375:   int hexDigsLine=ceil(log(numLines)/log(16));
-      782:  376:   int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
-      782:  377:   sprintf(a, "%0*lx", hexDigsLine, (*line).line);
-      782:  378:   sprintf(b, "%0*lx", hexDigsTag,  (*line).tag);
-      782:  379:   sprintf(c, "%0*lx", hexDigsSet,  (*line).set);
-      782:  380:   d=(*line).user_content;
-      782:  381:   f=(*line).valid;
-      782:  382:   g=(*line).dirty;
-      782:  383:   h=(*line).times_accessed;
-      782:  384:   j=(*line).last_accessed;
+     1158:  369:   int numLines=caches[level].size/caches[level].line_size;
+     1158:  370:   int lineSize=caches[level].line_size;
+     1158:  371:   int asociativity=caches[level].asociativity;
+     1158:  372:   int numsets=numLines/asociativity;
+     1158:  373:   int numWords=(caches[level].line_size*8)/cpu.word_width;
+     1158:  374:   int hexDigsSet=ceil(log(numsets)/log(16));
+     1158:  375:   int hexDigsLine=ceil(log(numLines)/log(16));
+     1158:  376:   int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
+     1158:  377:   sprintf(a, "%0*lx", hexDigsLine, (*line).line);
+     1158:  378:   sprintf(b, "%0*lx", hexDigsTag,  (*line).tag);
+     1158:  379:   sprintf(c, "%0*lx", hexDigsSet,  (*line).set);
+     1158:  380:   d=(*line).user_content;
+     1158:  381:   f=(*line).valid;
+     1158:  382:   g=(*line).dirty;
+     1158:  383:   h=(*line).times_accessed;
+     1158:  384:   j=(*line).last_accessed;
         -:  385:   char contentString[2000];
-      782:  386:   contentArrayToString((*line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
-      782:  387:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
+     1158:  386:   contentArrayToString((*line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
+     1158:  387:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
         -:  388:         &iter,
         -:  389:         iterstring);
-      782:  390:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
+     1158:  390:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
         -:  391:         LINE, &a,
         -:  392:         TAG, &b,
         -:  393:         SET, &c,
@@ -403,18 +403,18 @@
         -:  398:         TIMES_ACCESSED, h,
         -:  399:         LAST_ACCESSED, j,
         -:  400:         -1);
-      782:  401:}
+     1158:  401:}
         -:  402:/**
         -:  403: * This function writes a Instruction cache line.
         -:  404: * @param level which will be written
         -:  405: * @param line  A pointer to a struct cacheLine containing the data to be written.
         -:  406: * @param i line index
         -:  407: */
-      512:  408:void writeLineCacheInstructions(int level, struct cacheLine* line, int i){
-      512:  409:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
+      768:  408:void writeLineCacheInstructions(int level, struct cacheLine* line, int i){
+      768:  409:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
         -:  410:   GtkTreeIter iter;
         -:  411:   char iterstring[50];
-      512:  412:   sprintf(iterstring, "%d", i);	
+      768:  412:   sprintf(iterstring, "%d", i);	
         -:  413:   char a[100];
         -:  414:   char b[100];
         -:  415:   char c[100];
@@ -423,28 +423,28 @@
         -:  418:   int g;
         -:  419:   int h;
         -:  420:   int j;
-      512:  421:   int numLines=caches[level].size/caches[level].line_size;
-      512:  422:   int lineSize=caches[level].line_size;
-      512:  423:   int asociativity=caches[level].asociativity;
-      512:  424:   int numsets=numLines/asociativity;
-      512:  425:   int numWords=(caches[level].line_size*8)/cpu.word_width;
-      512:  426:   int hexDigsSet=ceil(log(numsets)/log(16));
-      512:  427:   int hexDigsLine=ceil(log(numLines)/log(16));
-      512:  428:   int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
-      512:  429:   sprintf(a, "%0*lx", hexDigsLine, (*line).line);
-      512:  430:   sprintf(b, "%0*lx", hexDigsTag,  (*line).tag);
-      512:  431:   sprintf(c, "%0*lx", hexDigsSet,  (*line).set);
-      512:  432:   d=(*line).user_content;
-      512:  433:   f=(*line).valid;
-      512:  434:   g=(*line).dirty;
-      512:  435:   h=(*line).times_accessed;
-      512:  436:   j=(*line).last_accessed;
+      768:  421:   int numLines=caches[level].size/caches[level].line_size;
+      768:  422:   int lineSize=caches[level].line_size;
+      768:  423:   int asociativity=caches[level].asociativity;
+      768:  424:   int numsets=numLines/asociativity;
+      768:  425:   int numWords=(caches[level].line_size*8)/cpu.word_width;
+      768:  426:   int hexDigsSet=ceil(log(numsets)/log(16));
+      768:  427:   int hexDigsLine=ceil(log(numLines)/log(16));
+      768:  428:   int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
+      768:  429:   sprintf(a, "%0*lx", hexDigsLine, (*line).line);
+      768:  430:   sprintf(b, "%0*lx", hexDigsTag,  (*line).tag);
+      768:  431:   sprintf(c, "%0*lx", hexDigsSet,  (*line).set);
+      768:  432:   d=(*line).user_content;
+      768:  433:   f=(*line).valid;
+      768:  434:   g=(*line).dirty;
+      768:  435:   h=(*line).times_accessed;
+      768:  436:   j=(*line).last_accessed;
         -:  437:   char contentString[2000];
-      512:  438:   contentArrayToString((*line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
-      512:  439:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
+      768:  438:   contentArrayToString((*line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
+      768:  439:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
         -:  440:         &iter,
         -:  441:         iterstring);
-      512:  442:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
+      768:  442:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
         -:  443:         LINE, &a,
         -:  444:         TAG, &b,
         -:  445:         SET, &c,
@@ -455,7 +455,7 @@
         -:  450:         TIMES_ACCESSED, h,
         -:  451:         LAST_ACCESSED, j,
         -:  452:         -1);
-      512:  453:}
+      768:  453:}
         -:  454:/**
         -:  455: * This function shows a memory position
         -:  456: * @param i memory address
@@ -517,108 +517,108 @@
         -:  512: * @param i memory address
         -:  513: * @return 0 if correct -1 if not word address error, -2 if out of page error
         -:  514: */
-        7:  515:int writePosicionMemory(struct memoryPosition *pos, int i){
-        7:  516:   GtkTreeModel *model= GTK_TREE_MODEL(modelMEMORY);
+        3:  515:int writePosicionMemory(struct memoryPosition *pos, int i){
+        3:  516:   GtkTreeModel *model= GTK_TREE_MODEL(modelMEMORY);
         -:  517:   GtkTreeIter iter;
         -:  518:   char iterstring[50];
         -:  519:   //if not word address return error
-        7:  520:   if(i%(cpu.word_width/8)!=0){
+        3:  520:   if(i%(cpu.word_width/8)!=0){
     #####:  521:      return -1;
         -:  522:   }
         -:  523:   //if out of page return error
-        7:  524:   if(i<memory.page_base_address || i>(memory.page_base_address+memory.page_size)){
+        3:  524:   if(i<memory.page_base_address || i>(memory.page_base_address+memory.page_size)){
     #####:  525:      return -2;
         -:  526:   }
         -:  527:   //get the table row from the memory address
-        7:  528:   i=(i-memory.page_base_address)/(cpu.word_width/8);   
-        7:  529:   sprintf(iterstring, "%d", i);	
+        3:  528:   i=(i-memory.page_base_address)/(cpu.word_width/8);   
+        3:  529:   sprintf(iterstring, "%d", i);	
         -:  530:   char a[100];
         -:  531:   char b[100];
-        7:  532:   void* c=NULL;
-        7:  533:   sprintf(a, "%0*lx", (int)cpu.address_width/4, (*pos).address);
-        7:  534:   sprintf(b, "%0*lx", (int)cpu.word_width/4, (*pos).content);
-        7:  535:   c=(*pos).user_content;
-        7:  536:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
+        3:  532:   void* c=NULL;
+        3:  533:   sprintf(a, "%0*lx", (int)cpu.address_width/4, (*pos).address);
+        3:  534:   sprintf(b, "%0*lx", (int)cpu.word_width/4, (*pos).content);
+        3:  535:   c=(*pos).user_content;
+        3:  536:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
         -:  537:         &iter,
         -:  538:         iterstring);
-        7:  539:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
+        3:  539:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
         -:  540:         ADDRESS, &a,
         -:  541:         CONTENT, &b,
         -:  542:         USER_CONTENT, c,
         -:  543:         -1);
-        7:  544:}
+        3:  544:}
         -:  545:/**
         -:  546: * This function colours a memory position
         -:  547: * @param i memory address
         -:  548: * @param color. This is an enum type. It tell the function which color to use.
         -:  549: */
-        7:  550:int setColorMemoryPosition(int i, int color){
-        7:  551:   GtkTreeModel *model= GTK_TREE_MODEL(modelMEMORY);
+        3:  550:int setColorMemoryPosition(int i, int color){
+        3:  551:   GtkTreeModel *model= GTK_TREE_MODEL(modelMEMORY);
         -:  552:   GtkTreeIter iter;
         -:  553:   char iterstring[50];
         -:  554:   //if not word address return error
-        7:  555:   if(i%(cpu.word_width/8)!=0){
+        3:  555:   if(i%(cpu.word_width/8)!=0){
     #####:  556:      return -1;
         -:  557:   }
         -:  558:   //if out of page return error
-        7:  559:   if(i<memory.page_base_address || i>(memory.page_base_address+memory.page_size)){
+        3:  559:   if(i<memory.page_base_address || i>(memory.page_base_address+memory.page_size)){
     #####:  560:      return -2;
         -:  561:   }
         -:  562:   //get the table row from the memory address
-        7:  563:   i=(i-memory.page_base_address)/(cpu.word_width/8);   
-        7:  564:   sprintf(iterstring, "%d", i);	
-        7:  565:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
+        3:  563:   i=(i-memory.page_base_address)/(cpu.word_width/8);   
+        3:  564:   sprintf(iterstring, "%d", i);	
+        3:  565:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
         -:  566:         &iter,
         -:  567:         iterstring);
-        7:  568:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
+        3:  568:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
         -:  569:         COLOR, colores[color],
         -:  570:         -1);
-        7:  571:}
+        3:  571:}
         -:  572:/**
         -:  573: * This function colours a data cache line
         -:  574: * @param level which will be coloured.
         -:  575: * @param i memory address
         -:  576: * @param color. This is an enum type. It tells the function which color to use.
         -:  577: */
-       14:  578:void setColorDataCacheLine(int level, int i, int color){
-       14:  579:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+        6:  578:void setColorDataCacheLine(int level, int i, int color){
+        6:  579:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
         -:  580:   GtkTreeIter iter;
         -:  581:   char iterstring[50];
-       14:  582:   sprintf(iterstring, "%d", i);	
-       14:  583:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
+        6:  582:   sprintf(iterstring, "%d", i);	
+        6:  583:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
         -:  584:         &iter,
         -:  585:         iterstring);
-       14:  586:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
+        6:  586:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
         -:  587:         COLOR_CACHE, colores[color],
         -:  588:         -1);
-       14:  589:}
+        6:  589:}
         -:  590:/**
         -:  591: * This function colours a data cache line
         -:  592: * @param level which will be coloured.
         -:  593: * @param i memory address
         -:  594: * @param color. This is an enum type. It tells the function which color to use.
         -:  595: */
-        7:  596:void setColorCacheLine(int level, int i, int color){
-        7:  597:   setColorDataCacheLine(level, i, color);
-        7:  598:}
+        3:  596:void setColorCacheLine(int level, int i, int color){
+        3:  597:   setColorDataCacheLine(level, i, color);
+        3:  598:}
         -:  599:/**
         -:  600: * This function colours a Instruction cache line
         -:  601: * @param level which will be coloured.
         -:  602: * @param i memory address
         -:  603: * @param color. This is an enum type. It tells the function which color to use.
         -:  604: */
-        7:  605:void setColorInstructionsCacheLine(int level, int i, int color){
-        7:  606:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
+        3:  605:void setColorInstructionsCacheLine(int level, int i, int color){
+        3:  606:   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
         -:  607:   GtkTreeIter iter;
         -:  608:   char iterstring[50];
-        7:  609:   sprintf(iterstring, "%d", i);	
-        7:  610:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
+        3:  609:   sprintf(iterstring, "%d", i);	
+        3:  610:   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
         -:  611:         &iter,
         -:  612:         iterstring);
-        7:  613:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
+        3:  613:   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
         -:  614:         COLOR_CACHE, colores[color],
         -:  615:         -1);
-        7:  616:}
+        3:  616:}
         -:  617:/**
         -:  618: * This function sets a memory word position to its initial value
         -:  619: * @param positionIndex to reset
@@ -635,121 +635,121 @@
         -:  630: * @param level to be written
         -:  631: * @param line to be written
         -:  632: */
-      256:  633:void writeBlankCacheLine(int level, long line){
-      256:  634:   writeBlankDataCacheLine(level, line);
-      256:  635:}
+      384:  633:void writeBlankCacheLine(int level, long line){
+      384:  634:   writeBlankDataCacheLine(level, line);
+      384:  635:}
         -:  636:/**
         -:  637: * This function sets a data cache line to its initial value
         -:  638: * @param level to be written
         -:  639: * @param line to be written
         -:  640: */
-      768:  641:void writeBlankDataCacheLine(int level, long line){
-      768:  642:   int numLines=caches[level].size/caches[level].line_size;
-      768:  643:   int asociativity=caches[level].asociativity;
-      768:  644:   int numsets=numLines/asociativity;
-      768:  645:   int numWords=(caches[level].line_size*8)/cpu.word_width;
-      768:  646:   if(caches[level].separated){
-      512:  647:      numLines/=2;
+     1152:  641:void writeBlankDataCacheLine(int level, long line){
+     1152:  642:   int numLines=caches[level].size/caches[level].line_size;
+     1152:  643:   int asociativity=caches[level].asociativity;
+     1152:  644:   int numsets=numLines/asociativity;
+     1152:  645:   int numWords=(caches[level].line_size*8)/cpu.word_width;
+     1152:  646:   if(caches[level].separated){
+      768:  647:      numLines/=2;
         -:  648:   }
         -:  649:   struct cacheLine cacheLineAdd;
-      768:  650:   cacheLineAdd.line=line;
-      768:  651:   cacheLineAdd.set=line/asociativity;
-      768:  652:   cacheLineAdd.tag=0;
-      768:  653:   cacheLineAdd.dirty=0;
-      768:  654:   cacheLineAdd.valid=0;
-      768:  655:   cacheLineAdd.last_accessed=0;
-      768:  656:   cacheLineAdd.times_accessed=0;
-      768:  657:   long lineContent[numWords];
-    13056:  658:   for(int i=0; i<numWords; i++){
-    12288:  659:      lineContent[i]=0;	
+     1152:  650:   cacheLineAdd.line=line;
+     1152:  651:   cacheLineAdd.set=line/asociativity;
+     1152:  652:   cacheLineAdd.tag=0;
+     1152:  653:   cacheLineAdd.dirty=0;
+     1152:  654:   cacheLineAdd.valid=0;
+     1152:  655:   cacheLineAdd.last_accessed=0;
+     1152:  656:   cacheLineAdd.times_accessed=0;
+     1152:  657:   long lineContent[numWords];
+    19584:  658:   for(int i=0; i<numWords; i++){
+    18432:  659:      lineContent[i]=0;	
         -:  660:   }
-      768:  661:   cacheLineAdd.content=lineContent;
-      768:  662:   cacheLineAdd.user_content=NULL;
-      768:  663:   writeLineCacheData(level, &cacheLineAdd, line);
-      768:  664:}
+     1152:  661:   cacheLineAdd.content=lineContent;
+     1152:  662:   cacheLineAdd.user_content=NULL;
+     1152:  663:   writeLineCacheData(level, &cacheLineAdd, line);
+     1152:  664:}
         -:  665:/**
         -:  666: * This function sets a Instruction cache line to its initial value
         -:  667: * @param level to be written
         -:  668: * @param line to be written
         -:  669: */
-      512:  670:void writeBlankInstructionCacheLine(int level, long line){
-      512:  671:   int numLines=caches[level].size/caches[level].line_size;
-      512:  672:   int asociativity=caches[level].asociativity;
-      512:  673:   int numsets=numLines/asociativity;
-      512:  674:   int numWords=(caches[level].line_size*8)/cpu.word_width;
-      512:  675:   if(caches[level].separated){
-      512:  676:      numLines/=2;
+      768:  670:void writeBlankInstructionCacheLine(int level, long line){
+      768:  671:   int numLines=caches[level].size/caches[level].line_size;
+      768:  672:   int asociativity=caches[level].asociativity;
+      768:  673:   int numsets=numLines/asociativity;
+      768:  674:   int numWords=(caches[level].line_size*8)/cpu.word_width;
+      768:  675:   if(caches[level].separated){
+      768:  676:      numLines/=2;
         -:  677:   }
         -:  678:   struct cacheLine cacheLineAdd;
-      512:  679:   cacheLineAdd.line=line;
-      512:  680:   cacheLineAdd.set=line/asociativity;
-      512:  681:   cacheLineAdd.tag=0;
-      512:  682:   cacheLineAdd.dirty=0;
-      512:  683:   cacheLineAdd.valid=0;
-      512:  684:   cacheLineAdd.last_accessed=0;
-      512:  685:   cacheLineAdd.times_accessed=0;
-      512:  686:   long lineContent[numWords];
-     8704:  687:   for(int i=0; i<numWords; i++){
-     8192:  688:      lineContent[i]=0;	
+      768:  679:   cacheLineAdd.line=line;
+      768:  680:   cacheLineAdd.set=line/asociativity;
+      768:  681:   cacheLineAdd.tag=0;
+      768:  682:   cacheLineAdd.dirty=0;
+      768:  683:   cacheLineAdd.valid=0;
+      768:  684:   cacheLineAdd.last_accessed=0;
+      768:  685:   cacheLineAdd.times_accessed=0;
+      768:  686:   long lineContent[numWords];
+    13056:  687:   for(int i=0; i<numWords; i++){
+    12288:  688:      lineContent[i]=0;	
         -:  689:   }
-      512:  690:   cacheLineAdd.content=lineContent;
-      512:  691:   cacheLineAdd.user_content=NULL;
-      512:  692:   writeLineCacheInstructions(level, &cacheLineAdd, line);
-      512:  693:}
+      768:  690:   cacheLineAdd.content=lineContent;
+      768:  691:   cacheLineAdd.user_content=NULL;
+      768:  692:   writeLineCacheInstructions(level, &cacheLineAdd, line);
+      768:  693:}
         -:  694:/**
         -:  695: * This function is used to add a property or value to the simulation statistics panel
         -:  696: * @param component String containig the name of the componet
         -:  697: * @param property String containig the name of the component's property
         -:  698: * @param value String containing the value which that property will be setted to.
         -:  699: */
-       28:  700:void setStatistics(char* component, char* property, char* value){
-       28:  701:   GtkTreeModel *tree_model=estatistics_model;
+       12:  700:void setStatistics(char* component, char* property, char* value){
+       12:  701:   GtkTreeModel *tree_model=estatistics_model;
         -:  702:   GtkTreeIter iter;
-       28:  703:   int isntEmpty=gtk_tree_model_get_iter_first (tree_model, &iter);
-       28:  704:   int hasNext=1;
-       28:  705:   int componentExists=0;
+       12:  703:   int isntEmpty=gtk_tree_model_get_iter_first (tree_model, &iter);
+       12:  704:   int hasNext=1;
+       12:  705:   int componentExists=0;
         -:  706:   //Search for the memory hierarchy componet
-      140:  707:   while(hasNext&&isntEmpty){
+       60:  707:   while(hasNext&&isntEmpty){
         -:  708:      char *name;
-      108:  709:      gtk_tree_model_get (tree_model, &iter,
+       42:  709:      gtk_tree_model_get (tree_model, &iter,
         -:  710:            COMPONET_OR_PROPERTY, &name, -1);
         -:  711:      //found
-      108:  712:      if(!strcmp(component, name)){
-       24:  713:         componentExists=1;
-       24:  714:         break;
+       42:  712:      if(!strcmp(component, name)){
+        6:  713:         componentExists=1;
+        6:  714:         break;
         -:  715:      }
-       84:  716:      hasNext=gtk_tree_model_iter_next (tree_model, &iter);
+       36:  716:      hasNext=gtk_tree_model_iter_next (tree_model, &iter);
         -:  717:   }
         -:  718:   //If the componet exists I search for the property
-       28:  719:   if(componentExists){
+       12:  719:   if(componentExists){
         -:  720:      GtkTreeIter child;
-       24:  721:      int hasChildren=gtk_tree_model_iter_children (tree_model,
+        6:  721:      int hasChildren=gtk_tree_model_iter_children (tree_model,
         -:  722:            &child,
         -:  723:            &iter);
-       24:  724:      int hasNext=1;
-       24:  725:      int propertyExists=0;
+        6:  724:      int hasNext=1;
+        6:  725:      int propertyExists=0;
         -:  726:      //Search for the componets property
-       62:  727:      while(hasNext&&hasChildren){
+       18:  727:      while(hasNext&&hasChildren){
         -:  728:         char *name;
-       36:  729:         gtk_tree_model_get (tree_model, &child,
+        9:  729:         gtk_tree_model_get (tree_model, &child,
         -:  730:               COMPONET_OR_PROPERTY, &name, -1);
         -:  731:         //found
-       36:  732:         if(!strcmp(property, name)){
-       22:  733:            propertyExists=1;
-       22:  734:            break;
+        9:  732:         if(!strcmp(property, name)){
+        3:  733:            propertyExists=1;
+        3:  734:            break;
         -:  735:         }
-       14:  736:         hasNext=gtk_tree_model_iter_next (tree_model, &child);
+        6:  736:         hasNext=gtk_tree_model_iter_next (tree_model, &child);
         -:  737:      }
         -:  738:      //If the componet's property exists I set the value
-       24:  739:      if(propertyExists){
-       22:  740:         gtk_tree_store_set(GTK_TREE_STORE(tree_model), &child,
+        6:  739:      if(propertyExists){
+        3:  740:         gtk_tree_store_set(GTK_TREE_STORE(tree_model), &child,
         -:  741:               //COMPONET_OR_PROPERTY, "probando",
         -:  742:               VALUE, value,
         -:  743:               -1);
         -:  744:         //If the componet's property doesn't exist I add the property and set the value
         -:  745:      }else{
-        2:  746:         gtk_tree_store_append(GTK_TREE_STORE(tree_model), &child, &iter);
-        2:  747:         gtk_tree_store_set(GTK_TREE_STORE(tree_model), &child,
+        3:  746:         gtk_tree_store_append(GTK_TREE_STORE(tree_model), &child, &iter);
+        3:  747:         gtk_tree_store_set(GTK_TREE_STORE(tree_model), &child,
         -:  748:               COMPONET_OR_PROPERTY, property,
         -:  749:               VALUE, value,
         -:  750:               -1);
@@ -757,74 +757,74 @@
         -:  752:      //If the componet doesn't exist I create the componet and the property and I set the value
         -:  753:   }else{
         -:  754:      GtkTreeIter child;
-        4:  755:      gtk_tree_store_append(GTK_TREE_STORE(tree_model), &iter, NULL);
-        4:  756:      gtk_tree_store_set(GTK_TREE_STORE(tree_model), &iter,
+        6:  755:      gtk_tree_store_append(GTK_TREE_STORE(tree_model), &iter, NULL);
+        6:  756:      gtk_tree_store_set(GTK_TREE_STORE(tree_model), &iter,
         -:  757:            COMPONET_OR_PROPERTY, component,
         -:  758:            -1);
-        4:  759:      gtk_tree_model_iter_children (tree_model,
+        6:  759:      gtk_tree_model_iter_children (tree_model,
         -:  760:            &child,
         -:  761:            &iter);
-        4:  762:      gtk_tree_store_append(GTK_TREE_STORE(tree_model), &child, &iter);
-        4:  763:      gtk_tree_store_set(GTK_TREE_STORE(tree_model), &child,
+        6:  762:      gtk_tree_store_append(GTK_TREE_STORE(tree_model), &child, &iter);
+        6:  763:      gtk_tree_store_set(GTK_TREE_STORE(tree_model), &child,
         -:  764:            COMPONET_OR_PROPERTY, property,
         -:  765:            VALUE, value,
         -:  766:            -1);
         -:  767:   }
-       28:  768:}
+       12:  768:}
         -:  769:/**
         -:  770: * This function is used to read a value from the simulation statistics panel
         -:  771: * @param component String containig the name of the componet
         -:  772: * @param property String containig the name of the component's property
         -:  773: * @return String containing th value
         -:  774: */
-       28:  775:char* getStatistics(char* component, char* property){
-       28:  776:   GtkTreeModel *tree_model=estatistics_model;
+       12:  775:char* getStatistics(char* component, char* property){
+       12:  776:   GtkTreeModel *tree_model=estatistics_model;
         -:  777:   GtkTreeIter iter;
-       28:  778:   gtk_tree_model_get_iter_first (tree_model, &iter);
-       28:  779:   int hasNext=1;
-       28:  780:   int componentExists=0;
+       12:  778:   gtk_tree_model_get_iter_first (tree_model, &iter);
+       12:  779:   int hasNext=1;
+       12:  780:   int componentExists=0;
         -:  781:   //Search for the memory hierarchy componet
-      182:  782:   while(hasNext){
+       78:  782:   while(hasNext){
         -:  783:      char *name;
-      147:  784:      gtk_tree_model_get (tree_model, &iter,
+       63:  784:      gtk_tree_model_get (tree_model, &iter,
         -:  785:            COMPONET_OR_PROPERTY, &name, -1);
         -:  786:      //found
-      147:  787:      if(!strcmp(component, name)){
-       21:  788:         componentExists=1;
-       21:  789:         break;
+       63:  787:      if(!strcmp(component, name)){
+        9:  788:         componentExists=1;
+        9:  789:         break;
         -:  790:      }
-      126:  791:      hasNext=gtk_tree_model_iter_next (tree_model, &iter);
+       54:  791:      hasNext=gtk_tree_model_iter_next (tree_model, &iter);
         -:  792:   }
         -:  793:   //If the componet exists I search for the property
-       28:  794:   if(componentExists){
+       12:  794:   if(componentExists){
         -:  795:      GtkTreeIter child;
-       21:  796:      gtk_tree_model_iter_children (tree_model,
+        9:  796:      gtk_tree_model_iter_children (tree_model,
         -:  797:            &child,
         -:  798:            &iter);
-       21:  799:      int hasNext=1;
-       21:  800:      int propertyExists=0;
+        9:  799:      int hasNext=1;
+        9:  800:      int propertyExists=0;
         -:  801:      //Search for the componet's property
-       63:  802:      while(hasNext){
+       27:  802:      while(hasNext){
         -:  803:         char *name;
-       35:  804:         gtk_tree_model_get (tree_model, &child,
+       15:  804:         gtk_tree_model_get (tree_model, &child,
         -:  805:               COMPONET_OR_PROPERTY, &name, -1);
         -:  806:         //found
-       35:  807:         if(!strcmp(property, name)){
-       14:  808:            propertyExists=1;
-       14:  809:            break;
+       15:  807:         if(!strcmp(property, name)){
+        6:  808:            propertyExists=1;
+        6:  809:            break;
         -:  810:         }
-       21:  811:         hasNext=gtk_tree_model_iter_next (tree_model, &child);
+        9:  811:         hasNext=gtk_tree_model_iter_next (tree_model, &child);
         -:  812:      }
         -:  813:      //If the componet's property exists I get the value
-       21:  814:      if(propertyExists){
+        9:  814:      if(propertyExists){
         -:  815:         char* value;
-       14:  816:         gtk_tree_model_get(GTK_TREE_MODEL(tree_model), &child,
+        6:  816:         gtk_tree_model_get(GTK_TREE_MODEL(tree_model), &child,
         -:  817:               //COMPONET_OR_PROPERTY, "probando",
         -:  818:               VALUE, &value,
         -:  819:               -1);
-       14:  820:         return value;
+        6:  820:         return value;
         -:  821:      }
         -:  822:   }
         -:  823:   //If the componet or the property don't exist I create the componet and the property and I set the value return param to NULL
-       14:  824:   return NULL;
+        6:  824:   return NULL;
         -:  825:}

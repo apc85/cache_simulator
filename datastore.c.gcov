@@ -1,7 +1,7 @@
         -:    0:Source:datastore.c
         -:    0:Graph:datastore.gcno
         -:    0:Data:datastore.gcda
-        -:    0:Runs:7
+        -:    0:Runs:17
         -:    0:Programs:1
         -:    1:#include <ctype.h>
         -:    2:
@@ -14,34 +14,34 @@
         -:    9: * Funcntion that creates the data structures for memory data storage.
         -:   10: *
         -:   11: */
-        4:   12:void createMemoryModel(){
-        4:   13:   modelMEMORY = gtk_list_store_new(N_COLUMNS,
+        6:   12:void createMemoryModel(){
+        6:   13:   modelMEMORY = gtk_list_store_new(N_COLUMNS,
         -:   14:         G_TYPE_STRING,   /* ADDRESS */
         -:   15:         G_TYPE_STRING,    /* CONTENT */
         -:   16:         G_TYPE_STRING,   /* COLOR */
         -:   17:         G_TYPE_POINTER
         -:   18:         );
-        4:   19:   int numWords=memory.size/(cpu.word_width/8);
-     2052:   20:   for(int i=memory.page_base_address; i<memory.page_base_address+memory.page_size; i+=(cpu.word_width/8)){
-     2048:   21:      gtk_list_store_append(modelMEMORY, &iter);
+        6:   19:   int numWords=memory.size/(cpu.word_width/8);
+     3078:   20:   for(int i=memory.page_base_address; i<memory.page_base_address+memory.page_size; i+=(cpu.word_width/8)){
+     3072:   21:      gtk_list_store_append(modelMEMORY, &iter);
         -:   22:      char address[50];
         -:   23:      char content[50];
-     2048:   24:      sprintf(address, "%0*x", (int)cpu.address_width/4, i);
-     2048:   25:      sprintf(content, "%0*x", (int)cpu.word_width/4, 0);
+     3072:   24:      sprintf(address, "%0*x", (int)cpu.address_width/4, i);
+     3072:   25:      sprintf(content, "%0*x", (int)cpu.word_width/4, 0);
         -:   26:      /* Fill fields with some data */
-     2048:   27:      gtk_list_store_set (modelMEMORY, &iter,
+     3072:   27:      gtk_list_store_set (modelMEMORY, &iter,
         -:   28:            CONTENT, content,
         -:   29:            ADDRESS, address,
         -:   30:            //COLOR, "blue",
         -:   31:            -1);
         -:   32:   }
-        4:   33:}
+        6:   33:}
         -:   34:
         -:   35:/**
         -:   36: * Function that creates the data structures for a cache level.
         -:   37: * @level whose data structure will be created.
         -:   38: */
-        8:   39:void createCacheModel(int level){
+       12:   39:void createCacheModel(int level){
         -:   40:   //Creo la cache. en caso de que sea dividia esta será la parte de data
         -:   41:   GtkTreeIter   iter;
         -:   42:   GtkTreeIter   iterInstruction;
@@ -61,7 +61,7 @@
         -:   56:      USER_CONTENT_CACHE=9,
         -:   57:      N_COLUMNS_CACHE=10
         -:   58:    */
-        8:   59:   modelData= gtk_list_store_new(N_COLUMNS_CACHE,
+       12:   59:   modelData= gtk_list_store_new(N_COLUMNS_CACHE,
         -:   60:         G_TYPE_STRING,   
         -:   61:         G_TYPE_STRING,   
         -:   62:         G_TYPE_UINT,   
@@ -73,9 +73,9 @@
         -:   68:         G_TYPE_STRING,
         -:   69:         G_TYPE_POINTER
         -:   70:         );
-        8:   71:   cacheLevels[level].modelData=modelData;
-        8:   72:   if(caches[level].separated){
-        4:   73:      modelInstruction= gtk_list_store_new(N_COLUMNS_CACHE,
+       12:   71:   cacheLevels[level].modelData=modelData;
+       12:   72:   if(caches[level].separated){
+        6:   73:      modelInstruction= gtk_list_store_new(N_COLUMNS_CACHE,
         -:   74:            G_TYPE_STRING,   
         -:   75:            G_TYPE_STRING,   
         -:   76:            G_TYPE_UINT,   
@@ -87,106 +87,106 @@
         -:   82:            G_TYPE_STRING,
         -:   83:            G_TYPE_POINTER
         -:   84:            );
-        4:   85:      cacheLevels[level].modelInstruction=modelInstruction;
+        6:   85:      cacheLevels[level].modelInstruction=modelInstruction;
         -:   86:   }
         -:   87:   //modelMEMORY=modelData;	
-        8:   88:   int numLines=caches[level].size/caches[level].line_size;
-        8:   89:   int asociativity=caches[level].asociativity;
-        8:   90:   int numsets=numLines/asociativity;
-        8:   91:   int numWords=(caches[level].line_size*8)/cpu.word_width;
-        8:   92:   if(caches[level].separated){
-        4:   93:      numLines/=2;
+       12:   88:   int numLines=caches[level].size/caches[level].line_size;
+       12:   89:   int asociativity=caches[level].asociativity;
+       12:   90:   int numsets=numLines/asociativity;
+       12:   91:   int numWords=(caches[level].line_size*8)/cpu.word_width;
+       12:   92:   if(caches[level].separated){
+        6:   93:      numLines/=2;
         -:   94:   }
         -:   95:#if DEBUG
-        8:   96:   fprintf(stderr,"cache level %d: lines: %d, asociativity: %d, sets: %d, words line: %d\n", level+1, numLines, asociativity, numsets, numWords);
+       12:   96:   fprintf(stderr,"cache level %d: lines: %d, asociativity: %d, sets: %d, words line: %d\n", level+1, numLines, asociativity, numsets, numWords);
         -:   97:#endif
-      776:   98:   for(int i=0; i<numLines; i++){
-      768:   99:      gtk_list_store_append(modelData, &iter);
-      768:  100:      if(caches[level].separated){ 
-      512:  101:         gtk_list_store_append(modelInstruction, &iterInstruction);
+     1164:   98:   for(int i=0; i<numLines; i++){
+     1152:   99:      gtk_list_store_append(modelData, &iter);
+     1152:  100:      if(caches[level].separated){ 
+      768:  101:         gtk_list_store_append(modelInstruction, &iterInstruction);
         -:  102:      }
-      768:  103:      if(caches[level].separated){
-      512:  104:         writeBlankDataCacheLine(level, i);
-      512:  105:         writeBlankInstructionCacheLine(level, i);
+     1152:  103:      if(caches[level].separated){
+      768:  104:         writeBlankDataCacheLine(level, i);
+      768:  105:         writeBlankInstructionCacheLine(level, i);
         -:  106:      }else{
-      256:  107:         writeBlankCacheLine(level, i);
+      384:  107:         writeBlankCacheLine(level, i);
         -:  108:      }
         -:  109:   }
-        8:  110:}
+       12:  110:}
         -:  111:
         -:  112:/**
         -:  113: * Function that generates all data structures for the program.
         -:  114: *
         -:  115: */
-        4:  116:void generateDataStorage(){
-        4:  117:   createMemoryModel();
-       12:  118:   for(int i=0; i< numberCaches; i++){
-        8:  119:      createCacheModel(i);
+        6:  116:void generateDataStorage(){
+        6:  117:   createMemoryModel();
+       18:  118:   for(int i=0; i< numberCaches; i++){
+       12:  119:      createCacheModel(i);
         -:  120:   }
-        4:  121:   create_model_statistics();
-        4:  122:}
+        6:  121:   create_model_statistics();
+        6:  122:}
         -:  123:
         -:  124:/**
         -:  125: * Function that inserts text into the buffer.
         -:  126: * @param text to be inserted.
         -:  127: * @param buffer in which th etext will be inserted.
         -:  128: */
-       64:  129:void insertTextInBuffer(char* text, GtkTextBuffer *buffer){
+       96:  129:void insertTextInBuffer(char* text, GtkTextBuffer *buffer){
         -:  130:   GtkTextMark *mark;
         -:  131:   GtkTextIter iter;
-       64:  132:   mark = gtk_text_buffer_get_insert (buffer);
-       64:  133:   gtk_text_buffer_get_iter_at_mark (buffer, &iter, mark);
-       64:  134:   gtk_text_buffer_insert (buffer, &iter, text, -1);
-       64:  135:}
+       96:  132:   mark = gtk_text_buffer_get_insert (buffer);
+       96:  133:   gtk_text_buffer_get_iter_at_mark (buffer, &iter, mark);
+       96:  134:   gtk_text_buffer_insert (buffer, &iter, text, -1);
+       96:  135:}
         -:  136:
         -:  137:/**
         -:  138: * Function that creates the data structure for simulation statistics.
         -:  139: */
-        4:  140:GtkTreeModel *create_model_statistics(void){
+        6:  140:GtkTreeModel *create_model_statistics(void){
         -:  141:   GtkTreeIter    toplevel, child;
-        4:  142:   GtkTreeModel *model = GTK_TREE_MODEL(gtk_tree_store_new(NUM_COLS,
+        6:  142:   GtkTreeModel *model = GTK_TREE_MODEL(gtk_tree_store_new(NUM_COLS,
         -:  143:            G_TYPE_STRING,
         -:  144:            G_TYPE_STRING,
         -:  145:            G_TYPE_STRING));
         -:  146:   /* Append a top level row and leave it empty */
-        4:  147:   gtk_tree_store_append(GTK_TREE_STORE(model), &toplevel, NULL);
-        4:  148:   gtk_tree_store_set(GTK_TREE_STORE(model), &toplevel,
+        6:  147:   gtk_tree_store_append(GTK_TREE_STORE(model), &toplevel, NULL);
+        6:  148:   gtk_tree_store_set(GTK_TREE_STORE(model), &toplevel,
         -:  149:         COMPONET_OR_PROPERTY, "CPU",
         -:  150:         -1);
         -:  151:   /* Append a second top level row, and fill it with some data */
-        4:  152:   gtk_tree_store_append(GTK_TREE_STORE(model), &toplevel, NULL);
-        4:  153:   gtk_tree_store_set(GTK_TREE_STORE(model), &toplevel,
+        6:  152:   gtk_tree_store_append(GTK_TREE_STORE(model), &toplevel, NULL);
+        6:  153:   gtk_tree_store_set(GTK_TREE_STORE(model), &toplevel,
         -:  154:         COMPONET_OR_PROPERTY, "Memory",
         -:  155:         -1);
-       12:  156:   for(int i=0; i<numberCaches; i++){
+       18:  156:   for(int i=0; i<numberCaches; i++){
         -:  157:      char currentCache[100];
-        8:  158:      sprintf(currentCache, "Cache L%d", i+1);
-        8:  159:      gtk_tree_store_append(GTK_TREE_STORE(model), &toplevel, NULL);
-        8:  160:      gtk_tree_store_set(GTK_TREE_STORE(model), &toplevel,
+       12:  158:      sprintf(currentCache, "Cache L%d", i+1);
+       12:  159:      gtk_tree_store_append(GTK_TREE_STORE(model), &toplevel, NULL);
+       12:  160:      gtk_tree_store_set(GTK_TREE_STORE(model), &toplevel,
         -:  161:            COMPONET_OR_PROPERTY, currentCache,
         -:  162:            -1);
         -:  163:      /* Append a child to the second top level row, and fill in some data */
-        8:  164:      gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
-        8:  165:      gtk_tree_store_set(GTK_TREE_STORE(model), &child,
+       12:  164:      gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
+       12:  165:      gtk_tree_store_set(GTK_TREE_STORE(model), &child,
         -:  166:            COMPONET_OR_PROPERTY, "Faults",
         -:  167:            VALUE, "",
         -:  168:            -1);
-        8:  169:      gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
-        8:  170:      gtk_tree_store_set(GTK_TREE_STORE(model), &child,
+       12:  169:      gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
+       12:  170:      gtk_tree_store_set(GTK_TREE_STORE(model), &child,
         -:  171:            COMPONET_OR_PROPERTY, "Hits",
         -:  172:            VALUE, "",
         -:  173:            -1);
-        8:  174:      gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
-        8:  175:      gtk_tree_store_set(GTK_TREE_STORE(model), &child,
+       12:  174:      gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
+       12:  175:      gtk_tree_store_set(GTK_TREE_STORE(model), &child,
         -:  176:            COMPONET_OR_PROPERTY, "Fault rate",
         -:  177:            VALUE, "",
         -:  178:            -1);
-        8:  179:      gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
-        8:  180:      gtk_tree_store_set(GTK_TREE_STORE(model), &child,
+       12:  179:      gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
+       12:  180:      gtk_tree_store_set(GTK_TREE_STORE(model), &child,
         -:  181:            COMPONET_OR_PROPERTY, "Hit rate",
         -:  182:            VALUE, "",
         -:  183:            -1);
         -:  184:   }
-        4:  185:   estatistics_model= model;
-        4:  186:   return GTK_TREE_MODEL(model);
+        6:  185:   estatistics_model= model;
+        6:  186:   return GTK_TREE_MODEL(model);
         -:  187:}

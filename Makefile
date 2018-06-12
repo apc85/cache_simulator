@@ -13,5 +13,5 @@ cache_simulator: mainprogram.c ${MODULES}
 
 clean:
 	rm -fr *~
-	rm *.gcno
-	rm *.gcda
+	rm *.g*
+

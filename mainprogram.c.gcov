@@ -1,7 +1,7 @@
         -:    0:Source:mainprogram.c
         -:    0:Graph:mainprogram.gcno
         -:    0:Data:mainprogram.gcda
-        -:    0:Runs:7
+        -:    0:Runs:17
         -:    0:Programs:1
         -:    1:#include <stdio.h>
         -:    2:#include <ctype.h>
@@ -32,17 +32,17 @@
         -:   27:      "\n", PROGRAM_NAME);
     #####:   28:}
         -:   29:
-        7:   30:int main(int argc, char *argv[]) {
+       17:   30:int main(int argc, char *argv[]) {
         -:   31:   int c;
         -:   32:
         -:   33:   // Parse command line arguments
-        7:   34:   opterr = 0;
-       16:   35:   while ((c = getopt (argc, argv, "vhg")) != -1)
-        2:   36:    switch (c)
+       17:   34:   opterr = 0;
+       39:   35:   while ((c = getopt (argc, argv, "vhg")) != -1)
+        5:   36:    switch (c)
         -:   37:      {
         -:   38:      case 'g':
-        2:   39:         useGUI = !useGUI;
-        2:   40:        break;
+        5:   39:         useGUI = !useGUI;
+        5:   40:        break;
         -:   41:      case 'v':
     #####:   42:        printf("%s version %s\n",PROGRAM_NAME,VERSION);
     #####:   43:        return 0;
@@ -65,50 +65,50 @@
         -:   60:    //printf("\npunto 1\n");
         -:   61:
         -:   62:    // Check that there is at leas one configuration file 
-        7:   63:    if(optind == argc) {
-        1:   64:       fprintf (stderr, "Must supply a <file>.ini on the command line.\n");
-        1:   65:       return 1;
+       17:   63:    if(optind == argc) {
+        3:   64:       fprintf (stderr, "Must supply a <file>.ini on the command line.\n");
+        3:   65:       return 1;
         -:   66:    }
         -:   67:
         -:   68:    //printf("\npunto 2\n");
         -:   69:
         -:   70:    // Read configuration file
         -:   71:    dictionary *ini;
-        6:   72:    if((ini = readConfigurationFile(argv[optind])) == NULL) {
-        2:   73:       return 1;
+       14:   72:    if((ini = readConfigurationFile(argv[optind])) == NULL) {
+        8:   73:       return 1;
         -:   74:    }
         -:   75:
         -:   76:    //printf("\npunto 3\n");
         -:   77:
         -:   78:    // Parse read configuration and populate global configuration variables.
-        4:   79:    if(parseConfiguration(ini) != 0) {
+        6:   79:    if(parseConfiguration(ini) != 0) {
     #####:   80:       return 1;
         -:   81:    }
         -:   82: 
         -:   83:    //printf("\npunto 4\n");
         -:   84:
         -:   85:    // Load trace file specified in the configuration file
-        4:   86:    if(readTraceFile((char *)cpu.trace_file) != 0) {
+        6:   86:    if(readTraceFile((char *)cpu.trace_file) != 0) {
     #####:   87:       return 1;
         -:   88:    }
         -:   89:
         -:   90:    //printf("\npunto 5\n");
         -:   91:
         -:   92:    // Create simulator data structures
-        4:   93:    generateDataStorage();
+        6:   93:    generateDataStorage();
         -:   94:
         -:   95:    // Start GUI...
-        4:   96:    if(useGUI) {
-        2:   97:       generateGUI(argc, argv);
+        6:   96:    if(useGUI) {
+        3:   97:       generateGUI(argc, argv);
         -:   98:    // ... or run batch simulation
         -:   99:    } else {
-        2:  100:       simulate();
+        3:  100:       simulate();
         -:  101:    }
         -:  102:
         -:  103:    //printf("\npunto 6\n");
         -:  104:
         -:  105:    // Free memory allocated by readTraceFile()
-        4:  106:    freeMemory();
+        6:  106:    freeMemory();
         -:  107:
-        4:  108:    return 0;
+        6:  108:    return 0;
         -:  109:}

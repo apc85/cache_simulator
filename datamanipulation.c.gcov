@@ -1,7 +1,7 @@
         -:    0:Source:datamanipulation.c
         -:    0:Graph:datamanipulation.gcno
         -:    0:Data:datamanipulation.gcda
-        -:    0:Runs:7
+        -:    0:Runs:17
         -:    0:Programs:1
         -:    1:﻿#include <stdio.h>
         -:    2:#include <string.h>
@@ -16,39 +16,39 @@
         -:   11: * @param  String to be converted into long
         -:   12: * @return long with converted value or error. -1 for wrong value error. -2 for null pointer error.
         -:   13: */
-        4:   14:long parseLongK1000(const char * cadena) {
+        6:   14:long parseLongK1000(const char * cadena) {
         -:   15:
-        4:   16:    if(cadena==NULL) {
+        6:   16:    if(cadena==NULL) {
     #####:   17:        return -2;
         -:   18:    }
         -:   19:    // Obtain the multiplier k, M, or G. Else error
-        4:   20:    long len=strlen(cadena);
-        4:   21:    long multiplicador=1;
-        4:   22:    if(cadena[len-1]=='K'||cadena[len-1]=='k') {
+        6:   20:    long len=strlen(cadena);
+        6:   21:    long multiplicador=1;
+        6:   22:    if(cadena[len-1]=='K'||cadena[len-1]=='k') {
     #####:   23:        multiplicador=1000;
-        4:   24:    } else if(cadena[len-1]=='M'||cadena[len-1]=='m') {
+        6:   24:    } else if(cadena[len-1]=='M'||cadena[len-1]=='m') {
     #####:   25:        multiplicador=1000000;
-        4:   26:    } else if(cadena[len-1]=='G'||cadena[len-1]=='g') {
-        4:   27:        multiplicador=1000000000;
+        6:   26:    } else if(cadena[len-1]=='G'||cadena[len-1]=='g') {
+        6:   27:        multiplicador=1000000000;
     #####:   28:    } else if(cadena[len-1]>'9'||cadena[len-1]<'0') {
     #####:   29:        return -1;
         -:   30:
         -:   31:    }
         -:   32:
         -:   33:    // if something not numeric or multiplier. error return -1
-        8:   34:    for(long i=0; i<len-1; i++) {
+       12:   34:    for(long i=0; i<len-1; i++) {
         -:   35:
-        4:   36:        if(cadena[i]>'9'||cadena[i]<'0') {
+        6:   36:        if(cadena[i]>'9'||cadena[i]<'0') {
     #####:   37:            return -1;
         -:   38:        }
         -:   39:    }
         -:   40:
-        4:   41:    if(len==1){
+        6:   41:    if(len==1){
     #####:   42:         return multiplicador;
         -:   43:
         -:   44:    }
         -:   45:
-        4:   46:    return atoi(cadena)*multiplicador;
+        6:   46:    return atoi(cadena)*multiplicador;
         -:   47:}
         -:   48:
         -:   49:/*
@@ -56,40 +56,40 @@
         -:   51: * @param  String to be converted into long
         -:   52: * @return long with converted value or error. -1 for wrong value error. -2 for null pointer error.
         -:   53: */
-       24:   54:long parseLongK1024(const char * cadena) {
+       36:   54:long parseLongK1024(const char * cadena) {
         -:   55:
-       24:   56:    if(cadena==NULL) {
+       36:   56:    if(cadena==NULL) {
     #####:   57:        return -2;
         -:   58:    }
         -:   59:
         -:   60:    // Obtain the multiplier k, M, or G. Else error
-       24:   61:    long len=strlen(cadena);
-       24:   62:    long multiplicador=1;
-       24:   63:    if(cadena[len-1]=='K'||cadena[len-1]=='k') {
-       12:   64:        multiplicador=1024;
-       12:   65:    } else if(cadena[len-1]=='M'||cadena[len-1]=='m') {
-        4:   66:        multiplicador=1048576;
-        8:   67:    } else if(cadena[len-1]=='G'||cadena[len-1]=='g') {
+       36:   61:    long len=strlen(cadena);
+       36:   62:    long multiplicador=1;
+       36:   63:    if(cadena[len-1]=='K'||cadena[len-1]=='k') {
+       18:   64:        multiplicador=1024;
+       18:   65:    } else if(cadena[len-1]=='M'||cadena[len-1]=='m') {
+        6:   66:        multiplicador=1048576;
+       12:   67:    } else if(cadena[len-1]=='G'||cadena[len-1]=='g') {
     #####:   68:        multiplicador=1073741824;
-        8:   69:    } else if(cadena[len-1]>'9'||cadena[len-1]<'0') {
+       12:   69:    } else if(cadena[len-1]>'9'||cadena[len-1]<'0') {
     #####:   70:        return -1;
         -:   71:
         -:   72:    }
         -:   73:
         -:   74:    // if something not numeric or multiplier. error return -1
-       52:   75:    for(long i=0; i<len-1; i++) {
+       78:   75:    for(long i=0; i<len-1; i++) {
         -:   76:
-       28:   77:        if(cadena[i]>'9'||cadena[i]<'0') {
+       42:   77:        if(cadena[i]>'9'||cadena[i]<'0') {
     #####:   78:            return -1;
         -:   79:        }
         -:   80:    }
         -:   81:
-       24:   82:    if(len==1){
+       36:   82:    if(len==1){
     #####:   83:         return multiplicador;
         -:   84:
         -:   85:    }
         -:   86:
-       24:   87:    return atoi(cadena)*multiplicador;
+       36:   87:    return atoi(cadena)*multiplicador;
         -:   88:}
         -:   89:
         -:   90:/*
@@ -97,23 +97,23 @@
         -:   92: * @param  String to be converted into int
         -:   93: * @return int with converted value or error. -1 for wrong value error. -2 for null pointer error.
         -:   94: */
-       12:   95:int parseInt(const char * cadena) {
+       18:   95:int parseInt(const char * cadena) {
         -:   96:
-       12:   97:    if(cadena==NULL) {
+       18:   97:    if(cadena==NULL) {
     #####:   98:        return -2;
         -:   99:    }
         -:  100:    // Obtain the multiplier k, M, or G. Else error.
-       12:  101:    int len=strlen(cadena);
+       18:  101:    int len=strlen(cadena);
         -:  102:
         -:  103:    // if something not numeric or multiplier. error return -1
-       32:  104:    for(long i=0; i<len; i++) {
+       48:  104:    for(long i=0; i<len; i++) {
         -:  105:
-       20:  106:        if(cadena[i]>'9'||cadena[i]<'0') {
+       30:  106:        if(cadena[i]>'9'||cadena[i]<'0') {
     #####:  107:            return -1;
         -:  108:        }
         -:  109:    }
         -:  110:
-       12:  111:    return atoi(cadena);
+       18:  111:    return atoi(cadena);
         -:  112:}
         -:  113:
         -:  114:/*
@@ -121,34 +121,34 @@
         -:  116: * @param  String to be converted into boolean. Possible strings: yes, no, true, false, 0, 1
         -:  117: * @return int with converted value. 1 for true, 0 for false, -1 for wrong value error. -2 for null pointer error.
         -:  118: */
-        8:  119:int parseBoolean(const char * cadena) {
+       12:  119:int parseBoolean(const char * cadena) {
         -:  120:
         -:  121:    // if null return error -2
-        8:  122:    if(cadena==NULL) {
+       12:  122:    if(cadena==NULL) {
     #####:  123:        return -2;
         -:  124:    }
         -:  125:
         -:  126:    // turn into lower case
         -:  127:    char cadenaMin[10];
         -:  128:    int i;
-       20:  129:    for( i= 0; cadena[i]; i++) {
-       12:  130:        cadenaMin[i] = tolower(cadena[i]);
+       30:  129:    for( i= 0; cadena[i]; i++) {
+       18:  130:        cadenaMin[i] = tolower(cadena[i]);
         -:  131:    }
-        8:  132:    cadenaMin[i]='\0';
+       12:  132:    cadenaMin[i]='\0';
         -:  133:
         -:  134:
         -:  135:
         -:  136:    // check string content and retun equivalent boolean value.
-       20:  137:    for(int i=0; i<N_TRUES; i++) {
-       16:  138:        if(strcmp(str_true[i], cadenaMin)==0) {
-        4:  139:            return 1;
+       30:  137:    for(int i=0; i<N_TRUES; i++) {
+       24:  138:        if(strcmp(str_true[i], cadenaMin)==0) {
+        6:  139:            return 1;
         -:  140:        }
         -:  141:
         -:  142:    }
         -:  143:
-        8:  144:    for(int i=0; i<N_FALSES; i++) {
-        8:  145:        if(strcmp(str_false[i], cadenaMin)==0) {
-        4:  146:            return 0;
+       12:  144:    for(int i=0; i<N_FALSES; i++) {
+       12:  145:        if(strcmp(str_false[i], cadenaMin)==0) {
+        6:  146:            return 0;
         -:  147:        }
         -:  148:
         -:  149:    }
@@ -163,13 +163,13 @@
         -:  158: * @param  String to be converted into enum. Possible strings defined in str_replacementPolicy
         -:  159: * @return enum  value or error. -2 for null pointer. -1 for wrong value error
         -:  160: */
-        8:  161:int parseReplacementPolicy(const char * cadena) {
-        8:  162:    if(cadena==NULL) {
+       12:  161:int parseReplacementPolicy(const char * cadena) {
+       12:  162:    if(cadena==NULL) {
     #####:  163:        return -2;
         -:  164:    }
-        8:  165:    for(int i=0; i<N_REPLACEMENT; i++) {
-        8:  166:        if(strcmp(cadena, str_replacementPolicy[i])==0) {
-        8:  167:            return i;
+       12:  165:    for(int i=0; i<N_REPLACEMENT; i++) {
+       12:  166:        if(strcmp(cadena, str_replacementPolicy[i])==0) {
+       12:  167:            return i;
         -:  168:        }
         -:  169:    }
     #####:  170:    return -1;
@@ -180,16 +180,16 @@
         -:  175: * @param  String to be converted into enum. Possible strings defined in str_replacementPolicy
         -:  176: * @return enum  value or error. -2 for null pointer error. -1 for wrong value error
         -:  177: */
-        8:  178:int parseWritePolicy(const char * cadena) {
+       12:  178:int parseWritePolicy(const char * cadena) {
         -:  179:
         -:  180:    // if null pointer retun error -2
-        8:  181:    if(cadena==NULL) {
+       12:  181:    if(cadena==NULL) {
     #####:  182:        return -2;
         -:  183:    }
         -:  184:
-       12:  185:    for(int i=0; i<N_WRITE; i++) {
-       12:  186:        if(strcmp(cadena, str_writePolicy[i])==0) {
-        8:  187:            return i;
+       18:  185:    for(int i=0; i<N_WRITE; i++) {
+       18:  186:        if(strcmp(cadena, str_writePolicy[i])==0) {
+       12:  187:            return i;
         -:  188:        }
         -:  189:    }
         -:  190:
@@ -202,9 +202,9 @@
         -:  197: * @param number to check
         -:  198: * @return boolean
         -:  199: */
-      155:  200:int isPowerOf2(long number) {
+      165:  200:int isPowerOf2(long number) {
         -:  201:
-      155:  202:    return number && !(number & (number - 1));
+      165:  202:    return number && !(number & (number - 1));
         -:  203:
         -:  204:}
         -:  205:
@@ -224,19 +224,19 @@
         -:  219: * @param  cadena String to be checked
         -:  220: * @return 1 if it is binary. -1 if it is not binary. -2 if NULL char* param
         -:  221: */
-        8:  222:int isCorrectBinary(const char * cadena) {
+       12:  222:int isCorrectBinary(const char * cadena) {
         -:  223:
         -:  224:    // if null return error -2
-        8:  225:    if(cadena==NULL) {
+       12:  225:    if(cadena==NULL) {
     #####:  226:        return -2;
         -:  227:    }
         -:  228:    
-       72:  229:    for(int i= 0; cadena[i]; i++) {
-       64:  230:        if(cadena[i]!='0'&&cadena[i]!='1'){
+      108:  229:    for(int i= 0; cadena[i]; i++) {
+       96:  230:        if(cadena[i]!='0'&&cadena[i]!='1'){
     #####:  231:        	return -1;
         -:  232:	}
         -:  233:    }
-        8:  234:    return 1;
+       12:  234:    return 1;
         -:  235:}
         -:  236:
         -:  237:/*
@@ -244,36 +244,36 @@
         -:  239: * @param  String to be converted into double
         -:  240: * @return long with converted value or error. -1 for wrong value error. -2 for null pointer error.
         -:  241: */
-       16:  242:double parseDouble(const char * cadena) {
+       24:  242:double parseDouble(const char * cadena) {
         -:  243:
-       16:  244:    if(cadena==NULL) {
+       24:  244:    if(cadena==NULL) {
     #####:  245:        return -2;
         -:  246:    }
         -:  247:    // Obtain the multiplier p, n, u, or m. Else error
-       16:  248:    long len=strlen(cadena);
-       16:  249:    double multiplicador=1;
-       16:  250:    if(cadena[len-1]=='m') {
-        4:  251:        multiplicador=1.0/1000.0;
-       12:  252:    } else if(cadena[len-1]=='u') {
+       24:  248:    long len=strlen(cadena);
+       24:  249:    double multiplicador=1;
+       24:  250:    if(cadena[len-1]=='m') {
+        6:  251:        multiplicador=1.0/1000.0;
+       18:  252:    } else if(cadena[len-1]=='u') {
     #####:  253:        multiplicador=1.0/1000000.0;
-       12:  254:    } else if(cadena[len-1]=='n') {
-        4:  255:        multiplicador=1.0/1000000000.0;
-        8:  256:    } else if(cadena[len-1]=='p') {
+       18:  254:    } else if(cadena[len-1]=='n') {
+        6:  255:        multiplicador=1.0/1000000000.0;
+       12:  256:    } else if(cadena[len-1]=='p') {
     #####:  257:        multiplicador=1.0/1000000000000.0;
-        8:  258:    } else if(cadena[len-1]>'9'||cadena[len-1]<'0') {
+       12:  258:    } else if(cadena[len-1]>'9'||cadena[len-1]<'0') {
     #####:  259:        return -1;
         -:  260:
         -:  261:    }
         -:  262:
         -:  263:    // if something not numeric or multiplier. error return -1
-       32:  264:    for(long i=0; i<len-1; i++) {
+       48:  264:    for(long i=0; i<len-1; i++) {
         -:  265:
-       16:  266:        if(cadena[i]>'9'||cadena[i]<'0') {
+       24:  266:        if(cadena[i]>'9'||cadena[i]<'0') {
     #####:  267:            return -1;
         -:  268:        }
         -:  269:    }
         -:  270:
-       16:  271:    return atoi(cadena)*multiplicador;
+       24:  271:    return atoi(cadena)*multiplicador;
         -:  272:}
         -:  273:
         -:  274:/*
@@ -282,14 +282,14 @@
         -:  277: * @param  page_base_address to be converted into long
         -:  278: * @return long with converted value or error. -1 for wrong value error. -2 for null pointer error.
         -:  279: */
-        4:  280:long parseAddress(const char* page_base_address){
+        6:  280:long parseAddress(const char* page_base_address){
         -:  281:
-        4:  282:        if(page_base_address==NULL){
+        6:  282:        if(page_base_address==NULL){
     #####:  283:		return -2;
         -:  284:	}
         -:  285:
-        4:  286:        long toReturn= strtol(page_base_address, NULL, 16);
-        4:  287:	return toReturn;
+        6:  286:        long toReturn= strtol(page_base_address, NULL, 16);
+        6:  287:	return toReturn;
         -:  288:        // provisional TODO
         -:  289:	//faltan comprobaciones sobre tamano y rango de la direccion
         -:  290:}
@@ -334,25 +334,25 @@
         -:  329:/*
         -:  330: * Convert an array of integers to a string
         -:  331: */
-     1332:  332:void contentArrayToString(long* array, char* content, int count, int width){
+     1941:  332:void contentArrayToString(long* array, char* content, int count, int width){
         -:  333:   char num[50];
-     1332:  334:   content[0]='\0';        
-    22644:  335:   for(int i=0; i<count; i++) {
-    21312:  336:      sprintf(num, "%s%0*lx", i>0 ? " " : "", width, array[i]);
-    21312:  337:      strcat(content, num);
+     1941:  334:   content[0]='\0';        
+    32997:  335:   for(int i=0; i<count; i++) {
+    31056:  336:      sprintf(num, "%s%0*lx", i>0 ? " " : "", width, array[i]);
+    31056:  337:      strcat(content, num);
         -:  338:   }
-     1332:  339:}
+     1941:  339:}
         -:  340:
         -:  341:/*
         -:  342: * Convert a space separated string of hex numbers into an array of longs
         -:  343: */
-       14:  344:void contentStringToArray(long* array, char* content, int count){
+        6:  344:void contentStringToArray(long* array, char* content, int count){
         -:  345:   char *pch;
-       14:  346:   pch = strtok (content," ");
-      238:  347:   for(int i=0; pch != NULL || i < count; i++, pch = strtok (NULL, " ")) {
-      224:  348:      array[i] = strtol(pch, NULL, 16);
+        6:  346:   pch = strtok (content," ");
+      102:  347:   for(int i=0; pch != NULL || i < count; i++, pch = strtok (NULL, " ")) {
+       96:  348:      array[i] = strtol(pch, NULL, 16);
         -:  349:   }
-       14:  350:}
+        6:  350:}
         -:  351:
         -:  352:
         -:  353:
