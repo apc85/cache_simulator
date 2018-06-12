@@ -21,6 +21,9 @@ extern int useGUI;
    GtkWidget *button1;
    GtkWidget *button2;
    GtkWidget *button3;
+#if DEBUG
+   GtkWidget *button4;
+#endif
 
    GtkWidget *buttonBox;
    GtkTextBuffer *buffer;

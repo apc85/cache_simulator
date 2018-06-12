@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
        return 1;
     }
 
-    printf("\npunto 4\n");
+    //printf("\npunto 4\n");
 
     // Load trace file specified in the configuration file
     if(readTraceFile((char *)cpu.trace_file) != 0) {

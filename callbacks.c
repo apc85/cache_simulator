@@ -4,6 +4,8 @@
 #include "simulator.h"
 
 //CALLBACKS//////////////////////////////////////////////////////////////
+
+
 /**
  * Callback function for setting simulation to its initial state.
  */
@@ -57,7 +59,6 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 {
    char *currentLine;
    while(currentLine = nextLineTrace()) {
-      printf("%s", currentLine);
       if(preprocessTraceLine(currentLine)) {
          struct memOperation operation;
          parseLine(currentLine, -1, &operation);
@@ -72,14 +73,20 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 void callbackNextStep( GtkWidget *widget, gpointer   data)
 {
    char *currentLine = nextLineTrace();
-   printf("%s", currentLine);
    if(currentLine!=NULL&&preprocessTraceLine(currentLine)) {
       struct memOperation operation;
       parseLine(currentLine, -1, &operation);
       simulate_step(&operation);
    }
 
-   
+}
+
+
+#if DEBUG
+/**
+ * Callback fuction for testing the program. Only in debug mode
+ */
+void callbackTest( GtkWidget *widget, gpointer   data){
 
    //////pruebas
    setStatistics("Cache L2", "Fault rate", "tres");
@@ -135,7 +142,10 @@ void callbackNextStep( GtkWidget *widget, gpointer   data)
    //scrollDataCacheToRow(0, 32);
    //scrollInstructionCacheToRow(0, 32);
    //scrollCacheToRow(1, 32);
+
 }
+#endif
+
 
 /* Destroy callback. This is used when you close the program*/
 void destroy( GtkWidget *widget, gpointer   data )

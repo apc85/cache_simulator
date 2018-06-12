@@ -9,4 +9,8 @@ void callbackRestart( GtkWidget *widget, gpointer data);
 void destroy( GtkWidget *widget, gpointer data );
 gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data );
 
+#if DEBUG
+void callbackTest( GtkWidget *widget, gpointer   data);
 #endif
+
+#endif 
