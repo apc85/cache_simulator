@@ -246,8 +246,15 @@ int parseConfiguration(dictionary *ini) {
     parseConfInt(ini,"cpu:word_width",&cpu.word_width,&errors);
     parseConfLongK1000(ini,"cpu:frequency",&cpu.frequency,&errors);
 
+    if(!isPowerOf2(cpu.address_width)){
+         fprintf(stderr,"Error: cpu:address_width must be power of 2\n");
+    }
+    if(!isPowerOf2(cpu.word_width)){
+         fprintf(stderr,"Error: cpu:word_width must be power of 2\n");
+    }
+
     // reading key cpu:trace_file
-    const char * cpu_trace_file=          iniparser_getstring(ini, "cpu:trace_file", NULL);
+    const char * cpu_trace_file= iniparser_getstring(ini, "cpu:trace_file", NULL);
     if(cpu_trace_file==NULL) {
         fprintf(stderr,"Error: Missing value cpu:trace_file\n");
         errors++;
