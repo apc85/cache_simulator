@@ -239,7 +239,7 @@ int readTraceFile(char * filename){
       numberOfOperations++;
    }
 
-
+ 
    if(errors==0){
 #if DEBUG
       if(!useGUI){

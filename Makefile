@@ -2,7 +2,7 @@
 MODULES = gui.c datainterface.c datamanipulation.c confparser.c iniparser.c datastore.c callbacks.c traceparser.c dictionary.c simulator.c
 
 DEBUG=0
-CFLAGS += -DDEBUG=${DEBUG}  $(shell pkg-config --cflags gtk+-2.0)
+CFLAGS += -DDEBUG=${DEBUG}  $(shell pkg-config --cflags gtk+-2.0) --coverage
 LIBS = $(shell pkg-config --libs gtk+-2.0) -lm
 
 cache_simulator: mainprogram.c ${MODULES}
@@ -13,3 +13,5 @@ cache_simulator: mainprogram.c ${MODULES}
 
 clean:
 	rm -fr *~
+	rm *.gcno
+	rm *.gcda

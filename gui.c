@@ -516,6 +516,7 @@ int scrollMemoryToPos(long address) {
    GtkTreePath * path=gtk_tree_path_new_from_string (rowChar);
    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW(viewMEMORY),
          path, NULL, TRUE, 0.5, 0);
+   return 0;
 }
 
 /**

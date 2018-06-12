@@ -437,9 +437,9 @@ void checkSectionKeys(dictionary *ini, const char *section, int numberOfValidKey
 /*
  * shows the current state of read data
  */
-void showConfiguration() {
+void showConfiguration(){
 
-    // show cpu info
+    // show cpu info 
     fprintf(stderr,"\nCPU\n");
 
     fprintf(stderr,"word_width:         [%ld bits] \n", cpu.word_width);

@@ -1,0 +1,32 @@
+make DEBUG=1
+
+#probando sin parametros, parametros erroneos
+./cache_simulator
+./cache_simulator nothing
+./cache_simulator nothing nothing
+
+
+#probando en modo sin interfaz
+./cache_simulator L1.ini -g
+
+#probando en modo sin interfaz configuracion con errores
+./cache_simulator L1.ini -g
+./cache_simulator L2.ini -g
+./cache_simulator L3.ini -g
+./cache_simulator L4.ini -g
+./cache_simulator L5.ini -g
+
+#probando modo con interfaz. Pulse todos los botones para probar
+./cache_simulator L1.ini
+
+gcov mainprogram.c
+gcov confparser.c
+gcov traceparser.c
+gcov datainterface.c
+gcov gui.c
+gcov datamanipulation.c
+gcov callbacks.c
+gcov datastore.c
+gcov simulator.c
+
+

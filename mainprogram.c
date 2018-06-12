@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
     if(parseConfiguration(ini) != 0) {
        return 1;
     }
-
+ 
     //printf("\npunto 4\n");
 
     // Load trace file specified in the configuration file

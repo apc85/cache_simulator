@@ -68,7 +68,7 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 }
 
 /**
- * Callback fuction for advancing one step on simulation
+ * Callback fuction for advancing one step on simulation 
  */
 void callbackNextStep( GtkWidget *widget, gpointer   data)
 {

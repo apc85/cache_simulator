@@ -317,7 +317,7 @@ int isCorrectHexadecimal(char * number){
  * @param number dec number with string format to be checked
  */
 int isCorrectDecimal(char * number){
-   for(int i=0; i<number[i]!='\0'; i++){
+   for(int i=0; number[i]!='\0'; i++){
       if(number[i]<'0'||number[i]>'9'){
          return 0;
       }
