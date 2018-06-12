@@ -8,7 +8,7 @@ char* str_replacementPolicy[]= {"lru", "lfu", "rnd", "fifo"};
 char* str_writePolicy[]= {"wt", "wb"};
 char* keysCPU[]= {"word_width", "address_width", "frequency", "trace_file"};
 char* keysMEMORY[]= {"size", "access_time_1","access_time_burst", "page_size", "page_base_address"};
-char* keysCACHE[]= {"line_size", "size","asociativity", "write_policy", "replacement","separated","column_bit_mask"};
+char* keysCACHE[]= {"line_size", "size","asociativity", "write_policy", "replacement","separated","column_bit_mask", "access_time"};
 char* str_true[]= {"1", "yes", "true"};
 char* str_false[]= {"0","no","false"};
 
@@ -376,6 +376,12 @@ int parseConfiguration(dictionary *ini) {
         } else {
             caches[cacheNumber].separated=long_separated;
         }
+
+        // reading key cache:access_time
+        sprintf(param, "cache%d:access_time", cacheNumber+1);
+        parseConfDouble(ini, param, &caches[cacheNumber].access_time, &errors);
+
+
     }
 
     // checking all the caches have the same line_size
@@ -454,15 +460,18 @@ void showConfiguration() {
     fprintf(stderr,"page_size:          [%ld bytes] \n", memory.page_size);
     fprintf(stderr,"page_base_address:  [0x%lx] \n", memory.page_base_address);
 
+
     // show each cache info
     for(long i=0; i<numberCaches; i++) {
         fprintf(stderr,"\nCACHE L%ld\n", i+1);
 
         fprintf(stderr,"line_size:          [%ld bits] \n",  caches[i].line_size);
         fprintf(stderr,"size:               [%ld bytes] \n",  caches[i].size);
+        fprintf(stderr,"access_time:        [%lf ns]\n",   caches[i].access_time*1000000000);
         fprintf(stderr,"asociativity:       [%ld]\n",  caches[i].asociativity);
         fprintf(stderr,"write_policy:       [%s]\n",   str_writePolicy[caches[i].write_policy]);
         fprintf(stderr,"replacement:        [%s]\n",   str_replacementPolicy[caches[i].replacement]);
         fprintf(stderr,"separated:          [%d]\n",   caches[i].separated);
+
     }
 }
