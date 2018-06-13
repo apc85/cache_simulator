@@ -241,12 +241,14 @@ int readTraceFile(char * filename){
 
  
    if(errors==0){
+
 #if DEBUG
       if(!useGUI){
       	   showOperations();
       }
       fprintf(stderr,"\nTracefile was loaded correctly\n");
 #endif
+
       return 0;
    }
    fprintf(stderr,"\n");
