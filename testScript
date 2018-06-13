@@ -1,43 +1,175 @@
+#!/bin/bash
+
 make DEBUG=1
 
 echo
-echo "test 1---------------------------------------------------------"
+echo "test: sin parametro---------------------------------------------------------"
 echo
 
 #probando sin parametros, parametros erroneos
-./cache_simulator
-./cache_simulator nothing
-./cache_simulator nothing nothing
+./cache_simulator -g
 
 echo
-echo "test 2---------------------------------------------------------"
+echo "test: con parametro fichero inexistente-----------------------------------------------"
+echo
+
+./cache_simulator nothing -g
+
+echo
+echo "test: con un parametro de mas---------------------------------------------------------"
+echo
+./cache_simulator L1.ini nothing -g
+
+echo
+echo "test: un parametro de mas y erroneos---------------------------------------------------------"
+echo
+./cache_simulator nothing nothing -g
+
+echo
+echo "test: opcion h---------------------------------------------------------"
+echo
+./cache_simulator -h
+
+echo
+echo "test: opcion ?---------------------------------------------------------"
+echo
+./cache_simulator -?
+
+echo
+echo "test: opcion v---------------------------------------------------------"
+echo
+./cache_simulator -v
+
+echo
+echo "test: opcion c---------------------------------------------------------"
+echo
+./cache_simulator -v
+
+
+echo
+echo "test: opcion desconocida---------------------------------------------------------"
+echo
+./cache_simulator -t
+
+
+echo
+echo "test: correcto en modo sin interfaz----------------------------------------------------"
 echo
 
 #probando en modo sin interfaz
 ./cache_simulator L1.ini -g
 
 echo
-echo "test 3---------------------------------------------------------"
+echo "test: correcto en modo con interfaz----------------------------------------------------"
 echo
 
 #probando modo con interfaz. Pulse todos los botones para probar
 ./cache_simulator L1.ini
 
-#probando en modo sin interfaz configuracion con errores
+
+#probando en modo sin interfaz configuracion con errores########################################################
+
+#for filename in ./errorCases/*.ini; do
+#  ./cache_simulator $filename -g
+#done
+echo
+echo "test: empty file----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/empty.ini -g
+echo
+echo "test: L10----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/L10.ini -g
+echo
+echo "test: L11----------------------------------------------------"
+echo
+./cache_simulatorconfigFilesForTest/L11.ini -g
+echo
+echo "test: L12----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/L12.ini -g
+echo
+echo "test: L1----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/L1.ini -g
+echo
+echo "test: L2----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/L2.ini -g
+echo
+echo "test: L3----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/L3.ini -g
+echo
+echo "test: L4----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/L4.ini -g
+echo
+echo "test: L5----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/L5.ini -g
+echo
+echo "test: L6----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/L6.ini -g
+echo
+echo "test: L7----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/L7.ini -g
+echo
+echo "test: L8----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/L8.ini -g
+echo
+echo "test: L9----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/L9.ini -g
+echo
+echo "test: missing cache section----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/missing_cache.ini -g
+echo
+echo "test: missing cache section 2----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/missing_cache.ini -g
+echo
+echo "test: missing scpu section----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/missing_cpu.ini -g
+echo
+echo "test: missing keys----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/missing_keys.ini -g
+echo
+echo "test: missing memory section----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/missing_memory.ini -g
 
 echo
-echo "test 4---------------------------------------------------------"
+echo "test: invalid cache name----------------------------------------------------"
 echo
+./cache_simulator configFilesForTest/invalid_cache_name.ini -g
 
-./cache_simulator errorCases/L1.ini -g
+echo
+echo "test: unknown section name----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/unknown_section_name.ini -g
+
+echo
+echo "test: unknown key----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/unknown_key.ini -g
+
+echo
+echo "test: traza_test----------------------------------------------------"
+echo
+./cache_simulator configFilesForTest/traza_test.ini -g
 
 
-#./cache_simulator errorCases/L2.ini -g
-#./cache_simulator errorCases/L3.ini -g
-#./cache_simulator errorCases/L4.ini -g
-#./cache_simulator errorCases/L5.ini -g
-
-
+echo
+echo "##################################################################################"
+echo "COVERAGE TESTS RESULTS"
+echo
 
 gcov mainprogram.c
 gcov confparser.c

@@ -1,0 +1,27 @@
+
+#casos normales
+
+# Comment
+I 0x0a12f03c L # Minimum fetch trace line. Use default size             #linea normal (instruccion load)
+D 0x0a12f03c L # Minimum fetch trace line. Use default size             #linea normal (dato load)
+D 0x0a12f03c S # Minimum fetch trace line. Use default size             #linea normal (dato store)
+! I 0x0a12f03c L # Minimum fetch trace line. Use default size           #linea normal con breakpoint
+! D 0x0a12f03c S 8 # Minimum fetch trace line. Use default size         #linea normal con breakpoint y tamano
+! I 0x0a12f03c L 8 7# Minimum fetch trace line. Use default size        #linea normal con breakpoint, tamano y valor
+I 0x0a12f03c L 8 # Minimum fetch trace line. Use default size           #linea normal con breakpoint y tamano
+I 0x0a12f03c L 8 7# Minimum fetch trace line. Use default size          #linea normal con breakpoint, tamano y valor
+
+#casos de error
+
+H 0x041d60ac L # Minimum load trace line. Use default size		#no es instruccion ni dato
+D C30F21A0 S # Minimum store trace line. Uses default size and data   	#la direccion no tine 0x
+D C30F21A0 S # Minimum store trace line. Uses default size and data   	#la direccion es negativa
+I 0xAHc00001 L 32 # Full fetch trace line with size			#letra desconocida en la direccion
+D 0x32f7a0b1 H 16 # Full load trace line with size			#no es load ni store
+D 0x527e9A30 L rrr # Store trace line. Uses default data		#tamano no es numerico
+D 0x12cefA00 S 23 2345 # Full store trace line with size and data	#tamano no espotencia de dos
+D 0x12cefA00 S -8 2345 # Full store trace line with size and data	#tamano es negativo
+D 0x12cefA00 S 23 2345 # Full store trace line with size and data	#tamano no espotencia de dos
+D 0x12cefA00 S -8 abcd # Full store trace line with size and data	#valor no numerico
+D 0x12cefA00 S -8 abcd # Full store trace line with size and data	#valor negativo
+

@@ -315,8 +315,31 @@ int parseConfiguration(dictionary *ini) {
             caches[cacheNumber].column_bit_mask=column_bit_mask;
         }
 
+
+        // reading key cache:separated
+        sprintf(param, "cache%d:separated", cacheNumber+1);
+
+        const char * cache_separated=iniparser_getstring(ini, param, NULL);
+        long long_separated=parseBoolean(cache_separated);
+        if(long_separated==-1) {
+            fprintf(stderr,"Error: cache%d:separated value is not valid\n", cacheNumber+1);
+            errors++;
+        } else if(long_separated==-2) {
+            fprintf(stderr,"Error: Missing value cache%d:separated\n", cacheNumber+1);
+            errors++;
+        } else {
+            caches[cacheNumber].separated=long_separated;
+        }
+
+
+
         // reading key cache:asocitivity
         sprintf(param, "cache%d:asociativity", cacheNumber+1);
+        //this is the number of lines. For error check
+        int numLines=caches[cacheNumber].size/caches[cacheNumber].line_size;
+        if(caches[cacheNumber].separated){
+             numLines/=2;
+	}
         const char * cache_asociativity=iniparser_getstring(ini, param, NULL);
         // si es F es de compleatamente asociativa. Un solo set. Tantas lines/set como lines totales.
         if(cache_asociativity!=NULL&&strcmp(cache_asociativity, "F")==0) {
@@ -332,7 +355,10 @@ int parseConfiguration(dictionary *ini) {
             } else if(!isPowerOf2(long_asociativity)) {
                 fprintf(stderr,"Error: The value of cache%d:asociativity must be power of 2\n", cacheNumber+1);
                 errors++;
-            } else {
+            } else if(long_asociativity>numLines){
+                fprintf(stderr,"Error: The value of cache%d:asociativity can't be bigger than the number of lines\n", cacheNumber+1);
+                errors++;
+            }else {
                 caches[cacheNumber].asociativity=long_asociativity;
             }
         }
@@ -366,20 +392,7 @@ int parseConfiguration(dictionary *ini) {
             caches[cacheNumber].replacement=long_replacement;
         }
 
-        // reading key cache:separated
-        sprintf(param, "cache%d:separated", cacheNumber+1);
 
-        const char * cache_separated=iniparser_getstring(ini, param, NULL);
-        long long_separated=parseBoolean(cache_separated);
-        if(long_separated==-1) {
-            fprintf(stderr,"Error: cache%d:separated value is not valid\n", cacheNumber+1);
-            errors++;
-        } else if(long_separated==-2) {
-            fprintf(stderr,"Error: Missing value cache%d:separated\n", cacheNumber+1);
-            errors++;
-        } else {
-            caches[cacheNumber].separated=long_separated;
-        }
 
         // reading key cache:access_time
         sprintf(param, "cache%d:access_time", cacheNumber+1);
@@ -448,17 +461,17 @@ void showConfiguration(){
 
     fprintf(stderr,"word_width:         [%ld bits] \n", cpu.word_width);
     fprintf(stderr,"address_width:      [%ld bits] \n", cpu.address_width);
-    fprintf(stderr,"frecuency:          [%ld Hz] \n", cpu.frequency);
-    fprintf(stderr,"bus_frequency:      [%ld Hz] \n", cpu.bus_frequency);
-    fprintf(stderr,"mem_bus_frequency:  [%ld Hz] \n", cpu.mem_bus_frequency);
+    //fprintf(stderr,"frecuency:          [%ld Hz] \n", cpu.frequency);
+    //fprintf(stderr,"bus_frequency:      [%ld Hz] \n", cpu.bus_frequency);
+    //fprintf(stderr,"mem_bus_frequency:  [%ld Hz] \n", cpu.mem_bus_frequency);
     fprintf(stderr,"trace_file:         [%s]\n", cpu.trace_file);
 
     // show memory info
     fprintf(stderr,"\nMEMORY\n");
 
     fprintf(stderr,"size:               [%ld bytes] \n",  memory.size);
-    fprintf(stderr,"bus_width:          [%ld bits] \n", memory.bus_width);
-    fprintf(stderr,"bus_frequency:      [%ld Hz] \n", memory.bus_frequency);
+    //fprintf(stderr,"bus_width:          [%ld bits] \n", memory.bus_width);
+    //fprintf(stderr,"bus_frequency:      [%ld Hz] \n", memory.bus_frequency);
     fprintf(stderr,"access_time_1:      [%lf ns] \n", memory.access_time_1*1000000000);
     fprintf(stderr,"access_time_burst:  [%lf ns] \n", memory.access_time_burst*1000000000);
     fprintf(stderr,"page_size:          [%ld bytes] \n", memory.page_size);

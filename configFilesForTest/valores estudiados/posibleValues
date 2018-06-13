@@ -1,0 +1,35 @@
+[cpu]                      
+word_width                 -1 0 15 32 something_else
+address_width              -1 0 15 32 something_else
+frequency                  -1 0 15 K 10K M 10M G 10G something_else
+trace_file                 traza.vca something_else
+
+
+
+[cache1]                   
+line_size                  -1 0 15 K 10K M 10M G 10G 32 64 something_else
+size                       -1 0 15 K 10K M 10M G 10G 16 something_else
+asociativity               -1 0 1 F 4 5 2048 something_else
+write_policy               wt wb something_else
+replacement                lru rand fifo lfu something_else 
+separated                  1 0 yes no true false YES NO TRUE FALSE something_else
+access_time               -1 0 15 p 10p n 10n u 10u m 10m something_else
+column_bit_mask           00000000 11111111 10101010 111111 111111111 something_else
+
+
+[cache2]                   
+line_size                  -1 0 15 K 10K M 10M G 10G 32 16 something_else
+size                       -1 0 15 K 10K M 10M G 10G 16 something_else
+asociativity               -1 0 1 F 4 5 2048 something_else
+write_policy               wt wb something_else
+replacement                lru rand fifo lfu something_else 
+separated                  1 0 yes no true false YES NO TRUE FALSE something_else
+access_time               -1 0 15 p 10p n 10n u 10u m 10m something_else
+column_bit_mask           00000000 11111111 10101010 111111 111111111 something_else
+ 
+[memory]                      
+size                      -1 0 15 K 10K M 10M G 10G 32 something_else
+access_time_1             -1 0 15 p 10p n 10n u 10u m 10m something_else 
+access_time_burst         -1 0 15 p 10p n 10n u 10u m 10m something_else
+page_base_address         -1 0x0 0x8000000 8000000 something_else
+page_size= 2K             -1 0 15 K 10K M 10M G 10G 32 something_else
