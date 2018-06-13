@@ -57,7 +57,6 @@ int main(int argc, char *argv[]) {
       default:
         abort();
       }
-    //printf("\npunto 1\n");
 
     // Check that there is at leas one configuration file 
     if(optind == argc) {
@@ -65,7 +64,6 @@ int main(int argc, char *argv[]) {
        return 1;
     }
 
-    //printf("\npunto 2\n");
 
     // Read configuration file
     dictionary *ini;
@@ -73,21 +71,17 @@ int main(int argc, char *argv[]) {
        return 1;
     }
 
-    //printf("\npunto 3\n");
 
     // Parse read configuration and populate global configuration variables.
     if(parseConfiguration(ini) != 0) {
        return 1;
     }
  
-    //printf("\npunto 4\n");
 
     // Load trace file specified in the configuration file
     if(readTraceFile((char *)cpu.trace_file) != 0) {
        return 1;
     }
-
-    //printf("\npunto 5\n");
 
     // Create simulator data structures
     generateDataStorage();
@@ -100,7 +94,6 @@ int main(int argc, char *argv[]) {
        simulate();
     }
 
-    //printf("\npunto 6\n");
 
     // Free memory allocated by readTraceFile()
     freeMemory();

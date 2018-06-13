@@ -147,12 +147,6 @@ char *nextLineTrace() {
    GtkTextIter end=lineIterCurrent;
    GtkTextIter lineIterSiguiente=lineIterCurrent;
    gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterSiguiente);
-   /*
-      gtk_text_buffer_remove_tag (buffer,
-      tagBlue,
-      &start,
-      &end);
-    */
    //coloreo de negro la linea anterior
    gtk_text_buffer_apply_tag (buffer, tagBlack, &start, &end);
    //coloreo de azul la line current
@@ -180,7 +174,6 @@ GtkWidget * createPanelMemory() {
    GtkTreeIter   iter;
    GtkTreeViewColumn* column;
    vboxMEMORY = gtk_vbox_new(FALSE, 2);
-   //createMemoryModel();
    viewMEMORY = gtk_tree_view_new_with_model(GTK_TREE_MODEL(modelMEMORY));
    GtkTreeSelection * selection= gtk_tree_view_get_selection (GTK_TREE_VIEW(viewMEMORY));
    gtk_tree_selection_set_mode (selection, GTK_SELECTION_NONE);
@@ -226,7 +219,6 @@ void createPanelCache(int level) {
    int asociativity=caches[level].asociativity;
    int numsets=numLines/asociativity;
    int numWords=(caches[level].line_size*8)/cpu.word_width;
-   //printf("\ncache level %d: lines: %d, asociativity: %d, sets: %d, words line: %d\n", level+1, numLines, asociativity, numsets, numWords);
    //createCacheModel(level);
    modelData=cacheLevels[level].modelData;
    viewData = gtk_tree_view_new_with_model(GTK_TREE_MODEL(modelData));
