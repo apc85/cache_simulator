@@ -293,6 +293,10 @@ int parseConfiguration(dictionary *ini) {
         // reading key cache:size
         sprintf(param, "cache%d:size", cacheNumber+1);
         parseConfLongK1024(ini, param, &caches[cacheNumber].size,&errors);
+        if((caches[cacheNumber].size)%(caches[cacheNumber].line_size)!=0){
+	    fprintf(stderr,"Error: cache%d:size must be a multiple of cache%d:line_size\n", cacheNumber+1, cacheNumber+1);
+            errors++;
+	}
 
         // reading key cache:column_bit_mask
         sprintf(param, "cache%d:column_bit_mask", cacheNumber+1);
