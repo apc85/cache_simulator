@@ -209,9 +209,7 @@ int isPowerOf2(long number) {
  * @return boolean
  */
 int isAMultipleOf8(long number) {
-
     return !number%8;
-
 }
 
 /*
