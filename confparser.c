@@ -291,7 +291,7 @@ int parseConfiguration(dictionary *ini) {
 	fprintf(stderr,"Error: memory:page_base_address is invalid\n");
         errors++;
     }
-    if(memory.page_base_address<0||memory.page_base_address>maxMemoy-1){
+    if(memory.page_base_address<0||memory.page_base_address>maxMemory-1){
 	fprintf(stderr,"Error: memory:page_base_address is out of range.\n");
         errors++;
     }
