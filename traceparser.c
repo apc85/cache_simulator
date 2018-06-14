@@ -51,6 +51,11 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
                return -1;
             }
             address = strtol(pch, NULL, 16);
+
+            if(address<memory.page_base_address||address>=memory.page_base_address+memory.page_size){
+	       fprintf(stderr,"address out of page range. line %d\n", lineNumber);
+               return -1;
+	    }
             break;
          case 2: // Load/Fetch or Store (One character)
             if(strlen(pch) != 1 || ( *pch != 'L' && *pch != 'S')) {

@@ -134,7 +134,7 @@ void callbackTest( GtkWidget *widget, gpointer   data){
    setColorMemoryPosition(134217732, 5);
    setColorDataCacheLine(0, 2, 9);
    setColorInstructionsCacheLine(0, 2, 10);
-   setColorInstructionsCacheLine(0, 2, 11);
+   //setColorInstructionsCacheLine(0, 2, 11);
    setColorCacheLine(1, 2, 5);
    //free((line).content);
    scrollMemoryToPos(134217832);

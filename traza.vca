@@ -1,32 +1,32 @@
 
 # Comment
-I 0x0a12f03c L # Minimum fetch trace line. Use default size
-D 0x041d60ac L # Minimum load trace line. Use default size
-D 0xC30F21A0 S # Minimum store trace line. Uses default size and data
-I 0xAbc00001 L 32 # Full fetch trace line with size
-D 0x32f7a0b1 L 16 # Full load trace line with size
-D 0x527e9A30 L 1024 # Store trace line. Uses default data
-D 0x12cefA00 S 8 2345 # Full store trace line with size and data
+I 0x0800073c L # Minimum fetch trace line. Use default size
+D 0x080006ac L # Minimum load trace line. Use default size
+D 0x080005A0 S # Minimum store trace line. Uses default size and data
+I 0x08000401 L 32 # Full fetch trace line with size
+D 0x080003b1 L 16 # Full load trace line with size
+D 0x08000230 L 1024 # Store trace line. Uses default data
+D 0x08000100 S 8 2345 # Full store trace line with size and data
 
 # The above empty line should be ignored
-! I 0x04000050 L 4 # Line with breakpoint
+! I 0x08000750 L 4 # Line with breakpoint
 # Comment
-I 0x0a12f03c L # Minimum fetch trace line. Use default size
-D 0x041d60ac L # Minimum load trace line. Use default size
-D 0xC30F21A0 S # Minimum store trace line. Uses default size and data
-I 0xAbc00001 L 32 # Full fetch trace line with size
-D 0x32f7a0b1 L 16 # Full load trace line with size
-D 0x527e9A30 L 1024 # Store trace line. Uses default data
-D 0x12cefA00 S 8 2345 # Full store trace line with size and data
+I 0x0800003c L # Minimum fetch trace line. Use default size
+D 0x080007ac L # Minimum load trace line. Use default size
+D 0x080006A0 S # Minimum store trace line. Uses default size and data
+I 0x08000501 L 32 # Full fetch trace line with size
+D 0x080004b1 L 16 # Full load trace line with size
+D 0x08000330 L 1024 # Store trace line. Uses default data
+D 0x08000200 S 8 2345 # Full store trace line with size and data
 # The above empty line should be ignored
-!I 0x04000050 L 4 # Line with breakpoint
+!I 0x08000150 L 4 # Line with breakpoint
 # Comment
-I 0x0a12f03c L # Minimum fetch trace line. Use default size
-D 0x041d60ac L # Minimum load trace line. Use default size
-D 0xC30F21A0 S # Minimum store trace line. Uses default size and data
-I 0xAbc00001 L 32 # Full fetch trace line with size
-D 0x32f7a0b1 L 16 # Full load trace line with size
-D 0x527e9A30 L 1024 # Store trace line. Uses default data
-D 0x12cefA00 S 8 2345 # Full store trace line with size and data
+I 0x0800003c L # Minimum fetch trace line. Use default size
+D 0x080007ac L # Minimum load trace line. Use default size
+D 0x080006A0 S # Minimum store trace line. Uses default size and data
+I 0x08000501 L 32 # Full fetch trace line with size
+D 0x080004b1 L 16 # Full load trace line with size
+D 0x08000330 L 1024 # Store trace line. Uses default data
+D 0x08000200 S 8 2345 # Full store trace line with size and data
 # The above empty line should be ignored
-! I 0x04000050 L 4 # Line with breakpoint
+! I 0x08000150 L 4 # Line with breakpoint
