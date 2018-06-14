@@ -1,5 +1,6 @@
 ﻿#include <stdio.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "datamanipulation.h"
 #include "confparser.h"
@@ -272,6 +273,28 @@ int parseConfiguration(dictionary *ini) {
     parseConfDouble(ini,"memory:access_time_burst",&memory.access_time_burst, &errors);
     parseConfLongK1024(ini,"memory:page_size",&memory.page_size,&errors);
     parseConfAddress(ini,"memory:page_base_address",&memory.page_base_address,&errors);
+
+
+    if(memory.size>pow(2, cpu.address_width)){
+	fprintf(stderr,"Error: memory:size is too big for a %ld bits machine.\n", cpu.address_width );
+        errors++;
+    }
+    if(memory.size%memory.page_size!=0){
+	fprintf(stderr,"Error: memory:size must be a multiple of memory:page_size\n");
+        errors++;
+    }
+    if(!isPowerOf2(memory.page_size)){
+	fprintf(stderr,"Error: memory:page_size must be power of 2\n");
+        errors++;
+    }
+    if(memory.page_base_address%memory.page_size!=0){
+	fprintf(stderr,"Error: memory:page_base_address is invalid\n");
+        errors++;
+    }
+    if(memory.page_base_address<0||memory.page_base_address>pow(2, cpu.address_width)-1){
+	fprintf(stderr,"Error: memory:page_base_address is out of range.\n");
+        errors++;
+    }
 
     // READING ALL THE CACHES CONFIGURATION /////////////////////////////////////////
     // Browse the cache array and check the configuration of each cache.
