@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "gui.h"
 #include "datamanipulation.h"
 #include "traceparser.h"
@@ -18,8 +19,8 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
 #endif
    // Set default values for optional fields
    int hasBreakPoint=DEFAULT_HAS_BREAK_POINT;
-   int size=DEFAULT_SIZE;
-   int data=DEFAULT_DATA;
+   int size=cpu.word_width/8;
+   long data=DEFAULT_DATA;
    int instructionOrData=DEFAULT_INSTRUCTION_OR_DATA;
    int operationType=DEFAULT_OPERATION_TYPE;
    long address=DEFAULT_ADDRESS; 
@@ -74,13 +75,23 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
                fprintf(stderr,"size must be power of 2. Line %d\n", lineNumber);
                return -1;
             }
+            int word_bytes=cpu.word_width/8;
+            if(size!=(word_bytes)){
+               fprintf(stderr,"Only word size access is already implemented. Please, use %d bytes size. Line %d\n", word_bytes, lineNumber);
+               return -1;
+            }
             break;
          case 4: // Data (Must be a number)
             if(!isCorrectDecimal(pch)){
                fprintf(stderr,"invalid data. Line %d\n", lineNumber);
                return -1;					
             }
-            data = atoi(pch);
+            data = atol(pch);
+            if(ceil(log(data+1)/log(2))>(size*8)){
+	       
+               fprintf(stderr,"data value is too large to be stored in %d bytes. Line %d\n", word_bytes, lineNumber);
+               return -1;
+            }
             break;
          default: // Too many fields
             fprintf(stderr,"too many fields. Line %d\n", lineNumber);
