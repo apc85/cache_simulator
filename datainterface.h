@@ -5,18 +5,18 @@
 #include "datastore.h"
 
 enum {
-    BLUE=0,
-    BLACK=1,
-    YELLOW=2,
-    GREEN=3,
-    RED=4,
-    GREY=5,
-    ORANGE=6,
-    PURPLE=7,
-    PINK=8,
-    LIGHT_BLUE=9,
-    LIGTH_GREE=10,
-    WHITE=11
+    READ,
+    WRITE ,
+    YELLOW,
+    GREEN,
+    RED,
+    GREY,
+    ORANGE,
+    PURPLE,
+    PINK,
+    LIGHT_BLUE,
+    LIGTH_GREE,
+    WHITE,
 };
 
 struct cacheLine{
@@ -39,6 +39,8 @@ struct memoryPosition{
   long content;
   void * user_content;
 };
+
+extern char *interfaceError;
 
 //para caches unificadas
 void showCacheLine(int level, int i);
@@ -63,13 +65,13 @@ void setColorInstructionsCacheLine(int level, int i, int color);
 void resetInstructionCache(int level);
 void writeBlankInstructionCacheLine(int level, long line);
 
-//para la memory
-int showPosicionMemory(int i);
-int readPosicionMemory(struct memoryPosition *pos, int i);
-int writePosicionMemory(struct memoryPosition *pos, int i);
-int setColorMemoryPosition(int i, int color);
+// Function calls to manipulate the memory
+int showMemoryAddress(long address);
+int readMemoryAddress(struct memoryPosition *pos, long address);
+int writeMemoryAddress(struct memoryPosition *pos, long address);
+int setMemoryAddressColor(long address, int color);
 void resetMemory();
-void writeBlankMemoryPosition(long positionIndex);
+void clearMemoryAddress(long address);
 
 //para las estadisticas
 void setStatistics(char* component, char* property, char* value);

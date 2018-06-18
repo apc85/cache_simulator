@@ -13,7 +13,7 @@ enum loadOrStore { LOAD=3, STORE=4 };
 #define DEFAULT_OPERATION_TYPE 0;
 #define DEFAULT_ADDRESS 0;
 
-struct memOperation{
+struct memOperation {
   int hasBreakPoint;
   int instructionOrData;
   long address;
@@ -26,9 +26,9 @@ struct memOperation{
 extern struct memOperation* memoryOperations;
 
 int readTraceFile(char * filename);
-int countLines(char* filename);
 void freeMemory();
 void showOperations();
 int preprocessTraceLine(char *currentLine);
 int parseLine(char* line, int lineNumber, struct memOperation *dirOperationGenerar);
+void printMemOperation(FILE *fp, struct memOperation *operation);
 #endif

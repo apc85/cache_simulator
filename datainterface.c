@@ -3,7 +3,9 @@
 #include "datainterface.h"
 
 //colors defined to be used in the program
-const char* const colores[]={"blue", "black", "yellow", "green", "red", "grey", "orange", "purple", "pink", "lightblue", "lightgreen", "white"};
+const char* const colors[] = { "green", "red", "yellow", "green", "red", "grey", "orange", "purple", "pink", "lightblue", "lightgreen", "white"};
+
+char *interfaceError = NULL;
 
 /**
  * This function sets memory to its initial state.
@@ -102,7 +104,7 @@ void resetDataCache(int level){
             TIMES_ACCESSED, times_accessed,
             LAST_ACCESSED, last_accessed,
             FIRST_ACCESSED, first_accessed,
-            COLOR_CACHE, colores[WHITE],
+            COLOR_CACHE, colors[WHITE],
             -1);
       //move iter to next position
       gtk_tree_model_iter_next (GTK_TREE_MODEL(model), &iter);
@@ -165,7 +167,7 @@ void resetInstructionCache(int level){
             TIMES_ACCESSED, times_accessed,
             LAST_ACCESSED, last_accessed,
             FIRST_ACCESSED, first_accessed,
-            COLOR_CACHE, colores[WHITE],
+            COLOR_CACHE, colors[WHITE],
             -1);
       //move iter to next position
       gtk_tree_model_iter_next (GTK_TREE_MODEL(model), &iter);
@@ -469,13 +471,13 @@ void writeLineCacheInstructions(int level, struct cacheLine* line, int i){
 }
 /**
  * This function shows a memory position
- * @param i memory address
+ * @param address is the memory address
  * @return 0 if correct -1 if not word address error, -2 if out of page error
  */
-int showPosicionMemory(int i){
+int showMemoryAddress(long address){
    struct memoryPosition pos;
    //I read the memory position
-   int returned=readPosicionMemory(&pos, i);
+   int returned=readMemoryAddress(&pos, address);
    if(returned!=0){
       return returned;
    }
@@ -488,25 +490,26 @@ int showPosicionMemory(int i){
 }
 /**
  * This function reads a memory position
- * @param pos. Read data will be placed in here. User must take care of freeing pos.content
- * @param i memory address
+ * @param pos. Read data will be placed in here. User must take care of freeing pos.user_content
+ * @param address is the memory address
  * @return 0 if correct -1 if not word address error, -2 if out of page error
  */
-int readPosicionMemory(struct memoryPosition *pos, int i){
+int readMemoryAddress(struct memoryPosition *pos, long address){
    GtkTreeModel *model= GTK_TREE_MODEL(modelMEMORY);
    GtkTreeIter iter;
-   char iterstring[50];
-   //if not word address return error
-   if(i%(cpu.word_width/8)!=0){
+   // if not word address return error
+   if(address % (cpu.word_width/8)!=0){
+      interfaceError = "not word address";
       return -1;
    }
-   //if out of page return error
-   if(i<memory.page_base_address || i>(memory.page_base_address+memory.page_size)){
+   // if out of page return error
+   if(address <memory.page_base_address || address >(memory.page_base_address+memory.page_size)){
+      interfaceError = "out of page";
       return -2;
    }
-   //get the table row from the memory address
-   i=(i-memory.page_base_address)/(cpu.word_width/8);   
-   sprintf(iterstring, "%d", i);	
+   // get the table row from the memory address
+   char iterstring[50];
+   sprintf(iterstring, "%ld", (address-memory.page_base_address)/(cpu.word_width/8));	
    gtk_tree_model_get_iter_from_string (model,
          &iter,
          iterstring);
@@ -518,37 +521,41 @@ int readPosicionMemory(struct memoryPosition *pos, int i){
          CONTENT, &b,
          USER_CONTENT, &c,
          -1);
-   (*pos).address=strtol(a, NULL, 16);
-   (*pos).content=strtol(b, NULL, 16);
-   (*pos).user_content=c;
+   pos->address = strtol(a, NULL, 16);
+   pos->content = strtol(b, NULL, 16);
+   pos->user_content = c;
+   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
+         COLOR, colors[READ],
+         -1);
+   return 0;
 }
 /**
  * This function writes a memory position.
  * @param pos. Data to be written will be read from this struct.
- * @param i memory address
+ * @param address is the memory address
  * @return 0 if correct -1 if not word address error, -2 if out of page error
  */
-int writePosicionMemory(struct memoryPosition *pos, int i){
+int writeMemoryAddress(struct memoryPosition *pos, long address){
    GtkTreeModel *model= GTK_TREE_MODEL(modelMEMORY);
    GtkTreeIter iter;
-   char iterstring[50];
-   //if not word address return error
-   if(i%(cpu.word_width/8)!=0){
+   // if not word address return error
+   if(address % (cpu.word_width/8)!=0){
+      interfaceError = "not word address";
       return -1;
    }
    //if out of page return error
-   if(i<memory.page_base_address || i>(memory.page_base_address+memory.page_size)){
+   if(address < memory.page_base_address || address > (memory.page_base_address+memory.page_size)){
+      interfaceError = "out of page";
       return -2;
    }
-   //get the table row from the memory address
-   i=(i-memory.page_base_address)/(cpu.word_width/8);   
-   sprintf(iterstring, "%d", i);	
    char a[100];
    char b[100];
-   void* c=NULL;
-   sprintf(a, "%0*lx", (int)cpu.address_width/4, (*pos).address);
-   sprintf(b, "%0*lx", (int)cpu.word_width/4, (*pos).content);
-   c=(*pos).user_content;
+   void* c=pos->user_content;
+   sprintf(a, "%0*lx", (int)cpu.address_width/4, pos->address);
+   sprintf(b, "%0*lx", (int)cpu.word_width/4, pos->content);
+   char iterstring[50];
+   //get the table row from the memory address
+   sprintf(iterstring, "%ld", (address-memory.page_base_address)/(cpu.word_width/8));	
    gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
          &iter,
          iterstring);
@@ -557,33 +564,49 @@ int writePosicionMemory(struct memoryPosition *pos, int i){
          CONTENT, &b,
          USER_CONTENT, c,
          -1);
+   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
+         COLOR, colors[WRITE],
+         -1);
+   return 0;
 }
 /**
  * This function colours a memory position
- * @param i memory address
+ * @param address is the memory address
  * @param color. This is an enum type. It tell the function which color to use.
  */
-int setColorMemoryPosition(int i, int color){
+int setMemoryAddressColor(long address, int color){
    GtkTreeModel *model= GTK_TREE_MODEL(modelMEMORY);
    GtkTreeIter iter;
    char iterstring[50];
    //if not word address return error
-   if(i%(cpu.word_width/8)!=0){
+   if(address % (cpu.word_width/8) != 0){
+      interfaceError = "not word address";
       return -1;
    }
    //if out of page return error
-   if(i<memory.page_base_address || i>(memory.page_base_address+memory.page_size)){
+   if(address <memory.page_base_address || address >(memory.page_base_address+memory.page_size)){
+      interfaceError = "out of page";
       return -2;
    }
    //get the table row from the memory address
-   i=(i-memory.page_base_address)/(cpu.word_width/8);   
-   sprintf(iterstring, "%d", i);	
+   sprintf(iterstring, "%ld", (address-memory.page_base_address)/(cpu.word_width/8));	
    gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
          &iter,
          iterstring);
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-         COLOR, colores[color],
+         COLOR, colors[color],
          -1);
+   return 0;
+}
+/**
+ * This function sets a memory word position to its initial value
+ * @param address is the memory address
+ */
+void clearMemoryAddress(long address){
+   struct memoryPosition pos;
+   pos.address=address * cpu.word_width/8;
+   pos.content=0;
+   writeMemoryAddress(&pos, address);
 }
 /**
  * This function colours a data cache line
@@ -600,7 +623,7 @@ void setColorDataCacheLine(int level, int i, int color){
          &iter,
          iterstring);
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-         COLOR_CACHE, colores[color],
+         COLOR_CACHE, colors[color],
          -1);
 }
 /**
@@ -627,19 +650,8 @@ void setColorInstructionsCacheLine(int level, int i, int color){
          &iter,
          iterstring);
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-         COLOR_CACHE, colores[color],
+         COLOR_CACHE, colors[color],
          -1);
-}
-/**
- * This function sets a memory word position to its initial value
- * @param positionIndex to reset
- */
-void writeBlankMemoryPosition(long positionIndex){
-   struct memoryPosition pos;
-   pos.address=positionIndex*(cpu.word_width/8);
-   pos.content=0;
-   printf("%ld\n", positionIndex );
-   writePosicionMemory(&pos, positionIndex);
 }
 /**
  * This function sets a cache line to its initial value
