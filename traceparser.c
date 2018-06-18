@@ -9,6 +9,9 @@
 
 struct memOperation* memoryOperations = NULL;
 
+// Private functions
+int countLines(FILE* fp);
+
 /**
  * Parse a trace line. It receives a string with the trace line and its line number in the trace file.
  * It returns by reference a structure with the parsed information.
@@ -122,53 +125,23 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
    }
    return 0;
 }
+
+void printMemOperation(FILE *fp, struct memOperation *operation) {
+   fprintf(fp, operation->hasBreakPoint ? "! " : "  ");
+   fprintf(fp, operation->operationType==LOAD ? "L " : "S ");
+   fprintf(fp, "%0*lx ", (int)cpu.address_width/4, operation->address);
+   fprintf(fp, operation->instructionOrData==INSTRUCTION ? "I " : "D ");
+   fprintf(fp, "% d ", operation->size);
+   fprintf(fp, "%ld", operation->data);
+   fprintf(fp,"\n");
+}
+
 /**
  * function for showing all values loaded from tracefile
  */
 void showOperations(){
-   fprintf(stderr,"\n");
    for(int i=0; i<numberOfOperations; i++){
-      if(memoryOperations[i].hasBreakPoint){
-         fprintf(stderr," ! ");
-         if(memoryOperations[i].instructionOrData==INSTRUCTION){
-            fprintf(stderr,"I ");
-         }
-         if(memoryOperations[i].instructionOrData==DATA){
-            fprintf(stderr,"D ");
-         }
-      }else{
-         if(memoryOperations[i].instructionOrData==INSTRUCTION){
-            fprintf(stderr,"   I ");
-         }
-         if(memoryOperations[i].instructionOrData==DATA){
-            fprintf(stderr,"   D ");
-         }
-      }
-      char number[20];
-      sprintf(number, "0x%lx",memoryOperations[i].address);
-      int len= strlen(number);
-      int numEspacios=16-len;
-      fprintf(stderr," %s ", number);
-      for(int j=0; j<numEspacios; j++){
-         fprintf(stderr," ");
-      }
-      if(memoryOperations[i].operationType==LOAD){
-         fprintf(stderr," L ");
-      }
-      if(memoryOperations[i].operationType==STORE){
-         fprintf(stderr," S ");
-      }
-      char number2[20];
-      sprintf(number2, " %d ", memoryOperations[i].size);
-      len=strlen(number2);
-      numEspacios=10-len;
-      fprintf(stderr," %s ", number2);
-      for(int j=0; j<numEspacios; j++){
-         fprintf(stderr," ");
-      }
-
-      fprintf(stderr," %ld ", memoryOperations[i].data);
-      fprintf(stderr,"\n");
+      printMemOperation(stderr,&memoryOperations[i]);
    }
 }
 
@@ -176,7 +149,6 @@ void showOperations(){
  * Remove comments and other string operations on a line from a trace file.
  * Returns 1 if the line is not empty, after removing the comments.
  */
-
 int preprocessTraceLine(char *currentLine) {
    int emptyLine=1;
    for(int i=0; currentLine[i]!='\0'; i++){
@@ -204,20 +176,23 @@ int preprocessTraceLine(char *currentLine) {
 int readTraceFile(char * filename){
    numberOfOperations = 0;
    int errors = 0;
-   int numberOfLines = countLines(filename);
-   if(numberOfLines == -1){
-      return -1;
-   }
    FILE *file;
    char *currentLine = NULL;
    size_t len = 0;
    size_t read;
+
+#if DEBUG
+    printf("Loading trace file: %s\n", filename);
+#endif
 
    file=fopen(filename, "r");
    if (file == NULL){
       fprintf(stderr,"Error: can not open file %s.\n",filename);
       return -1;
    }
+
+   int numberOfLines = countLines(file);
+   rewind(file);
 
    memoryOperations=NULL;
    if(!useGUI){
@@ -277,20 +252,14 @@ int readTraceFile(char * filename){
 }
 
 /**
- * Count the number of lines in the file. Returns -1 on errors.
+ * Count the number of lines in the file.
  */
-int countLines(char* filename){
-   FILE *fp;
+int countLines(FILE* fp){
    int count = 0;
-   char c; 
 
-   if ((fp = fopen(filename, "r")) == NULL)
-      return -1;
-
-   for (c = getc(fp); c != EOF; c = getc(fp))
+   for (char c = getc(fp); c != EOF; c = getc(fp))
       if (c == '\n')
-         count = count + 1;
-   fclose(fp);
+         count++;
    return count;
 }
 
