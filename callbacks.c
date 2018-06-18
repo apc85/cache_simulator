@@ -107,10 +107,10 @@ void callbackTest( GtkWidget *widget, gpointer   data){
    pos.content=1024;
    char cadena[]="hola mundo. Este es el contenido del usuario.";
    pos.user_content=cadena;
-   writePosicionMemory(&pos, 134217732);
-   showPosicionMemory(9);
-   showPosicionMemory(10);
-   showPosicionMemory(11);
+   writeMemoryAddress(&pos, 134217732);
+   showMemoryAddress(9);
+   showMemoryAddress(10);
+   showMemoryAddress(11);
    struct cacheLine line;
    line.tag=2;
    line.line=1;
@@ -132,7 +132,7 @@ void callbackTest( GtkWidget *widget, gpointer   data){
    showCacheLineData(0, 7);
    showCacheLine(1, 7);
    showCacheLine(1, 6);
-   setColorMemoryPosition(134217732, 5);
+   setMemoryAddressColor(134217732, 5);
    setColorDataCacheLine(0, 2, 9);
    setColorInstructionsCacheLine(0, 2, 10);
    //setColorInstructionsCacheLine(0, 2, 11);
