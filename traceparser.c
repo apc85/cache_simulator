@@ -64,6 +64,10 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
                return -1;
             }
             instructionOrData = *pch == 'I' ? INSTRUCTION : DATA;
+            if(operationType==STORE && instructionOrData==INSTRUCTION){
+               fprintf(stderr,"You can not store (S) an Instruction (I). Line %d\n", lineNumber);
+               return -1;
+            }
             break;
          case 3: // Size (Must be number of bytes and power of two)
             if(!isCorrectDecimal(pch)){
