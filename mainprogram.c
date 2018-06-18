@@ -13,8 +13,9 @@
 
 void printUsage() {
    printf(
-      "Usage: %s [OPTION]... <file>.ini\n"
+      "Usage: %s [OPTION]... <file>.ini [<file>.vca]\n"
       "Simulate the memory hierarchy defined in <file>.ini.\n"
+      "Optionally provide a trace file. This overides the one specified in the ini file.\n"
       "This a list of the options accepted:\n"
       "\n"
       "  -g    toggle GUI\n"
@@ -58,12 +59,17 @@ int main(int argc, char *argv[]) {
         abort();
       }
 
-    // Check that there is at leas one configuration file 
-    if(optind == argc) {
+    // Check that there is at least one configuration file.
+    if(argc - optind <= 0) {
        fprintf (stderr, "Must supply a <file>.ini on the command line.\n");
        return 1;
     }
 
+    // Check that there are not too many command line arguments.
+    if(argc - optind > 2) {
+       fprintf (stderr, "Too many command line arguments.\n");
+       return 1;
+    }
 
     // Read configuration file
     dictionary *ini;
@@ -71,12 +77,15 @@ int main(int argc, char *argv[]) {
        return 1;
     }
 
-
     // Parse read configuration and populate global configuration variables.
     if(parseConfiguration(ini) != 0) {
        return 1;
     }
- 
+
+    // Override trace file if there is a filename on the command line.
+    if(optind+1 < argc) {
+       cpu.trace_file = argv[optind +1];
+    }
 
     // Load trace file specified in the configuration file
     if(readTraceFile((char *)cpu.trace_file) != 0) {
