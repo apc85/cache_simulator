@@ -46,7 +46,7 @@
   #define MAX_CACHES 10
   int numberCaches;
 
-  #define N_BITS_MASK 8
+  #define N_BITS_MASK 9
 
   struct structCpu cpu;
   struct structMemory memory;

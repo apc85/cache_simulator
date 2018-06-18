@@ -77,6 +77,7 @@ void resetDataCache(int level){
    int dirty=0;
    int times_accessed=0;
    int last_accessed=0;
+   int first_accessed=0;
    long cache_content[numWords];
    char cache_content_char[2000];
    for(int i=0; i<numWords; i++){
@@ -100,6 +101,7 @@ void resetDataCache(int level){
             DIRTY, dirty,
             TIMES_ACCESSED, times_accessed,
             LAST_ACCESSED, last_accessed,
+            FIRST_ACCESSED, first_accessed,
             COLOR_CACHE, colores[WHITE],
             -1);
       //move iter to next position
@@ -139,6 +141,7 @@ void resetInstructionCache(int level){
    int dirty=0;
    int times_accessed=0;
    int last_accessed=0;
+   int first_accessed=0;
    long cache_content[numWords];
    char cache_content_char[2000];
    for(int i=0; i<numWords; i++){
@@ -161,6 +164,7 @@ void resetInstructionCache(int level){
             DIRTY, dirty,
             TIMES_ACCESSED, times_accessed,
             LAST_ACCESSED, last_accessed,
+            FIRST_ACCESSED, first_accessed,
             COLOR_CACHE, colores[WHITE],
             -1);
       //move iter to next position
@@ -202,7 +206,7 @@ void showCacheLineData(int level, int i){
    printf("line: %lx     tag: %lx    set: %lx\n", line.line, line.tag, line.set);
    printf("content: %s\n", contentString);
    printf("user content: %s\n", (char*)line.user_content);
-   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d\n", line.valid, line.dirty, line.last_accessed, line.times_accessed);
+   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d  first accessed: %d\n", line.valid, line.dirty, line.last_accessed, line.times_accessed, line.first_accessed);
    printf("------------------------------------------------------\n");
    free(line.content);
 }
@@ -232,7 +236,8 @@ void readLineCacheData(int level, struct cacheLine* line, int i){
    int g;
    int h;
    int j;
-   //read the values from data sruct
+   int k;
+   //read the values from data structure
    gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
          LINE, &a,
          TAG, &b,
@@ -243,6 +248,7 @@ void readLineCacheData(int level, struct cacheLine* line, int i){
          DIRTY, &g,
          TIMES_ACCESSED, &h,
          LAST_ACCESSED, &j,
+         FIRST_ACCESSED, &k,
          -1);
    //number of words in a cache line
    int numWords = (caches[level].line_size*8)/cpu.word_width;
@@ -261,6 +267,7 @@ void readLineCacheData(int level, struct cacheLine* line, int i){
    line->dirty = g;
    line->times_accessed = h;
    line->last_accessed = j;
+   line->first_accessed = k;
 }
 /**
  * This function reads a instruction cache line.
@@ -288,6 +295,7 @@ void readLineCacheInstructions(int level, struct cacheLine* line, int i){
    int g;
    int h;
    int j;
+   int k;
    //read the values from data sruct
    gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
          LINE, &a,
@@ -299,6 +307,7 @@ void readLineCacheInstructions(int level, struct cacheLine* line, int i){
          DIRTY, &g,
          TIMES_ACCESSED, &h,
          LAST_ACCESSED, &j,
+         FIRST_ACCESSED, &k,
          -1);
    //number of words in a cache line
    int numWords=(caches[level].line_size*8)/cpu.word_width;
@@ -316,6 +325,7 @@ void readLineCacheInstructions(int level, struct cacheLine* line, int i){
    (*line).dirty=g;
    (*line).times_accessed=h;
    (*line).last_accessed=j;
+   (*line).first_accessed=k;
 }
 /**
  * This function reads a Instruction cache line.
@@ -334,7 +344,7 @@ void showCacheLineInstructions(int level, int i){
    printf("line: %lx     tag: %lx    set: %lx\n", line.line, line.tag, line.set);
    printf("content:%s\n", contentString);
    printf("user content: %s\n", (char*)line.user_content);
-   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d\n", line.valid, line.dirty, line.last_accessed, line.times_accessed);
+   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d  first accessed: %d\n", line.valid, line.dirty, line.last_accessed, line.times_accessed, line.first_accessed);
    printf("------------------------------------------------------\n");
    free(line.content);
 }
@@ -366,6 +376,7 @@ void writeLineCacheData(int level, struct cacheLine* line, int i){
    int g;
    int h;
    int j;
+   int k;
    int numLines=caches[level].size/caches[level].line_size;
    int lineSize=caches[level].line_size;
    int asociativity=caches[level].asociativity;
@@ -382,6 +393,7 @@ void writeLineCacheData(int level, struct cacheLine* line, int i){
    g=(*line).dirty;
    h=(*line).times_accessed;
    j=(*line).last_accessed;
+   k=(*line).first_accessed;
    char contentString[2000];
    contentArrayToString((*line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
    gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
@@ -397,6 +409,7 @@ void writeLineCacheData(int level, struct cacheLine* line, int i){
          DIRTY, g,
          TIMES_ACCESSED, h,
          LAST_ACCESSED, j,
+         FIRST_ACCESSED, k,
          -1);
 }
 /**
@@ -418,6 +431,7 @@ void writeLineCacheInstructions(int level, struct cacheLine* line, int i){
    int g;
    int h;
    int j;
+   int k;
    int numLines=caches[level].size/caches[level].line_size;
    int lineSize=caches[level].line_size;
    int asociativity=caches[level].asociativity;
@@ -434,6 +448,7 @@ void writeLineCacheInstructions(int level, struct cacheLine* line, int i){
    g=(*line).dirty;
    h=(*line).times_accessed;
    j=(*line).last_accessed;
+   k=(*line).first_accessed;
    char contentString[2000];
    contentArrayToString((*line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
    gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
@@ -449,6 +464,7 @@ void writeLineCacheInstructions(int level, struct cacheLine* line, int i){
          DIRTY, g,
          TIMES_ACCESSED, h,
          LAST_ACCESSED, j,
+         FIRST_ACCESSED, k,
          -1);
 }
 /**
@@ -654,6 +670,7 @@ void writeBlankDataCacheLine(int level, long line){
    cacheLineAdd.valid=0;
    cacheLineAdd.last_accessed=0;
    cacheLineAdd.times_accessed=0;
+   cacheLineAdd.first_accessed=0;
    long lineContent[numWords];
    for(int i=0; i<numWords; i++){
       lineContent[i]=0;	
@@ -683,6 +700,7 @@ void writeBlankInstructionCacheLine(int level, long line){
    cacheLineAdd.valid=0;
    cacheLineAdd.last_accessed=0;
    cacheLineAdd.times_accessed=0;
+   cacheLineAdd.first_accessed=0;
    long lineContent[numWords];
    for(int i=0; i<numWords; i++){
       lineContent[i]=0;	

@@ -120,6 +120,7 @@ void callbackTest( GtkWidget *widget, gpointer   data){
    line.valid=1;
    line.last_accessed=3;
    line.times_accessed=4;
+   line.first_accessed=5;
    line.content=(long[]){1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
    void * user_use;
    writeLineCacheInstructions(0, &line, 7);

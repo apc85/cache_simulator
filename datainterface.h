@@ -31,6 +31,7 @@ struct cacheLine{
   int dirty;
   int last_accessed;
   int times_accessed;
+  int first_accessed;
 };
 
 struct memoryPosition{

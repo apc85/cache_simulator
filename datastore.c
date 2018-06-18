@@ -44,17 +44,18 @@ void createCacheModel(int level){
    GtkListStore *modelData;
    GtkListStore *modelInstruction;
    /*
-      LINE=0,
-      SET=1,
-      VALID=2,
-      DIRTY=3,
-      TIMES_ACCESSED=4,
-      LAST_ACCESSED=5,
-      TAG=6,
-      CONTENT_CACHE=7,
-      COLOR_CACHE=8,
-      USER_CONTENT_CACHE=9,
-      N_COLUMNS_CACHE=10
+    LINE=0,
+    SET=1,
+    VALID=2,
+    DIRTY=3,
+    TIMES_ACCESSED=4,
+    LAST_ACCESSED=5,
+    FIRST_ACCESSED=6,
+    TAG=7,
+    CONTENT_CACHE=8,
+    COLOR_CACHE=9,
+    USER_CONTENT_CACHE=10,
+    N_COLUMNS_CACHE=11
     */
    modelData= gtk_list_store_new(N_COLUMNS_CACHE,
          G_TYPE_STRING,   
@@ -62,6 +63,7 @@ void createCacheModel(int level){
          G_TYPE_UINT,   
          G_TYPE_UINT,    
          G_TYPE_UINT,   
+         G_TYPE_UINT,
          G_TYPE_UINT,
          G_TYPE_STRING,
          G_TYPE_STRING,
@@ -76,6 +78,7 @@ void createCacheModel(int level){
             G_TYPE_UINT,   
             G_TYPE_UINT,    
             G_TYPE_UINT,   
+            G_TYPE_UINT,
             G_TYPE_UINT,
             G_TYPE_STRING,
             G_TYPE_STRING,
