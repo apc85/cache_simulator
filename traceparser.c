@@ -39,13 +39,13 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
    {
       // Current field
       switch(fieldId) {
-         case 0: // Instruction or Data (One character)
-            if(strlen(pch) != 1 || ( *pch != 'I' && *pch != 'D')) {
-               fprintf(stderr,"memory operation must be Intruction (I) or Data (D). Line %d\n", lineNumber);
+         case 0:// Load/Fetch or Store (One character)
+            if(strlen(pch) != 1 || ( *pch != 'L' && *pch != 'S')) {
+               fprintf(stderr,"memory operation must be Load/Fetch (L) or Store (S). Line %d\n", lineNumber);
                return -1;
             }
-            instructionOrData = *pch == 'I' ? INSTRUCTION : DATA;
-            break;
+            operationType = *pch == 'L' ? LOAD : STORE;
+            break; 
          case 1: // Address (Must be hexadecimal)
             if(!isCorrectHexadecimal(pch)){
                fprintf(stderr,"invalid address. line %d\n", lineNumber);
@@ -58,12 +58,12 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
                return -1;
 	    }
             break;
-         case 2: // Load/Fetch or Store (One character)
-            if(strlen(pch) != 1 || ( *pch != 'L' && *pch != 'S')) {
-               fprintf(stderr,"memory operation must be Load/Fetch (L) or Store (S). Line %d\n", lineNumber);
+         case 2: // Instruction or Data (One character)
+            if(strlen(pch) != 1 || ( *pch != 'I' && *pch != 'D')) {
+               fprintf(stderr,"memory operation must be Intruction (I) or Data (D). Line %d\n", lineNumber);
                return -1;
             }
-            operationType = *pch == 'L' ? LOAD : STORE;
+            instructionOrData = *pch == 'I' ? INSTRUCTION : DATA;
             break;
          case 3: // Size (Must be number of bytes and power of two)
             if(!isCorrectDecimal(pch)){
