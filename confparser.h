@@ -41,6 +41,8 @@
       int hexDigsSet;
       int hexDigsLine;
       int hexDigsTag;
+      int offsetBits;
+      int setBits;
   };
 
   #define NCLAVES_CPU 4

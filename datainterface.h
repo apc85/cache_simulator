@@ -20,18 +20,18 @@ enum {
 };
 
 struct cacheLine{
-  long line;
-  long tag;
-  long set;
-  long * content;
+  unsigned line;
+  unsigned tag;
+  unsigned set;
+  unsigned * content;
 
   void * user_content;
 
-  int valid;
-  int dirty;
-  int last_accessed;
-  int times_accessed;
-  int first_accessed;
+  unsigned valid;
+  unsigned dirty;
+  unsigned last_accessed;
+  unsigned times_accessed;
+  unsigned first_accessed;
 };
 
 struct memoryPosition{
@@ -50,7 +50,10 @@ void setColorCacheLine(int level, int i, int color);
 void resetCache(int level);
 void writeBlankCacheLine(int level, unsigned line);
 
+void writeCacheLine(int level, struct cacheLine *line, unsigned line_number);
+
 //para caches divididas
+long findTagInCache(int level, unsigned requestTag);
 void showCacheLineData(int level, int i);
 void readLineCacheData(int level, struct cacheLine* line, int i);
 void writeLineCacheData(int level, struct cacheLine* line, int i);

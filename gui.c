@@ -231,7 +231,6 @@ void line_cell_data_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, Gtk
    guint  number;
    gchar  buf[64];
    gtk_tree_model_get(model, iter, LINE, &number, -1);
-   printf("%u\n",level);
    g_snprintf(buf, sizeof(buf), "%0*x", caches[level].hexDigsLine, number);
    g_object_set(renderer, "text", buf, NULL);
 }
@@ -242,7 +241,6 @@ void set_cell_data_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkT
    guint  number;
    gchar  buf[64];
    gtk_tree_model_get(model, iter, SET, &number, -1);
-   printf("%u\n",level);
    g_snprintf(buf, sizeof(buf), "%0*x", caches[level].hexDigsSet, number);
    g_object_set(renderer, "text", buf, NULL);
 }
@@ -253,7 +251,6 @@ void tag_cell_data_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkT
    guint  number;
    gchar  buf[64];
    gtk_tree_model_get(model, iter, TAG, &number, -1);
-   printf("%u\n",level);
    g_snprintf(buf, sizeof(buf), "%0*x", caches[level].hexDigsTag, number);
    g_object_set(renderer, "text", buf, NULL);
 }
@@ -305,41 +302,10 @@ void createPanelCache(int level) {
       gtk_tree_view_column_set_cell_data_func(column, renderer, set_cell_data_func, (void*) level, NULL);
    }
    if(mask[VALID]=='1'){
-      column = gtk_tree_view_column_new_with_attributes("valid",
-            gtk_cell_renderer_text_new(),
+      renderer = gtk_cell_renderer_text_new();
+      column = gtk_tree_view_column_new_with_attributes("V",
+            renderer,
             "text", VALID,
-            "background", COLOR_CACHE,
-            NULL);
-      gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
-   }
-   if(mask[DIRTY]=='1'){
-      column = gtk_tree_view_column_new_with_attributes("dirty",
-            gtk_cell_renderer_text_new(),
-            "text", DIRTY,
-            "background", COLOR_CACHE,
-            NULL);
-      gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
-   }
-   if(mask[LAST_ACCESSED]=='1'){
-      column = gtk_tree_view_column_new_with_attributes("last accessed",
-            gtk_cell_renderer_text_new(),
-            "text", LAST_ACCESSED,
-            "background", COLOR_CACHE,
-            NULL);
-      gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
-   }
-   if(mask[TIMES_ACCESSED]=='1'){
-      column = gtk_tree_view_column_new_with_attributes("times accessed",
-            gtk_cell_renderer_text_new(),
-            "text", TIMES_ACCESSED,
-            "background", COLOR_CACHE,
-            NULL);
-      gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
-   }
-   if(mask[FIRST_ACCESSED]=='1'){
-      column = gtk_tree_view_column_new_with_attributes("first accessed",
-            gtk_cell_renderer_text_new(),
-            "text", FIRST_ACCESSED,
             "background", COLOR_CACHE,
             NULL);
       gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
@@ -353,6 +319,38 @@ void createPanelCache(int level) {
             NULL);
       gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
       gtk_tree_view_column_set_cell_data_func(column, renderer, tag_cell_data_func, (void*) level, NULL);
+   }
+   if(mask[DIRTY]=='1'){
+      column = gtk_tree_view_column_new_with_attributes("D",
+            gtk_cell_renderer_text_new(),
+            "text", DIRTY,
+            "background", COLOR_CACHE,
+            NULL);
+      gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
+   }
+   if(mask[TIMES_ACCESSED]=='1'){
+      column = gtk_tree_view_column_new_with_attributes("AC",
+            gtk_cell_renderer_text_new(),
+            "text", TIMES_ACCESSED,
+            "background", COLOR_CACHE,
+            NULL);
+      gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
+   }
+   if(mask[LAST_ACCESSED]=='1'){
+      column = gtk_tree_view_column_new_with_attributes("LA",
+            gtk_cell_renderer_text_new(),
+            "text", LAST_ACCESSED,
+            "background", COLOR_CACHE,
+            NULL);
+      gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
+   }
+   if(mask[FIRST_ACCESSED]=='1'){
+      column = gtk_tree_view_column_new_with_attributes("FA",
+            gtk_cell_renderer_text_new(),
+            "text", FIRST_ACCESSED,
+            "background", COLOR_CACHE,
+            NULL);
+      gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
    }
    if(mask[CONTENT_CACHE]=='1'){
       column = gtk_tree_view_column_new_with_attributes("Content",

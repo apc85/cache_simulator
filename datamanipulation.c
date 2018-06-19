@@ -327,11 +327,11 @@ int isCorrectDecimal(char * number){
 /*
  * Convert an array of integers to a string
  */
-void contentArrayToString(long* array, char* content, int count, int width){
+void contentArrayToString(unsigned* array, char* content, int count, int width){
    char num[50];
    content[0]='\0';        
    for(int i=0; i<count; i++) {
-      sprintf(num, "%s%0*lx", i>0 ? " " : "", width, array[i]);
+      sprintf(num, "%s%0*x", i>0 ? " " : "", width, array[i]);
       strcat(content, num);
    }
 }
@@ -339,7 +339,7 @@ void contentArrayToString(long* array, char* content, int count, int width){
 /*
  * Convert a space separated string of hex numbers into an array of longs
  */
-void contentStringToArray(long* array, char* content, int count){
+void contentStringToArray(unsigned* array, char* content, int count){
    char *pch;
    pch = strtok (content," ");
    for(int i=0; pch != NULL || i < count; i++, pch = strtok (NULL, " ")) {

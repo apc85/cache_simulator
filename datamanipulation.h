@@ -30,7 +30,7 @@ double parseDouble(const char * cadena);
 long parseAddress(const char* page_base_address);
 int isCorrectHexadecimal(char * number);
 int isCorrectDecimal(char * number);
-void contentArrayToString(long* array, char* content, int count, int width);
-void contentStringToArray(long* array, char* content, int level);
+void contentArrayToString(unsigned* array, char* content, int count, int width);
+void contentStringToArray(unsigned* array, char* content, int level);
 
 #endif

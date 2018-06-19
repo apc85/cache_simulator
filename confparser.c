@@ -443,7 +443,9 @@ int parseConfiguration(dictionary *ini) {
        caches[cacheNumber].numWords    = caches[cacheNumber].line_size*8/cpu.word_width;
        caches[cacheNumber].hexDigsSet  = ceil(log(caches[cacheNumber].numSets)/log(16));
        caches[cacheNumber].hexDigsLine = ceil(log(caches[cacheNumber].numLines)/log(16));
-       caches[cacheNumber].hexDigsTag  = (cpu.address_width/3)-caches[cacheNumber].hexDigsSet-ceil(log(caches[cacheNumber].line_size)/log(16));
+       caches[cacheNumber].hexDigsTag  = (cpu.address_width/4)-caches[cacheNumber].hexDigsSet-ceil(log(caches[cacheNumber].line_size)/log(16));
+       caches[cacheNumber].offsetBits  = log(caches[cacheNumber].line_size)/log(2);
+       caches[cacheNumber].setBits     = log(caches[cacheNumber].numSets)/log(2);
     }
 
     if(errors>0) {
