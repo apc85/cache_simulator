@@ -168,38 +168,22 @@ char *nextLineTrace() {
 }
 
 
-void
-address_cell_data_func (GtkTreeViewColumn *col,
-                        GtkCellRenderer   *renderer,
-                        GtkTreeModel      *model,
-                        GtkTreeIter       *iter,
-                        gpointer           user_data)
+void address_cell_data_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter, gpointer user_data)
 {
-  guint  number;
-  gchar  buf[64];
-
-  gtk_tree_model_get(model, iter, user_data, &number, -1);
-
-  g_snprintf(buf, sizeof(buf), "%0*x", (int)cpu.address_width/4, number);
-
-  g_object_set(renderer, "text", buf, NULL);
+   guint  number;
+   gchar  buf[64];
+   gtk_tree_model_get(model, iter, user_data, &number, -1);
+   g_snprintf(buf, sizeof(buf), "%0*x", (int)cpu.address_width/4, number);
+   g_object_set(renderer, "text", buf, NULL);
 }
 
-void
-content_cell_data_func (GtkTreeViewColumn *col,
-                        GtkCellRenderer   *renderer,
-                        GtkTreeModel      *model,
-                        GtkTreeIter       *iter,
-                        gpointer           user_data)
+void content_cell_data_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter, gpointer user_data)
 {
-  guint  number;
-  gchar  buf[64];
-
-  gtk_tree_model_get(model, iter, user_data, &number, -1);
-
-  g_snprintf(buf, sizeof(buf), "%0*x", (int)cpu.word_width/4, number);
-
-  g_object_set(renderer, "text", buf, NULL);
+   guint  number;
+   gchar  buf[64];
+   gtk_tree_model_get(model, iter, user_data, &number, -1);
+   g_snprintf(buf, sizeof(buf), "%0*x", (int)cpu.word_width/4, number);
+   g_object_set(renderer, "text", buf, NULL);
 }
 
 /*
@@ -241,6 +225,39 @@ GtkWidget * createPanelMemory() {
    return vboxMEMORY;
 }
 
+void line_cell_data_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter, gpointer user_data)
+{
+   int level = (int) user_data;
+   guint  number;
+   gchar  buf[64];
+   gtk_tree_model_get(model, iter, LINE, &number, -1);
+   printf("%u\n",level);
+   g_snprintf(buf, sizeof(buf), "%0*x", caches[level].hexDigsLine, number);
+   g_object_set(renderer, "text", buf, NULL);
+}
+
+void set_cell_data_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter, gpointer user_data)
+{
+   int level = (int) user_data;
+   guint  number;
+   gchar  buf[64];
+   gtk_tree_model_get(model, iter, SET, &number, -1);
+   printf("%u\n",level);
+   g_snprintf(buf, sizeof(buf), "%0*x", caches[level].hexDigsSet, number);
+   g_object_set(renderer, "text", buf, NULL);
+}
+
+void tag_cell_data_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter, gpointer user_data)
+{
+   int level = (int) user_data;
+   guint  number;
+   gchar  buf[64];
+   gtk_tree_model_get(model, iter, TAG, &number, -1);
+   printf("%u\n",level);
+   g_snprintf(buf, sizeof(buf), "%0*x", caches[level].hexDigsTag, number);
+   g_object_set(renderer, "text", buf, NULL);
+}
+
 /**
  * Function to create the GUI panels of a cache level. Cache data structure must have been created previously.
  * @param level whose GUI panel will be generated.
@@ -252,13 +269,14 @@ void createPanelCache(int level) {
    //Creo la cache. en caso de que sea dividia esta será la parte de data
    GtkTreeIter   iter;
    GtkTreeViewColumn* column;
+   GtkCellRenderer *renderer;
    GtkListStore *modelData;
    GtkWidget *vboxData;
    GtkWidget *viewData;
    vboxData = gtk_vbox_new(FALSE, 2);
    int numLines=caches[level].size/caches[level].line_size;
    int asociativity=caches[level].asociativity;
-   int numsets=numLines/asociativity;
+   int numSets=numLines/asociativity;
    int numWords=(caches[level].line_size*8)/cpu.word_width;
    //createCacheModel(level);
    modelData=cacheLevels[level].modelData;
@@ -267,20 +285,24 @@ void createPanelCache(int level) {
    gtk_tree_selection_set_mode (selectionData, GTK_SELECTION_NONE);
    //CREO LAS COLUMNAS A MOSTRAR EN LA TABLA. No confundir con las columnas de la estructura de dados model
    if(mask[LINE]=='1'){
+      renderer = gtk_cell_renderer_text_new();
       column = gtk_tree_view_column_new_with_attributes("Line",
-            gtk_cell_renderer_text_new(),
+            renderer,
             "text", LINE,
             "background", COLOR_CACHE,
             NULL);
       gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
+      gtk_tree_view_column_set_cell_data_func(column, renderer, line_cell_data_func, (void*) level, NULL);
    }
    if(mask[SET]=='1'){
+      renderer = gtk_cell_renderer_text_new();
       column = gtk_tree_view_column_new_with_attributes("Set",
-            gtk_cell_renderer_text_new(),
+            renderer,
             "text", SET,
             "background", COLOR_CACHE,
             NULL);
       gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
+      gtk_tree_view_column_set_cell_data_func(column, renderer, set_cell_data_func, (void*) level, NULL);
    }
    if(mask[VALID]=='1'){
       column = gtk_tree_view_column_new_with_attributes("valid",
@@ -323,12 +345,14 @@ void createPanelCache(int level) {
       gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
    }
    if(mask[TAG]=='1'){
+      renderer = gtk_cell_renderer_text_new();
       column = gtk_tree_view_column_new_with_attributes("Tag",
-            gtk_cell_renderer_text_new(),
+            renderer,
             "text", TAG,
             "background", COLOR_CACHE,
             NULL);
       gtk_tree_view_append_column(GTK_TREE_VIEW(viewData), column);
+      gtk_tree_view_column_set_cell_data_func(column, renderer, tag_cell_data_func, (void*) level, NULL);
    }
    if(mask[CONTENT_CACHE]=='1'){
       column = gtk_tree_view_column_new_with_attributes("Content",

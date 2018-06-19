@@ -48,7 +48,7 @@ void readLineCache(int level, struct cacheLine* line, int i);
 void writeLineCache(int level, struct cacheLine* line, int i);
 void setColorCacheLine(int level, int i, int color);
 void resetCache(int level);
-void writeBlankCacheLine(int level, long line);
+void writeBlankCacheLine(int level, unsigned line);
 
 //para caches divididas
 void showCacheLineData(int level, int i);
@@ -56,14 +56,14 @@ void readLineCacheData(int level, struct cacheLine* line, int i);
 void writeLineCacheData(int level, struct cacheLine* line, int i);
 void setColorDataCacheLine(int level, int i, int color);
 void resetDataCache(int level);
-void writeBlankDataCacheLine(int level, long line);
+void writeBlankDataCacheLine(int level, unsigned line);
 
 void showCacheLineInstructions(int level, int i);
 void readLineCacheInstructions(int level, struct cacheLine* line, int i);
 void writeLineCacheInstructions(int level, struct cacheLine* line, int i);
 void setColorInstructionsCacheLine(int level, int i, int color);
 void resetInstructionCache(int level);
-void writeBlankInstructionCacheLine(int level, long line);
+void writeBlankInstructionCacheLine(int level, unsigned line);
 
 // Function calls to manipulate the memory
 int showMemoryAddress(long address);

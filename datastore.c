@@ -20,8 +20,8 @@ void createMemoryModel(){
       gtk_list_store_append(modelMEMORY, &iter);
       /* Fill fields with some data */
       gtk_list_store_set (modelMEMORY, &iter,
-            CONTENT, 0,
             ADDRESS, i,
+            CONTENT, 0,
             //COLOR, "blue",
             -1);
    }
@@ -53,14 +53,14 @@ void createCacheModel(int level){
     N_COLUMNS_CACHE=11
     */
    modelData= gtk_list_store_new(N_COLUMNS_CACHE,
-         G_TYPE_STRING,   
-         G_TYPE_STRING,   
+         G_TYPE_UINT,   
+         G_TYPE_UINT,   
          G_TYPE_UINT,   
          G_TYPE_UINT,    
          G_TYPE_UINT,   
          G_TYPE_UINT,
          G_TYPE_UINT,
-         G_TYPE_STRING,
+         G_TYPE_UINT,
          G_TYPE_STRING,
          G_TYPE_STRING,
          G_TYPE_POINTER
@@ -68,14 +68,14 @@ void createCacheModel(int level){
    cacheLevels[level].modelData=modelData;
    if(caches[level].separated){
       modelInstruction= gtk_list_store_new(N_COLUMNS_CACHE,
-            G_TYPE_STRING,   
-            G_TYPE_STRING,   
+            G_TYPE_UINT,   
+            G_TYPE_UINT,   
             G_TYPE_UINT,   
             G_TYPE_UINT,    
             G_TYPE_UINT,   
             G_TYPE_UINT,
             G_TYPE_UINT,
-            G_TYPE_STRING,
+            G_TYPE_UINT,
             G_TYPE_STRING,
             G_TYPE_STRING,
             G_TYPE_POINTER
@@ -85,13 +85,13 @@ void createCacheModel(int level){
    //modelMEMORY=modelData;	
    int numLines=caches[level].size/caches[level].line_size;
    int asociativity=caches[level].asociativity;
-   int numsets=numLines/asociativity;
+   int numSets=numLines/asociativity;
    int numWords=(caches[level].line_size*8)/cpu.word_width;
    if(caches[level].separated){
       numLines/=2;
    }
 #if DEBUG
-   fprintf(stderr,"cache level %d: lines: %d, asociativity: %d, sets: %d, words line: %d\n", level+1, numLines, asociativity, numsets, numWords);
+   fprintf(stderr,"cache level %d: lines: %d, asociativity: %d, sets: %d, words line: %d\n", level+1, numLines, asociativity, numSets, numWords);
 #endif
    for(int i=0; i<numLines; i++){
       gtk_list_store_append(modelData, &iter);

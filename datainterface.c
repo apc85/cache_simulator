@@ -47,57 +47,38 @@ void resetCache(int level){
 void resetDataCache(int level){
    //some memory hierarchy properties that will be used later
    int numLines=caches[level].size/caches[level].line_size;
-   int lineSize=caches[level].line_size;
-   int asociativity=caches[level].asociativity;
-   int numsets=numLines/asociativity;
    int numWords=(caches[level].line_size*8)/cpu.word_width;
    //if cache is divided cache size is half
    if(caches[level].separated){
       numLines/=2;
    }
    //this is for filling each field with the correct amount of bits it must be represented with.
-   int hexDigsSet=ceil(log(numsets)/log(16));
-   int hexDigsLine=ceil(log(numLines)/log(16));
-   int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
    struct cacheLine* line;
    GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
    GtkTreeIter iter;
    //get iter at first position
    gtk_tree_model_get_iter_first (model, &iter);
    //set each field to its initial value
-   char cache_line[100];
-   char cache_tag[100];
-   char cache_set[100];
-   void *user_content=NULL;
-   int valid=0;
-   int dirty=0;
-   int times_accessed=0;
-   int last_accessed=0;
-   int first_accessed=0;
    long cache_content[numWords];
-   char cache_content_char[2000];
    for(int i=0; i<numWords; i++){
       cache_content[i]=0;
    }
    //this converts form long array to string representation.
-
+   char cache_content_char[2000];
    contentArrayToString(cache_content, cache_content_char, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
    //I write all the reseted fields in each cache line
    for(int i=0; i<numLines; i++){ 
-      sprintf(cache_line, "%0*x", hexDigsLine, i);
-      sprintf(cache_tag, "%0*x", hexDigsTag, 0);
-      sprintf(cache_set, "%0*x", hexDigsSet, i/asociativity);
       gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-            LINE, &cache_line,
-            TAG, &cache_tag,
-            SET, &cache_set,
+            LINE, i,
+            TAG, 0,
+            SET, i/caches[level].asociativity,
             CONTENT_CACHE, cache_content_char,
-            USER_CONTENT_CACHE, user_content,
-            VALID, valid,
-            DIRTY, dirty,
-            TIMES_ACCESSED, times_accessed,
-            LAST_ACCESSED, last_accessed,
-            FIRST_ACCESSED, first_accessed,
+            USER_CONTENT_CACHE, NULL,
+            VALID, 0,
+            DIRTY, 0,
+            TIMES_ACCESSED, 0,
+            LAST_ACCESSED, 0,
+            FIRST_ACCESSED, 0,
             COLOR_CACHE, colors[WHITE],
             -1);
       //move iter to next position
@@ -113,14 +94,14 @@ void resetInstructionCache(int level){
    int numLines=caches[level].size/caches[level].line_size;
    int lineSize=caches[level].line_size;
    int asociativity=caches[level].asociativity;
-   int numsets=numLines/asociativity;
+   int numSets=numLines/asociativity;
    int numWords=(caches[level].line_size*8)/cpu.word_width;
    //if cache is divided cache size is half
    if(caches[level].separated){
       numLines/=2;
    }
    //this is for filling each field with the correct amount of bits it must be represented with.
-   int hexDigsSet=ceil(log(numsets)/log(16));
+   int hexDigsSet=ceil(log(numSets)/log(16));
    int hexDigsLine=ceil(log(numLines)/log(16));
    int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
    struct cacheLine* line;
@@ -231,55 +212,25 @@ int findTagInCache(int level, long tag) {
 void readLineCacheData(int level, struct cacheLine* line, int i){
    GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
    GtkTreeIter iter;
-   char iterstring[50];
-   //this is the line index in string format
-   sprintf(iterstring, "%d", i);	
-   //I get an iter pointing to the line which will be read
-   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
-         &iter,
-         iterstring);
-   //this is for temporally storing read values 
-   char* a;
-   char* b;
-   char* c;
-   char* d;
-   void* e;
-   int f;
-   int g;
-   int h;
-   int j;
-   int k;
-   //read the values from data structure
+   char contentString[2000];
+   contentArrayToString((*line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
+   gtk_tree_model_iter_nth_child (model, &iter, NULL, i);
    gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
-         LINE, &a,
-         TAG, &b,
-         SET, &c,
-         CONTENT_CACHE, &d,
-         USER_CONTENT_CACHE, &e,
-         VALID, &f,
-         DIRTY, &g,
-         TIMES_ACCESSED, &h,
-         LAST_ACCESSED, &j,
-         FIRST_ACCESSED, &k,
+         LINE, &line->line,
+         TAG, &line->tag,
+         SET, &line->set,
+         CONTENT_CACHE, contentString,
+         USER_CONTENT_CACHE, &line->user_content,
+         VALID, &line->valid,
+         DIRTY, &line->dirty,
+         TIMES_ACCESSED, &line->times_accessed,
+         LAST_ACCESSED, &line->last_accessed,
+         FIRST_ACCESSED, &line->first_accessed,
          -1);
    //number of words in a cache line
-   int numWords = (caches[level].line_size*8)/cpu.word_width;
-   long *array;
-   array = malloc((sizeof(long))*numWords);
+   line->content = malloc((sizeof(long))*caches[level].numWords);
    //turn String format to long array.
-   //contentStringToArray(array, d, level);
-   contentStringToArray(array, d, numWords);
-   //place values in struct return param so that caller user can get them
-   line->line = strtol(a, NULL, 16);
-   line->tag = strtol(b, NULL, 16);
-   line->set = strtol(c, NULL, 16);
-   line->content = array;
-   line->user_content = e;
-   line->valid = f;
-   line->dirty = g;
-   line->times_accessed = h;
-   line->last_accessed = j;
-   line->first_accessed = k;
+   contentStringToArray(line->content, contentString, caches[level].numWords);
 }
 /**
  * This function reads a instruction cache line.
@@ -290,54 +241,25 @@ void readLineCacheData(int level, struct cacheLine* line, int i){
 void readLineCacheInstructions(int level, struct cacheLine* line, int i){
    GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
    GtkTreeIter iter;
-   char iterstring[50];
-   //this is the line index in string format
-   sprintf(iterstring, "%d", i);	
-   //I get an iter pointing to the line which will be read
-   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
-         &iter,
-         iterstring);
-   //this is for temporally storing read values 
-   char* a;
-   char* b;
-   char* c;
-   char* d;
-   void* e;
-   int f;
-   int g;
-   int h;
-   int j;
-   int k;
-   //read the values from data sruct
+   char contentString[2000];
+   contentArrayToString((*line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
+   gtk_tree_model_iter_nth_child (model, &iter, NULL, i);
    gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
-         LINE, &a,
-         TAG, &b,
-         SET, &c,
-         CONTENT_CACHE, &d,
-         USER_CONTENT_CACHE, &e,
-         VALID, &f,
-         DIRTY, &g,
-         TIMES_ACCESSED, &h,
-         LAST_ACCESSED, &j,
-         FIRST_ACCESSED, &k,
+         LINE, &line->line,
+         TAG, &line->tag,
+         SET, &line->set,
+         CONTENT_CACHE, contentString,
+         USER_CONTENT_CACHE, &line->user_content,
+         VALID, &line->valid,
+         DIRTY, &line->dirty,
+         TIMES_ACCESSED, &line->times_accessed,
+         LAST_ACCESSED, &line->last_accessed,
+         FIRST_ACCESSED, &line->first_accessed,
          -1);
    //number of words in a cache line
-   int numWords=(caches[level].line_size*8)/cpu.word_width;
-   long *array;
-   array=malloc((sizeof(long))*numWords);
+   line->content = malloc((sizeof(long))*caches[level].numWords);
    //turn String format to long array.
-   contentStringToArray(array, d, level);
-   //place values in struct return param so that caller user can get them
-   (*line).line=strtol(a, NULL, 16);
-   (*line).tag=strtol(b, NULL, 16);
-   (*line).set=strtol(c, NULL, 16);
-   (*line).content=array;
-   (*line).user_content=e;
-   (*line).valid=f;
-   (*line).dirty=g;
-   (*line).times_accessed=h;
-   (*line).last_accessed=j;
-   (*line).first_accessed=k;
+   contentStringToArray(line->content, contentString, caches[level].numWords);
 }
 /**
  * This function reads a Instruction cache line.
@@ -378,50 +300,20 @@ void writeLineCache(int level, struct cacheLine* line, int i){
 void writeLineCacheData(int level, struct cacheLine* line, int i){
    GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
    GtkTreeIter iter;
-   char iterstring[50];
-   sprintf(iterstring, "%d", i);	
-   char a[100];
-   char b[100];
-   char c[100];
-   void *d;
-   int f;
-   int g;
-   int h;
-   int j;
-   int k;
-   int numLines=caches[level].size/caches[level].line_size;
-   int lineSize=caches[level].line_size;
-   int asociativity=caches[level].asociativity;
-   int numsets=numLines/asociativity;
-   int numWords=(caches[level].line_size*8)/cpu.word_width;
-   int hexDigsSet=ceil(log(numsets)/log(16));
-   int hexDigsLine=ceil(log(numLines)/log(16));
-   int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
-   sprintf(a, "%0*lx", hexDigsLine, (*line).line);
-   sprintf(b, "%0*lx", hexDigsTag,  (*line).tag);
-   sprintf(c, "%0*lx", hexDigsSet,  (*line).set);
-   d=(*line).user_content;
-   f=(*line).valid;
-   g=(*line).dirty;
-   h=(*line).times_accessed;
-   j=(*line).last_accessed;
-   k=(*line).first_accessed;
    char contentString[2000];
    contentArrayToString((*line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
-   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
-         &iter,
-         iterstring);
+   gtk_tree_model_iter_nth_child (model, &iter, NULL, i);
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-         LINE, &a,
-         TAG, &b,
-         SET, &c,
+         LINE, line->line,
+         TAG, line->tag,
+         SET, line->set,
          CONTENT_CACHE, contentString,
-         USER_CONTENT_CACHE, d,
-         VALID, f,
-         DIRTY, g,
-         TIMES_ACCESSED, h,
-         LAST_ACCESSED, j,
-         FIRST_ACCESSED, k,
+         USER_CONTENT_CACHE, line->user_content,
+         VALID, line->valid,
+         DIRTY, line->dirty,
+         TIMES_ACCESSED, line->times_accessed,
+         LAST_ACCESSED, line->last_accessed,
+         FIRST_ACCESSED, line->first_accessed,
          -1);
 }
 /**
@@ -433,50 +325,20 @@ void writeLineCacheData(int level, struct cacheLine* line, int i){
 void writeLineCacheInstructions(int level, struct cacheLine* line, int i){
    GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
    GtkTreeIter iter;
-   char iterstring[50];
-   sprintf(iterstring, "%d", i);	
-   char a[100];
-   char b[100];
-   char c[100];
-   void* d;
-   int f;
-   int g;
-   int h;
-   int j;
-   int k;
-   int numLines=caches[level].size/caches[level].line_size;
-   int lineSize=caches[level].line_size;
-   int asociativity=caches[level].asociativity;
-   int numsets=numLines/asociativity;
-   int numWords=(caches[level].line_size*8)/cpu.word_width;
-   int hexDigsSet=ceil(log(numsets)/log(16));
-   int hexDigsLine=ceil(log(numLines)/log(16));
-   int hexDigsTag=(cpu.address_width/4)-hexDigsSet-ceil(log(lineSize)/log(16));
-   sprintf(a, "%0*lx", hexDigsLine, (*line).line);
-   sprintf(b, "%0*lx", hexDigsTag,  (*line).tag);
-   sprintf(c, "%0*lx", hexDigsSet,  (*line).set);
-   d=(*line).user_content;
-   f=(*line).valid;
-   g=(*line).dirty;
-   h=(*line).times_accessed;
-   j=(*line).last_accessed;
-   k=(*line).first_accessed;
    char contentString[2000];
    contentArrayToString((*line).content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
-   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
-         &iter,
-         iterstring);
+   gtk_tree_model_iter_nth_child (model, &iter, NULL, i);
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-         LINE, &a,
-         TAG, &b,
-         SET, &c,
+         LINE, line->line,
+         TAG, line->tag,
+         SET, line->set,
          CONTENT_CACHE, contentString,
-         USER_CONTENT_CACHE, d,
-         VALID, f,
-         DIRTY, g,
-         TIMES_ACCESSED, h,
-         LAST_ACCESSED, j,
-         FIRST_ACCESSED, k,
+         USER_CONTENT_CACHE, line->user_content,
+         VALID, line->valid,
+         DIRTY, line->dirty,
+         TIMES_ACCESSED, line->times_accessed,
+         LAST_ACCESSED, line->last_accessed,
+         FIRST_ACCESSED, line->first_accessed,
          -1);
 }
 /**
@@ -655,7 +517,7 @@ void setColorInstructionsCacheLine(int level, int i, int color){
  * @param level to be written
  * @param line to be written
  */
-void writeBlankCacheLine(int level, long line){
+void writeBlankCacheLine(int level, unsigned line){
    writeBlankDataCacheLine(level, line);
 }
 /**
@@ -663,10 +525,10 @@ void writeBlankCacheLine(int level, long line){
  * @param level to be written
  * @param line to be written
  */
-void writeBlankDataCacheLine(int level, long line){
+void writeBlankDataCacheLine(int level, unsigned line){
    int numLines=caches[level].size/caches[level].line_size;
    int asociativity=caches[level].asociativity;
-   int numsets=numLines/asociativity;
+   int numSets=numLines/asociativity;
    int numWords=(caches[level].line_size*8)/cpu.word_width;
    if(caches[level].separated){
       numLines/=2;
@@ -693,10 +555,10 @@ void writeBlankDataCacheLine(int level, long line){
  * @param level to be written
  * @param line to be written
  */
-void writeBlankInstructionCacheLine(int level, long line){
+void writeBlankInstructionCacheLine(int level, unsigned line){
    int numLines=caches[level].size/caches[level].line_size;
    int asociativity=caches[level].asociativity;
-   int numsets=numLines/asociativity;
+   int numSets=numLines/asociativity;
    int numWords=(caches[level].line_size*8)/cpu.word_width;
    if(caches[level].separated){
       numLines/=2;

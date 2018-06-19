@@ -436,6 +436,16 @@ int parseConfiguration(dictionary *ini) {
        }
     }
 
+    // Precalculate some useful values of the cache configuration
+    for(int cacheNumber=0; cacheNumber<numberCaches; cacheNumber++) {
+       caches[cacheNumber].numLines    = caches[cacheNumber].size / caches[cacheNumber].line_size;
+       caches[cacheNumber].numSets     = caches[cacheNumber].numLines / caches[cacheNumber].asociativity;
+       caches[cacheNumber].numWords    = caches[cacheNumber].line_size*8/cpu.word_width;
+       caches[cacheNumber].hexDigsSet  = ceil(log(caches[cacheNumber].numSets)/log(16));
+       caches[cacheNumber].hexDigsLine = ceil(log(caches[cacheNumber].numLines)/log(16));
+       caches[cacheNumber].hexDigsTag  = (cpu.address_width/3)-caches[cacheNumber].hexDigsSet-ceil(log(caches[cacheNumber].line_size)/log(16));
+    }
+
     if(errors>0) {
         fprintf(stderr,"\nTotal errors: %d\n", errors);
         return -1;
