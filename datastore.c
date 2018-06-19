@@ -11,22 +11,17 @@
  */
 void createMemoryModel(){
    modelMEMORY = gtk_list_store_new(N_COLUMNS,
-         G_TYPE_STRING,   /* ADDRESS */
-         G_TYPE_STRING,    /* CONTENT */
+         G_TYPE_UINT,   /* ADDRESS */
+         G_TYPE_UINT,    /* CONTENT */
          G_TYPE_STRING,   /* COLOR */
          G_TYPE_POINTER
          );
-   int numWords=memory.size/(cpu.word_width/8);
-   for(int i=memory.page_base_address; i<memory.page_base_address+memory.page_size; i+=(cpu.word_width/8)){
+   for(unsigned long i=memory.page_base_address; i<memory.page_base_address+memory.page_size; i+=(cpu.word_width/8)){
       gtk_list_store_append(modelMEMORY, &iter);
-      char address[50];
-      char content[50];
-      sprintf(address, "%0*x", (int)cpu.address_width/4, i);
-      sprintf(content, "%0*x", (int)cpu.word_width/4, 0);
       /* Fill fields with some data */
       gtk_list_store_set (modelMEMORY, &iter,
-            CONTENT, content,
-            ADDRESS, address,
+            CONTENT, 0,
+            ADDRESS, i,
             //COLOR, "blue",
             -1);
    }
@@ -185,6 +180,6 @@ GtkTreeModel *create_model_statistics(void){
             VALUE, "",
             -1);
    }
-   estatistics_model= model;
+   statistics_model= model;
    return GTK_TREE_MODEL(model);
 }

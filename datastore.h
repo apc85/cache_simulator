@@ -13,7 +13,7 @@ GtkListStore *modelMEMORY;//estructura de data
 
 struct cacheLEVEL cacheLevels[MAX_CACHES];
 
-GtkTreeModel *estatistics_model;
+GtkTreeModel *statistics_model;
 
 enum {
     ADDRESS=0,

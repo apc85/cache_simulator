@@ -4,7 +4,7 @@
 
 #include "confparser.h"
 #include "traceparser.h"
-#include "datastore.h"
+#include "datainterface.h"
 #include "gui.h"
 #include "simulator.h"
 
@@ -101,6 +101,7 @@ int main(int argc, char *argv[]) {
     // ... or run batch simulation
     } else {
        simulate();
+       printStatistics(stdout);
     }
 
 

@@ -73,8 +73,9 @@ int setMemoryAddressColor(long address, int color);
 void resetMemory();
 void clearMemoryAddress(long address);
 
-//para las estadisticas
+// Function calls to manage the performance and statistics storage
 void setStatistics(char* component, char* property, char* value);
 char* getStatistics(char* component, char* property);
+void printStatistics(FILE* fp);
 
 #endif

@@ -19,17 +19,11 @@ void resetMemory() {
    //this is the number of words in the whole memory
    int numWords=memory.size/(cpu.word_width/8);
    //for the n words in the mory
-   for(int i=memory.page_base_address; i<memory.page_base_address+memory.page_size; i+=(cpu.word_width/8)){
-      char address[50];
-      char content[50];
-      //obtain adrress in string format
-      sprintf(address, "%0*x", (int)cpu.address_width/4, i);
-      //set initial content to 0 
-      sprintf(content, "%0*x", (int)cpu.word_width/4, 0);
+   for(unsigned long i=memory.page_base_address; i<memory.page_base_address+memory.page_size; i+=(cpu.word_width/8)){
       /* Fill fields with data */
       gtk_list_store_set (modelMEMORY, &iter,
-            CONTENT, content,
-            ADDRESS, address,
+            CONTENT, 0,
+            ADDRESS, i,
             COLOR, "white",
             USER_CONTENT, NULL,
             -1);
@@ -212,6 +206,22 @@ void showCacheLineData(int level, int i){
    printf("------------------------------------------------------\n");
    free(line.content);
 }
+
+int findTagInCache(int level, long tag) {
+/*   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+   GtkTreeIter iter;
+   // Get first cache line
+   int valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(model), &iter);
+
+   while (valid)
+   {
+      gtk_tree_model_get (GTK_TREE_MODEL(model), &iter, TAG, &b, -1);
+      // Get next cache line
+      valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(model), &iter);
+   } */
+
+}
+
 /**
  * This function reads a data cache line.
  * @param level which will be read
@@ -508,22 +518,15 @@ int readMemoryAddress(struct memoryPosition *pos, long address){
       return -2;
    }
    // get the table row from the memory address
-   char iterstring[50];
-   sprintf(iterstring, "%ld", (address-memory.page_base_address)/(cpu.word_width/8));	
-   gtk_tree_model_get_iter_from_string (model,
+   gtk_tree_model_iter_nth_child (model,
          &iter,
-         iterstring);
-   char* a;
-   char* b;
-   void* c=NULL;
+         NULL,
+         (address-memory.page_base_address)/(cpu.word_width/8));
    gtk_tree_model_get (model, &iter,
-         ADDRESS, &a,
-         CONTENT, &b,
-         USER_CONTENT, &c,
+         ADDRESS, &pos->address,
+         CONTENT, &pos->content,
+         USER_CONTENT, &pos->user_content,
          -1);
-   pos->address = strtol(a, NULL, 16);
-   pos->content = strtol(b, NULL, 16);
-   pos->user_content = c;
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
          COLOR, colors[READ],
          -1);
@@ -548,21 +551,15 @@ int writeMemoryAddress(struct memoryPosition *pos, long address){
       interfaceError = "out of page";
       return -2;
    }
-   char a[100];
-   char b[100];
-   void* c=pos->user_content;
-   sprintf(a, "%0*lx", (int)cpu.address_width/4, pos->address);
-   sprintf(b, "%0*lx", (int)cpu.word_width/4, pos->content);
-   char iterstring[50];
    //get the table row from the memory address
-   sprintf(iterstring, "%ld", (address-memory.page_base_address)/(cpu.word_width/8));	
-   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
+   gtk_tree_model_iter_nth_child (model,
          &iter,
-         iterstring);
+         NULL,
+         (address-memory.page_base_address)/(cpu.word_width/8));
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-         ADDRESS, &a,
-         CONTENT, &b,
-         USER_CONTENT, c,
+         ADDRESS, pos->address,
+         CONTENT, pos->content,
+         USER_CONTENT, pos->user_content,
          -1);
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
          COLOR, colors[WRITE],
@@ -728,7 +725,7 @@ void writeBlankInstructionCacheLine(int level, long line){
  * @param value String containing the value which that property will be setted to.
  */
 void setStatistics(char* component, char* property, char* value){
-   GtkTreeModel *tree_model=estatistics_model;
+   GtkTreeModel *tree_model=statistics_model;
    GtkTreeIter iter;
    int isntEmpty=gtk_tree_model_get_iter_first (tree_model, &iter);
    int hasNext=1;
@@ -803,7 +800,7 @@ void setStatistics(char* component, char* property, char* value){
  * @return String containing th value
  */
 char* getStatistics(char* component, char* property){
-   GtkTreeModel *tree_model=estatistics_model;
+   GtkTreeModel *tree_model=statistics_model;
    GtkTreeIter iter;
    gtk_tree_model_get_iter_first (tree_model, &iter);
    int hasNext=1;
@@ -852,4 +849,8 @@ char* getStatistics(char* component, char* property){
    }
    //If the componet or the property don't exist I create the componet and the property and I set the value return param to NULL
    return NULL;
+}
+
+void printStatistics(FILE* fp) {
+   fprintf(fp, "TODO!\n");
 }

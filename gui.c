@@ -167,28 +167,69 @@ char *nextLineTrace() {
    return currentLine;
 }
 
+
+void
+address_cell_data_func (GtkTreeViewColumn *col,
+                        GtkCellRenderer   *renderer,
+                        GtkTreeModel      *model,
+                        GtkTreeIter       *iter,
+                        gpointer           user_data)
+{
+  guint  number;
+  gchar  buf[64];
+
+  gtk_tree_model_get(model, iter, user_data, &number, -1);
+
+  g_snprintf(buf, sizeof(buf), "%0*x", (int)cpu.address_width/4, number);
+
+  g_object_set(renderer, "text", buf, NULL);
+}
+
+void
+content_cell_data_func (GtkTreeViewColumn *col,
+                        GtkCellRenderer   *renderer,
+                        GtkTreeModel      *model,
+                        GtkTreeIter       *iter,
+                        gpointer           user_data)
+{
+  guint  number;
+  gchar  buf[64];
+
+  gtk_tree_model_get(model, iter, user_data, &number, -1);
+
+  g_snprintf(buf, sizeof(buf), "%0*x", (int)cpu.word_width/4, number);
+
+  g_object_set(renderer, "text", buf, NULL);
+}
+
 /*
  * Funtion to create the Memory Panel for the GUI. Memory data structure must have been created previously.
  */
 GtkWidget * createPanelMemory() {
    GtkTreeIter   iter;
    GtkTreeViewColumn* column;
+   GtkCellRenderer *renderer;
    vboxMEMORY = gtk_vbox_new(FALSE, 2);
    viewMEMORY = gtk_tree_view_new_with_model(GTK_TREE_MODEL(modelMEMORY));
    GtkTreeSelection * selection= gtk_tree_view_get_selection (GTK_TREE_VIEW(viewMEMORY));
    gtk_tree_selection_set_mode (selection, GTK_SELECTION_NONE);
+   renderer = gtk_cell_renderer_text_new();
    column = gtk_tree_view_column_new_with_attributes("Address",
-         gtk_cell_renderer_text_new(),
+         renderer,
          "text", ADDRESS,
          "background", COLOR,
          NULL);
    gtk_tree_view_append_column(GTK_TREE_VIEW(viewMEMORY), column);
+   gtk_tree_view_column_set_cell_data_func(column, renderer, address_cell_data_func, (void*) ADDRESS, NULL);
+
+   renderer = gtk_cell_renderer_text_new();
    column = gtk_tree_view_column_new_with_attributes("Content",
-         gtk_cell_renderer_text_new(),
+         renderer,
          "text", CONTENT,
          "background", COLOR,
          NULL);
    gtk_tree_view_append_column(GTK_TREE_VIEW(viewMEMORY), column);
+   gtk_tree_view_column_set_cell_data_func(column, renderer, content_cell_data_func, (void*) CONTENT, NULL);
    GtkWidget *scwin = gtk_scrolled_window_new(NULL, NULL);
    gtk_container_add(GTK_CONTAINER(scwin), viewMEMORY);
    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scwin), GTK_POLICY_AUTOMATIC,
@@ -433,7 +474,7 @@ void createPanelCache(int level) {
 GtkWidget *create_view_statistics(void) {
    GtkTreeViewColumn   *col;
    GtkCellRenderer     *renderer;
-   GtkTreeModel *model= estatistics_model;
+   GtkTreeModel *model= statistics_model;
    GtkWidget *view=     estatistics_view;
    view = gtk_tree_view_new();
    /* --- Column #1 --- */
