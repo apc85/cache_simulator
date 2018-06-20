@@ -342,7 +342,7 @@ void contentArrayToString(unsigned* array, char* content, int count, int width){
 void contentStringToArray(unsigned* array, char* content, int count){
    char *pch;
    pch = strtok (content," ");
-   for(int i=0; pch != NULL || i < count; i++, pch = strtok (NULL, " ")) {
+   for(int i=0; pch != NULL && i < count; i++, pch = strtok (NULL, " ")) {
       array[i] = strtol(pch, NULL, 16);
    }
 }

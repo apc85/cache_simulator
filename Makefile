@@ -6,7 +6,7 @@ DEBUG=0
 COVER=0
 
 LIBS = $(shell pkg-config --libs gtk+-2.0) -lm
-CFLAGS += -Wreturn-type -DDEBUG=${DEBUG}  $(shell pkg-config --cflags gtk+-2.0)
+CFLAGS += -g -Wreturn-type -DDEBUG=${DEBUG}  $(shell pkg-config --cflags gtk+-2.0)
 
 ifeq ($(COVER),1)
 CFLAGS += --coverage
