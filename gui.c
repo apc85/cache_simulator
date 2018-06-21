@@ -64,7 +64,7 @@ int generateGUI(int argc, char *argv[]) {
    gtk_box_pack_start (GTK_BOX(buttonBox), button4, FALSE, FALSE, 5);
 #endif
    ///creo la tabla para los paneles
-   table = gtk_table_new (2, 4, TRUE);
+   table = gtk_table_new (2, 2+numberCaches, TRUE);
    /* Coloca la tabla en la ventana principal */
    //gtk_container_add (GTK_CONTAINER (verticalBox), table);
    gtk_box_pack_start (GTK_BOX(verticalBox), table, TRUE, TRUE, 5);
