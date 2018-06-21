@@ -94,6 +94,10 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
                return -1;					
             }
             data = atol(pch);
+            if(operationType==LOAD){
+               fprintf(stderr,"you can not use the data field in load (L) operations. Line %d\n", lineNumber);
+               return -1;		
+            }
             if(ceil(log(data+1)/log(2))>(size*8)){
 	       
                fprintf(stderr,"data value is too large to be stored in %d bytes. Line %d\n", word_bytes, lineNumber);
