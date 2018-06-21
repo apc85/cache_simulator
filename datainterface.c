@@ -714,5 +714,75 @@ char* getStatistics(char* component, char* property){
 }
 
 void printStatistics(FILE* fp) {
-   fprintf(fp, "TODO!\n");
+   fprintf(fp, "\n------SIMULATION STATISTICS------\n\n");   
+   GtkTreeModel *tree_model=statistics_model;
+   GtkTreeIter iter;
+   gtk_tree_model_get_iter_first (tree_model, &iter);
+   int hasNext=1;
+   int componentExists=0;
+   //Search for the memory hierarchy componet
+   while(hasNext){
+      char *name;
+      gtk_tree_model_get (tree_model, &iter,
+            COMPONET_OR_PROPERTY, &name, -1);
+      //print title
+      printf("%s\n", name);
+     
+
+      //print children
+
+      GtkTreeIter child;
+      int hasNextProperty=gtk_tree_model_iter_children (tree_model,
+            &child,
+            &iter);
+
+      
+
+      while(hasNextProperty){
+         char *name;
+         char *value;
+         gtk_tree_model_get (tree_model, &child,
+               COMPONET_OR_PROPERTY, &name, -1);
+         gtk_tree_model_get (tree_model, &child,
+               VALUE, &value, -1);
+
+         printf("        %s: %s\n", name, value);
+         hasNextProperty=gtk_tree_model_iter_next (tree_model, &child);
+      }
+
+
+
+      hasNext=gtk_tree_model_iter_next (tree_model, &iter);
+   }
+/*
+      GtkTreeIter child;
+      gtk_tree_model_iter_children (tree_model,
+            &child,
+            &iter);
+      int hasNext=1;
+      int propertyExists=0;
+      //Search for the componet's property
+      while(hasNext){
+         char *name;
+         gtk_tree_model_get (tree_model, &child,
+               COMPONET_OR_PROPERTY, &name, -1);
+         //found
+         if(!strcmp(property, name)){
+            propertyExists=1;
+            break;
+         }
+         hasNext=gtk_tree_model_iter_next (tree_model, &child);
+      }
+      //If the componet's property exists I get the value
+      if(propertyExists){
+         char* value;
+         gtk_tree_model_get(GTK_TREE_MODEL(tree_model), &child,
+               //COMPONET_OR_PROPERTY, "probando",
+               VALUE, &value,
+               -1);
+         return value;
+      }
+*/
+   //If the componet or the property don't exist I create the componet and the property and I set the value return param to NULL
+   
 }
