@@ -754,35 +754,39 @@ void printStatistics(FILE* fp) {
 
       hasNext=gtk_tree_model_iter_next (tree_model, &iter);
    }
-/*
-      GtkTreeIter child;
-      gtk_tree_model_iter_children (tree_model,
-            &child,
-            &iter);
-      int hasNext=1;
-      int propertyExists=0;
-      //Search for the componet's property
-      while(hasNext){
-         char *name;
-         gtk_tree_model_get (tree_model, &child,
-               COMPONET_OR_PROPERTY, &name, -1);
-         //found
-         if(!strcmp(property, name)){
-            propertyExists=1;
-            break;
-         }
-         hasNext=gtk_tree_model_iter_next (tree_model, &child);
-      }
-      //If the componet's property exists I get the value
-      if(propertyExists){
-         char* value;
-         gtk_tree_model_get(GTK_TREE_MODEL(tree_model), &child,
-               //COMPONET_OR_PROPERTY, "probando",
-               VALUE, &value,
-               -1);
-         return value;
-      }
-*/
    //If the componet or the property don't exist I create the componet and the property and I set the value return param to NULL
    
 }
+
+
+
+void removeAllColors(){
+
+   for(int i=0; i<numberCaches; i++){
+
+       GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[i].modelData);
+       GtkTreeIter iter;
+       int hasNext= gtk_tree_model_get_iter_first (model, &iter);
+
+       while(hasNext){
+           gtk_list_store_set (GTK_LIST_STORE(model), &iter, COLOR_CACHE, colors[WHITE], -1);
+           hasNext=gtk_tree_model_iter_next (model, &iter);
+       }
+
+       if(caches[i].separated){
+
+           model= GTK_TREE_MODEL(cacheLevels[i].modelInstruction);
+           hasNext= gtk_tree_model_get_iter_first (model, &iter);
+
+           while(hasNext){
+              gtk_list_store_set (GTK_LIST_STORE(model), &iter, COLOR_CACHE, colors[WHITE], -1);
+              hasNext=gtk_tree_model_iter_next (model, &iter);
+           }
+       }
+
+
+   }
+
+
+}
+

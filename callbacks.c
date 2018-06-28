@@ -72,6 +72,7 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
  */
 void callbackNextStep( GtkWidget *widget, gpointer   data)
 {
+   removeAllColors();
    char *currentLine = nextLineTrace();
    if(currentLine!=NULL&&preprocessTraceLine(currentLine)) {
       struct memOperation operation;

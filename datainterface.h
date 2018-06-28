@@ -81,4 +81,7 @@ void setStatistics(char* component, char* property, char* value);
 char* getStatistics(char* component, char* property);
 void printStatistics(FILE* fp);
 
+//function calls to manipulate the whole memory hierarchy.
+void removeAllColors();
+
 #endif
