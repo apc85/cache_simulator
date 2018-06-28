@@ -85,7 +85,7 @@ void createCacheModel(int level){
    //modelMEMORY=modelData;	
  
 #if DEBUG
-   fprintf(stderr,"cache level %d: lines: %d, asociativity: %d, sets: %d, words line: %d\n", level+1, caches[level].numLines, caches[level].asociativity, caches[level].numSets, caches[level].numWords);
+   fprintf(stderr,"cache level %d: lines: %d, asociativity: %ld, sets: %d, words line: %d\n", level+1, caches[level].numLines, caches[level].asociativity, caches[level].numSets, caches[level].numWords);
 #endif
    for(int i=0; i<caches[level].numLines; i++){
       gtk_list_store_append(modelData, &iter);
