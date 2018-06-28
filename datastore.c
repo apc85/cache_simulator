@@ -83,17 +83,11 @@ void createCacheModel(int level){
       cacheLevels[level].modelInstruction=modelInstruction;
    }
    //modelMEMORY=modelData;	
-   int numLines=caches[level].size/caches[level].line_size;
-   int asociativity=caches[level].asociativity;
-   int numSets=numLines/asociativity;
-   int numWords=(caches[level].line_size*8)/cpu.word_width;
-   if(caches[level].separated){
-      numLines/=2;
-   }
+ 
 #if DEBUG
-   fprintf(stderr,"cache level %d: lines: %d, asociativity: %d, sets: %d, words line: %d\n", level+1, numLines, asociativity, numSets, numWords);
+   fprintf(stderr,"cache level %d: lines: %d, asociativity: %d, sets: %d, words line: %d\n", level+1, caches[level].numLines, caches[level].asociativity, caches[level].numSets, caches[level].numWords);
 #endif
-   for(int i=0; i<numLines; i++){
+   for(int i=0; i<caches[level].numLines; i++){
       gtk_list_store_append(modelData, &iter);
       if(caches[level].separated){ 
          gtk_list_store_append(modelInstruction, &iterInstruction);

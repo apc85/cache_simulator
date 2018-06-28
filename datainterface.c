@@ -526,24 +526,18 @@ void writeBlankCacheLine(int level, unsigned line){
  * @param line to be written
  */
 void writeBlankDataCacheLine(int level, unsigned line){
-   int numLines=caches[level].size/caches[level].line_size;
-   int asociativity=caches[level].asociativity;
-   int numSets=numLines/asociativity;
-   int numWords=(caches[level].line_size*8)/cpu.word_width;
-   if(caches[level].separated){
-      numLines/=2;
-   }
+   
    struct cacheLine cacheLineAdd;
    cacheLineAdd.line=line;
-   cacheLineAdd.set=line/asociativity;
+   cacheLineAdd.set=line/(caches[level].asociativity);
    cacheLineAdd.tag=0;
    cacheLineAdd.dirty=0;
    cacheLineAdd.valid=0;
    cacheLineAdd.last_accessed=0;
    cacheLineAdd.times_accessed=0;
    cacheLineAdd.first_accessed=0;
-   unsigned lineContent[numWords];
-   for(unsigned i=0; i<numWords; i++){
+   unsigned lineContent[caches[level].numWords];
+   for(unsigned i=0; i<caches[level].numWords; i++){
       lineContent[i]=0;	
    }
    cacheLineAdd.content=lineContent;
@@ -556,24 +550,18 @@ void writeBlankDataCacheLine(int level, unsigned line){
  * @param line to be written
  */
 void writeBlankInstructionCacheLine(int level, unsigned line){
-   int numLines=caches[level].size/caches[level].line_size;
-   int asociativity=caches[level].asociativity;
-   int numSets=numLines/asociativity;
-   int numWords=(caches[level].line_size*8)/cpu.word_width;
-   if(caches[level].separated){
-      numLines/=2;
-   }
+   
    struct cacheLine cacheLineAdd;
    cacheLineAdd.line=line;
-   cacheLineAdd.set=line/asociativity;
+   cacheLineAdd.set=line/(caches[level].asociativity);
    cacheLineAdd.tag=0;
    cacheLineAdd.dirty=0;
    cacheLineAdd.valid=0;
    cacheLineAdd.last_accessed=0;
    cacheLineAdd.times_accessed=0;
    cacheLineAdd.first_accessed=0;
-   unsigned lineContent[numWords];
-   for(unsigned i=0; i<numWords; i++){
+   unsigned lineContent[caches[level].numWords];
+   for(unsigned i=0; i<caches[level].numWords; i++){
       lineContent[i]=0;	
    }
    cacheLineAdd.content=lineContent;

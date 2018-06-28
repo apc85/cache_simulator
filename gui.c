@@ -271,10 +271,6 @@ void createPanelCache(int level) {
    GtkWidget *vboxData;
    GtkWidget *viewData;
    vboxData = gtk_vbox_new(FALSE, 2);
-   int numLines=caches[level].size/caches[level].line_size;
-   int asociativity=caches[level].asociativity;
-   int numSets=numLines/asociativity;
-   int numWords=(caches[level].line_size*8)/cpu.word_width;
    //createCacheModel(level);
    modelData=cacheLevels[level].modelData;
    viewData = gtk_tree_view_new_with_model(GTK_TREE_MODEL(modelData));
@@ -393,8 +389,6 @@ void createPanelCache(int level) {
       GtkWidget *vboxInstruction;
       GtkWidget *viewInstruction;
       vboxInstruction = gtk_vbox_new(FALSE, 2);
-      int numLines=caches[level].size/caches[level].line_size;
-      int asociativity=caches[level].asociativity;
       modelInstruction=cacheLevels[level].modelInstruction;
       viewInstruction = gtk_tree_view_new_with_model(GTK_TREE_MODEL(modelInstruction));
       GtkTreeSelection * selectionInstruction= gtk_tree_view_get_selection (GTK_TREE_VIEW(viewInstruction));
