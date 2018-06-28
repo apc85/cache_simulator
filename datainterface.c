@@ -713,6 +713,10 @@ char* getStatistics(char* component, char* property){
    return NULL;
 }
 
+/**
+ * This function is used to print simulation statistics panel
+ * @param fp file to where it will be printed
+ */
 void printStatistics(FILE* fp) {
    fprintf(fp, "\n------SIMULATION STATISTICS------\n\n");   
    GtkTreeModel *tree_model=statistics_model;
@@ -759,9 +763,12 @@ void printStatistics(FILE* fp) {
 }
 
 
-
+/**
+ * This function is used to remove all the colors from the cache and memory tables
+ */
 void removeAllColors(){
 
+   //remove colors from all caches
    for(int i=0; i<numberCaches; i++){
 
        GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[i].modelData);
@@ -783,10 +790,15 @@ void removeAllColors(){
               hasNext=gtk_tree_model_iter_next (model, &iter);
            }
        }
-
-
    }
 
+   //remove colors from memory
+   GtkTreeIter iter;
+   int hasNext= gtk_tree_model_get_iter_first (GTK_TREE_MODEL(modelMEMORY), &iter);
+   while(hasNext){
+   	gtk_list_store_set (GTK_LIST_STORE(modelMEMORY), &iter, COLOR, colors[WHITE], -1);
+   	hasNext=gtk_tree_model_iter_next (GTK_TREE_MODEL(modelMEMORY), &iter);
+   }
 
 }
 
