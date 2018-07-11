@@ -192,6 +192,66 @@ char *nextLineTrace() {
    return currentLine;
 }
 
+char *previousLineTrace() {
+
+   //iter at the current line
+   GtkTextIter lineIterCurrent;
+   gtk_text_buffer_get_iter_at_mark (buffer, &lineIterCurrent, marcaLineCurrent);
+   //iter at the first line.
+   //GtkTextIter start;
+   //gtk_text_buffer_get_iter_at_offset (buffer, &start, 0);
+   //iter at the next line
+   //GtkTextIter lineIterNext=lineIterCurrent;
+   //gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterNext);
+   //iter at the previous line
+   GtkTextIter lineIterPrevious=lineIterCurrent;
+
+   gtk_text_view_backward_display_line (GTK_TEXT_VIEW(text_view), &lineIterPrevious);
+   int principio=gtk_text_view_backward_display_line (GTK_TEXT_VIEW(text_view), &lineIterPrevious);
+   if(!principio){
+       gtk_text_buffer_get_iter_at_offset (buffer, &lineIterPrevious, 0);
+       //return "dasdasd";
+   }else{
+       gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterPrevious);
+   }
+ //gtk_text_view_backward_display_line_start (GTK_TEXT_VIEW(text_view), &lineIterPrevious);
+
+
+   //GtkTextIter end=lineIterNext;
+
+   // Remove all tags for removing colour.
+   //gtk_text_buffer_remove_all_tags (buffer,
+   //     &start,
+   //      &end);
+   //end=lineIterCurrent;
+
+   //coloreo de negro todas las lineas anteriores y la actual
+   //gtk_text_buffer_apply_tag (buffer, tagBlack, &start, &end);
+
+   //coloreo de azul la linea actual
+   //gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterCurrent, &lineIterNext);
+
+   //coloreo de azul la linea anterior
+   //gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterPrevious, &lineIterCurrent);
+
+   //scroll until new line is visible
+   //gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(text_view), &lineIterPrevious, 0.0, 0, 0.0, 0.0);
+   //Store the current line
+   char *currentLine = gtk_text_buffer_get_text (buffer, &lineIterPrevious, &lineIterCurrent, 1);
+   
+   //printf("%s", lineCurrent);
+   gtk_text_buffer_move_mark (buffer, marcaLineCurrent, &lineIterPrevious);
+   //gtk_text_buffer_add_mark (buffer, marcaLineCurrent, &lineIterCurrent);
+
+   if(currentLine[0]=='\0'){
+       return NULL;
+   }
+    
+   return currentLine;
+
+}
+
+
 
 void address_cell_data_func (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter, gpointer user_data)
 {

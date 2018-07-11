@@ -57,6 +57,7 @@ extern int useGUI;
    GtkWidget *create_view_statistics(void);
    void insertTextInPanel(char* text);
    char *nextLineTrace();
+   char *previousLineTrace();
    int scrollMemoryToPos(long address);
    void scrollCacheToRow(int level, long row);
    void scrollDataCacheToRow(int level, long row);

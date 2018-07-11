@@ -101,6 +101,7 @@ void callbackNextStep( GtkWidget *widget, gpointer   data)
 void callbackTest( GtkWidget *widget, gpointer   data){
 
    //////pruebas
+   /*
    setStatistics("Cache L2", "Fault rate", "tres");
    setStatistics("CPU", "Fault rate", "tres");
    setStatistics("Cache L3", "nueva categoria", "cuatro");
@@ -136,6 +137,7 @@ void callbackTest( GtkWidget *widget, gpointer   data){
    line.content=(unsigned[]){1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
    void * user_use;
    writeLineCacheInstructions(0, &line, 7);
+*/
 /*
    line.content=(unsigned[]){1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
    writeLineCacheData(0, &line, 7);
@@ -144,6 +146,7 @@ void callbackTest( GtkWidget *widget, gpointer   data){
 
    showCacheLineInstructions(0, 7);
 */
+/*
    showCacheLineData(0, 7);
    showCacheLine(1, 7);
    showCacheLine(1, 6);
@@ -159,6 +162,9 @@ void callbackTest( GtkWidget *widget, gpointer   data){
    scrollDataCacheToRow(0, 32);
    scrollInstructionCacheToRow(0, 32);
    scrollCacheToRow(1, 32);
+*/
+
+printf("%s\n", previousLineTrace());
 
 }
 #endif
