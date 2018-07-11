@@ -81,6 +81,17 @@ int generateGUI(int argc, char *argv[]) {
    //buffer = gtk_text_buffer_new (NULL);
    text_view = gtk_text_view_new_with_buffer (buffer);
    gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (text_view), GTK_WRAP_NONE);
+
+   //In the initial state first line is going to be executed first so it must be coloured in blue.
+   //iter at the next line
+   GtkTextIter lineIterNext;
+   gtk_text_buffer_get_iter_at_offset (buffer, &lineIterNext, 0);
+   //iter at the line next to the next line
+   GtkTextIter lineIterNextNext=lineIterNext;
+   gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterNextNext);
+   //coloreo de azul la linea siguiente
+   gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterNext, &lineIterNextNext);
+
    scrolled_window = gtk_scrolled_window_new (NULL, NULL);
    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_container_add(GTK_CONTAINER(scrolled_window), text_view);
@@ -140,21 +151,35 @@ int generateGUI(int argc, char *argv[]) {
  *  
  */
 char *nextLineTrace() {
+   //iter at the current line
    GtkTextIter lineIterCurrent;
    gtk_text_buffer_get_iter_at_mark (buffer, &lineIterCurrent, marcaLineCurrent);
+   //iter at the first line.
    GtkTextIter start;
    gtk_text_buffer_get_iter_at_offset (buffer, &start, 0);
-   GtkTextIter end=lineIterCurrent;
-   GtkTextIter lineIterSiguiente=lineIterCurrent;
-   gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterSiguiente);
-   //coloreo de negro la linea anterior
+   //iter at the next line
+   GtkTextIter lineIterNext=lineIterCurrent;
+   gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterNext);
+   //iter at the line next to the next line
+   GtkTextIter lineIterNextNext=lineIterNext;
+   gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterNextNext);
+
+
+   GtkTextIter end=lineIterNext;
+   //coloreo de negro todas las lineas anteriores y la actual
    gtk_text_buffer_apply_tag (buffer, tagBlack, &start, &end);
-   //coloreo de azul la line current
-   gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterCurrent, &lineIterSiguiente);
+
+   //coloreo de azul la linea actual
+   //gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterCurrent, &lineIterSiguiente);
+
+   //coloreo de azul la linea siguiente
+   gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterNext, &lineIterNextNext);
+
    //scroll until new line is visible
-   gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(text_view), &lineIterCurrent, 0.0, 0, 0.0, 0.0);
+   gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(text_view), &lineIterNext, 0.0, 0, 0.0, 0.0);
    //Store the current line
-   char *currentLine = gtk_text_buffer_get_text (buffer, &lineIterCurrent, &lineIterSiguiente, 1);
+   char *currentLine = gtk_text_buffer_get_text (buffer, &lineIterCurrent, &lineIterNext, 1);
+   
    //printf("%s", lineCurrent);
    gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterCurrent);
    gtk_text_buffer_move_mark (buffer, marcaLineCurrent, &lineIterCurrent);

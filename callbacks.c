@@ -28,8 +28,7 @@ void callbackRestart( GtkWidget *widget, gpointer   data){
    GtkTextIter start;
    gtk_text_buffer_get_iter_at_offset (buffer, &start, 0);
    GtkTextIter end=lineIterCurrent;
-   GtkTextIter lineIterSiguiente=lineIterCurrent;
-   gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterSiguiente);
+   gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &end);
    // Remove all tags for removing colour.
    gtk_text_buffer_remove_all_tags (buffer,
          &start,
@@ -50,6 +49,17 @@ void callbackRestart( GtkWidget *widget, gpointer   data){
          scrollCacheToRow(i, 0);
       }
    }
+
+   //In the initial state first line is going to be executed first so it must be coloured in blue.
+   //iter at the next line
+   GtkTextIter lineIterNext;
+   gtk_text_buffer_get_iter_at_offset (buffer, &lineIterNext, 0);
+   //iter at the line next to the next line
+   GtkTextIter lineIterNextNext=lineIterNext;
+   gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterNextNext);
+   //coloreo de azul la linea siguiente
+   gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterNext, &lineIterNextNext);
+
 }
 
 /**
