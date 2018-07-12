@@ -111,6 +111,7 @@ void callbackNextStep( GtkWidget *widget, gpointer   data)
  */
 void callbackGoBack( GtkWidget *widget, gpointer   data){
     goToPreviousLineTraceAndGetIt();
+    printf("%s", getCurrentLineTrace());
 }
 
 
