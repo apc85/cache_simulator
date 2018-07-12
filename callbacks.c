@@ -68,10 +68,13 @@ void callbackRestart( GtkWidget *widget, gpointer   data){
 void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 {
    char *currentLine;
+   char* previousLine;
    currentLine = getCurrentLineTrace();
    int firstOperation=1;
 
    while(currentLine) {
+
+      printf("%s", currentLine);
        
       if(preprocessTraceLine(currentLine)) {
          struct memOperation operation;
@@ -81,11 +84,19 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
          }
          removeAllColors();
          simulate_step(&operation);
-         goToNextLineTraceAndGetCurrent();
-         currentLine = getCurrentLineTrace();
-         firstOperation=0;
       }
+      
+      previousLine=currentLine;
+      currentLine=goToNextLineTrace();
+      firstOperation=0;
+
    }
+
+   if(currentLine==NULL&&previousLine[0]!='\0'){
+        insertTextInBuffer("\n", buffer);
+        currentLine=goToNextLineTrace();
+   }
+
 }
 
 /**
@@ -94,11 +105,24 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 void callbackNextStep( GtkWidget *widget, gpointer   data)
 {
    removeAllColors();
-   char *currentLine = goToNextLineTraceAndGetCurrent();
+   char *currentLine = getCurrentLineTrace();
+
+   
    if(currentLine!=NULL&&preprocessTraceLine(currentLine)) {
       struct memOperation operation;
       parseLine(currentLine, -1, &operation);
       simulate_step(&operation);
+   }
+
+   //jump to the next trace line
+   char* nextLine= goToNextLineTrace();
+
+
+   //after it reaches the last line it needs to jump to the next. As it doesn't exist  I add a while line.
+   //if this isn't done it will stay in the last line and it will be simulated again if you press the button.
+   if(nextLine==NULL&&currentLine[0]!='\0'){
+        insertTextInBuffer("\n", buffer);
+        goToNextLineTrace();
    }
 
 }
@@ -110,7 +134,7 @@ void callbackNextStep( GtkWidget *widget, gpointer   data)
  * Callback fuction for going back to the previou operation on tracefile. Only in debug mode
  */
 void callbackGoBack( GtkWidget *widget, gpointer   data){
-    goToPreviousLineTraceAndGetIt();
+    goToPreviousLineTrace();
     printf("%s", getCurrentLineTrace());
 }
 
@@ -184,8 +208,9 @@ void callbackTest( GtkWidget *widget, gpointer   data){
    scrollCacheToRow(1, 32);
 */
 
-//printf("%s\n", goToPreviousLineTraceAndGetIt());
-printf("%s\n", getCurrentLineTrace());
+//printf("%s\n", goToPreviousLineTrace());
+goToNextLineTrace();
+printf("%s", getCurrentLineTrace());
 
 }
 #endif

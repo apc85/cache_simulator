@@ -171,12 +171,11 @@ char *getCurrentLineTrace() {
 
 
 
-
 /*
  *  Go to the next line from the trace file stored in the text widget and get it.
  *  
  */
-char *goToNextLineTraceAndGetCurrent() {
+char *goToNextLineTrace() {
    //iter at the current line
    GtkTextIter lineIterCurrent;
    gtk_text_buffer_get_iter_at_mark (buffer, &lineIterCurrent, marcaLineCurrent);
@@ -185,18 +184,28 @@ char *goToNextLineTraceAndGetCurrent() {
    gtk_text_buffer_get_iter_at_offset (buffer, &start, 0);
    //iter at the next line
    GtkTextIter lineIterNext=lineIterCurrent;
-   gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterNext);
+   int endOfTrace=gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterNext);
+
    //iter at the line next to the next line
    GtkTextIter lineIterNextNext=lineIterNext;
    gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterNextNext);
-
+   
 
    GtkTextIter end=lineIterNext;
    //coloreo de negro todas las lineas anteriores y la actual
-   gtk_text_buffer_apply_tag (buffer, tagBlack, &start, &end);
+   gtk_text_buffer_remove_all_tags (buffer,
+        &start,
+        &end);
+
 
    //coloreo de azul la linea actual
    //gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterCurrent, &lineIterSiguiente);
+
+   if(endOfTrace==0){
+       //printf("se acabó\n");
+       return NULL;
+      
+   }
 
    //coloreo de azul la linea siguiente
    gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterNext, &lineIterNextNext);
@@ -204,21 +213,21 @@ char *goToNextLineTraceAndGetCurrent() {
    //scroll until new line is visible
    gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(text_view), &lineIterNext, 0.0, 0, 0.0, 0.0);
    //Store the current line
-   char *currentLine = gtk_text_buffer_get_text (buffer, &lineIterCurrent, &lineIterNext, 1);
+   char *currentLine = gtk_text_buffer_get_text (buffer, &lineIterNext, &lineIterNextNext, 1);
    
    //printf("%s", lineCurrent);
    gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterCurrent);
-   gtk_text_buffer_move_mark (buffer, marcaLineCurrent, &lineIterCurrent);
-   //gtk_text_buffer_add_mark (buffer, marcaLineCurrent, &lineIterCurrent);
+   //printf("%d\n", endOfTrace);
 
-   if(currentLine[0]=='\0'){
-       return NULL;
-   }
-    
+
+   gtk_text_buffer_move_mark (buffer, marcaLineCurrent, &lineIterCurrent);
+
+   //printf("%s", currentLine); 
+   //printf("aaaaaaa\n"); 
    return currentLine;
 }
-
-char *goToPreviousLineTraceAndGetIt() {
+ 
+char *goToPreviousLineTrace() {
 
    //iter at the current line
    GtkTextIter lineIterCurrent;
@@ -231,7 +240,8 @@ char *goToPreviousLineTraceAndGetIt() {
    GtkTextIter lineIterPrevious=lineIterCurrent;
 
    int principio=gtk_text_view_backward_display_line (GTK_TEXT_VIEW(text_view), &lineIterPrevious);
-   if(!principio){
+   if(principio==0){
+       //printf("se acabó\n");
        return NULL;
    }
    principio=gtk_text_view_backward_display_line (GTK_TEXT_VIEW(text_view), &lineIterPrevious);
@@ -255,11 +265,11 @@ char *goToPreviousLineTraceAndGetIt() {
    // Remove all tags for removing colour.
    gtk_text_buffer_remove_all_tags (buffer,
         &start,
-         &lineIterNext);
+        &lineIterNext);
    //end=lineIterCurrent;
 
    //coloreo de negro todas las lineas anteriores y la actual
-   gtk_text_buffer_apply_tag (buffer, tagBlack, &start, &lineIterPrevious);
+   //gtk_text_buffer_apply_tag (buffer, tagBlack, &start, &lineIterPrevious);
 
    //coloreo de azul la linea actual
    //gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterCurrent, &lineIterNext);
@@ -276,6 +286,7 @@ char *goToPreviousLineTraceAndGetIt() {
    gtk_text_buffer_move_mark (buffer, marcaLineCurrent, &lineIterPrevious);
    //gtk_text_buffer_add_mark (buffer, marcaLineCurrent, &lineIterCurrent);
 
+   
    return currentLine;
 
 }
