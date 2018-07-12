@@ -59,9 +59,12 @@ int generateGUI(int argc, char *argv[]) {
    gtk_box_pack_start (GTK_BOX(buttonBox), button2, FALSE, FALSE, 5);
    gtk_box_pack_start (GTK_BOX(buttonBox), button3, FALSE, FALSE, 5);
 #if DEBUG
-   button4= gtk_button_new_with_label ("Test");
-   g_signal_connect (button4, "clicked", G_CALLBACK (callbackTest), (gpointer) NULL);
+   button4= gtk_button_new_with_label ("Go Back");
+   g_signal_connect (button4, "clicked", G_CALLBACK (callbackGoBack), (gpointer) NULL);
    gtk_box_pack_start (GTK_BOX(buttonBox), button4, FALSE, FALSE, 5);
+   button5= gtk_button_new_with_label ("Test");
+   g_signal_connect (button5, "clicked", G_CALLBACK (callbackTest), (gpointer) NULL);
+   gtk_box_pack_start (GTK_BOX(buttonBox), button5, FALSE, FALSE, 5);
 #endif
    ///creo la tabla para los paneles
    table = gtk_table_new (2, 2+numberCaches, TRUE);

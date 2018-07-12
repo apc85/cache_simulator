@@ -105,6 +105,15 @@ void callbackNextStep( GtkWidget *widget, gpointer   data)
 
 
 #if DEBUG
+
+/**
+ * Callback fuction for going back to the previou operation on tracefile. Only in debug mode
+ */
+void callbackGoBack( GtkWidget *widget, gpointer   data){
+    goToPreviousLineTraceAndGetIt();
+}
+
+
 /**
  * Callback fuction for testing the program. Only in debug mode
  */

@@ -23,6 +23,7 @@ extern int useGUI;
    GtkWidget *button3;
 #if DEBUG
    GtkWidget *button4;
+   GtkWidget *button5;
 #endif
 
    GtkWidget *buttonBox;
