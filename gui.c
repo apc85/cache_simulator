@@ -230,8 +230,11 @@ char *goToPreviousLineTraceAndGetIt() {
    //iter at the previous line
    GtkTextIter lineIterPrevious=lineIterCurrent;
 
-   gtk_text_view_backward_display_line (GTK_TEXT_VIEW(text_view), &lineIterPrevious);
    int principio=gtk_text_view_backward_display_line (GTK_TEXT_VIEW(text_view), &lineIterPrevious);
+   if(!principio){
+       return NULL;
+   }
+   principio=gtk_text_view_backward_display_line (GTK_TEXT_VIEW(text_view), &lineIterPrevious);
    if(!principio){
        gtk_text_buffer_get_iter_at_offset (buffer, &lineIterPrevious, 0);
        //return "dasdasd";
