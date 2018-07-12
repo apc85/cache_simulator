@@ -68,12 +68,22 @@ void callbackRestart( GtkWidget *widget, gpointer   data){
 void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 {
    char *currentLine;
-   while(currentLine = goToNextLineTraceAndGetCurrent()) {
-      removeAllColors();
+   currentLine = getCurrentLineTrace();
+   int firstOperation=1;
+
+   while(currentLine) {
+       
       if(preprocessTraceLine(currentLine)) {
          struct memOperation operation;
          parseLine(currentLine, -1, &operation);
+         if(operation.hasBreakPoint && !firstOperation){
+              break;
+         }
+         removeAllColors();
          simulate_step(&operation);
+         goToNextLineTraceAndGetCurrent();
+         currentLine = getCurrentLineTrace();
+         firstOperation=0;
       }
    }
 }

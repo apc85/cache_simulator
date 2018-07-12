@@ -157,7 +157,11 @@ char *getCurrentLineTrace() {
    //iter at the next line
    GtkTextIter lineIterNext=lineIterCurrent;
    gtk_text_view_forward_display_line (GTK_TEXT_VIEW(text_view), &lineIterNext);
-   char *currentLine = gtk_text_buffer_get_text (buffer, &lineIterCurrent, &lineIterNext, 1); 
+   char *currentLine = gtk_text_buffer_get_text (buffer, &lineIterCurrent, &lineIterNext, 1);
+   if(currentLine!=NULL&&currentLine[0]=='\0'){
+       return NULL;
+   }
+
    return currentLine;
 }
 
