@@ -68,7 +68,7 @@ void callbackRestart( GtkWidget *widget, gpointer   data){
 void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 {
    char *currentLine;
-   while(currentLine = nextLineTrace()) {
+   while(currentLine = goToNextLineTraceAndGetCurrent()) {
       removeAllColors();
       if(preprocessTraceLine(currentLine)) {
          struct memOperation operation;
@@ -84,7 +84,7 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 void callbackNextStep( GtkWidget *widget, gpointer   data)
 {
    removeAllColors();
-   char *currentLine = nextLineTrace();
+   char *currentLine = goToNextLineTraceAndGetCurrent();
    if(currentLine!=NULL&&preprocessTraceLine(currentLine)) {
       struct memOperation operation;
       parseLine(currentLine, -1, &operation);
@@ -164,7 +164,8 @@ void callbackTest( GtkWidget *widget, gpointer   data){
    scrollCacheToRow(1, 32);
 */
 
-printf("%s\n", previousLineTrace());
+//printf("%s\n", goToPreviousLineTraceAndGetIt());
+printf("%s\n", getCurrentLineTrace());
 
 }
 #endif
