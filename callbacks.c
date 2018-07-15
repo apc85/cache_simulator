@@ -92,11 +92,6 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 
    }
 
-   if(currentLine==NULL&&previousLine[0]!='\0'){
-        insertTextInBuffer("\n", buffer);
-        currentLine=goToNextLineTrace();
-   }
-
 }
 
 /**
@@ -114,16 +109,9 @@ void callbackNextStep( GtkWidget *widget, gpointer   data)
       simulate_step(&operation);
    }
 
+
    //jump to the next trace line
-   char* nextLine= goToNextLineTrace();
-
-
-   //after it reaches the last line it needs to jump to the next. As it doesn't exist  I add a blank line.
-   //if this isn't done it will stay in the last line and it will be simulated again if you press the button.
-   if(nextLine==NULL&&currentLine[0]!='\0'){
-        insertTextInBuffer("\n", buffer);
-        goToNextLineTrace();
-   }
+   goToNextLineTrace();
 
 }
 

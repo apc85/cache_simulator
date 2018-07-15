@@ -247,6 +247,9 @@ int readTraceFile(char * filename){
       }
       fprintf(stderr,"\nTracefile was loaded correctly\n");
 #endif
+      if(useGUI){
+            insertTextInBuffer("\n", buffer);
+      }
 
       return 0;
    }
