@@ -10,6 +10,7 @@
  * Callback function for setting simulation to its initial state.
  */
 void callbackRestart( GtkWidget *widget, gpointer   data){
+   cycle = 0;
    // Reset each cache
    for(int i=0; i<numberCaches; i++){
       // If it is a divided cache, both parts must be reset
@@ -163,9 +164,9 @@ void callbackTest( GtkWidget *widget, gpointer   data){
    line.user_content="hola mundo. Este es el contenido del usuario en la linea cache.";
    line.dirty=2;
    line.valid=1;
-   line.last_accessed=3;
-   line.times_accessed=4;
-   line.first_accessed=5;
+   line.lastAccess=3;
+   line.accessCount=4;
+   line.firstAccess=5;
    line.content=(unsigned[]){1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
    void * user_use;
    writeLineCacheInstructions(0, &line, 7);

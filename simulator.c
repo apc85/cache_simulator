@@ -2,22 +2,16 @@
 #include <string.h>
 #include <math.h>
 #include "confparser.h"
-#include "traceparser.h"
 #include "datainterface.h"
+#include "datamanipulation.h"
 #include "simulator.h"
+
+unsigned long cycle = 0;
 
 /* Private functions */
 void incrementDoubleStatistics(char *component, char *property, double value);
 void incrementIntegerStatistics(char *component, char *property, int value);
-/*
-struct memOperation{
-  int hasBreakPoint;
-  int instructionOrData;
-  long address;
-  int operationType;
-  int size;
-  long data;
-}; */
+int selectVia(int cacheLevel, int set);
 
 struct response_type {
    double time;
@@ -53,7 +47,7 @@ void simulate_step(struct memOperation *operation) {
          readLineCacheData(cacheLevel, &cacheData, line);
          if(response.size == 1) {
             response.data[0] = cacheData.content[offset];
-   printf("Will get %d -> %d\n",offset, response.data[0]);
+            printf("Will get %d -> %d\n",offset, response.data[0]);
 
          } else {
          }
@@ -117,7 +111,8 @@ void simulate_step(struct memOperation *operation) {
             cacheData.valid = 1;
             cacheData.tag = tag;
             cacheData.content = response.data;
-            writeCacheLine(cacheLevel, &cacheData, set*caches[cacheLevel].asociativity);
+            int via = selectVia(cacheLevel, set);
+            writeCacheLine(cacheLevel, &cacheData, via);
          } else {
             // Assuming WriteThrough and WriteNoAllocate
             
@@ -128,6 +123,52 @@ void simulate_step(struct memOperation *operation) {
    free(response.data);
    incrementIntegerStatistics("Totals", "Accesses", 1);
    incrementDoubleStatistics("Totals", "Access time", response.time);
+   cycle++;
+}
+
+int selectVia(int cacheLevel, int set) {
+   struct cacheLine cacheData;
+   int lruLine = -1;
+   int lruTime = -1;
+   int lfuLine = -1;
+   int lfuCount = -1;
+   int fifoLine = -1;
+   int fifoTime = -1;
+   int firstLine = set*caches[cacheLevel].asociativity;
+   for(int i = 0, via = rand() % caches[cacheLevel].asociativity; i < caches[cacheLevel].asociativity; i++, via=(via+1) % caches[cacheLevel].asociativity) {
+      int line = firstLine + via;
+      readFlagsCacheData(cacheLevel, &cacheData, line);
+      if(cacheData.valid == 0)
+         return line;
+      if(lruLine == -1 || lruTime > cacheData.lastAccess) {
+         lruLine = line;
+         lruTime = cacheData.lastAccess;
+      }
+      if(lfuLine == -1 || lfuCount > cacheData.accessCount) {
+         lfuLine = line;
+         lfuCount = cacheData.accessCount;
+      }
+      if(fifoLine == -1 || fifoTime > cacheData.firstAccess) {
+         fifoLine = line;
+         fifoTime = cacheData.firstAccess;
+      }
+   }
+   // LRU=0, LFU=1, RANDOM=2, FIFO=3
+   if(caches[cacheLevel].replacement == RANDOM) {
+      return set * caches[cacheLevel].asociativity
+             + rand() % caches[cacheLevel].asociativity;
+   }
+   else if(caches[cacheLevel].replacement == LRU) {
+      return lruLine;
+   }
+   else if(caches[cacheLevel].replacement == LFU) {
+      return lfuLine;
+   }
+   else if(caches[cacheLevel].replacement == FIFO) {
+      return fifoLine;
+   }
+   else
+      return set * caches[cacheLevel].asociativity;
 }
 
 void incrementDoubleStatistics(char *component, char *property, double value) {

@@ -501,7 +501,7 @@ void createPanelCache(int level) {
       //si es dividida lo titulo como cache de data y creo la parte correspondiente a instructions
    } else {
       char cadena[50];
-      sprintf(cadena, "CACHE L%d DATOS", level+1);
+      sprintf(cadena, "CACHE L%d DATA", level+1);
       label =gtk_label_new (cadena);
       gtk_box_pack_start(GTK_BOX(vboxData), label, FALSE, FALSE, 1);
       gtk_box_pack_start(GTK_BOX(vboxData), scwin, TRUE, TRUE, 1);
@@ -605,7 +605,7 @@ void createPanelCache(int level) {
             GTK_POLICY_ALWAYS);
       GtkWidget *labelInstruction;
       char cadenaInstructions[50];
-      sprintf(cadenaInstructions, "CACHE L%d INSTRUCCIONES", level+1);
+      sprintf(cadenaInstructions, "CACHE L%d INST.", level+1);
       labelInstruction =gtk_label_new (cadenaInstructions);
       gtk_box_pack_start(GTK_BOX(vboxInstruction), labelInstruction, FALSE, FALSE, 1);
       gtk_box_pack_start(GTK_BOX(vboxInstruction), scwinInstruction, TRUE, TRUE, 1);

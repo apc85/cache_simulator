@@ -406,10 +406,10 @@ int parseConfiguration(dictionary *ini) {
         const char * cache_replacement=iniparser_getstring(ini, param, NULL);
         long long_replacement=parseReplacementPolicy(cache_replacement);
         if(long_replacement==-1) {
-            fprintf(stderr,"Error: cache%d:replacement value is not valid\n", cacheNumber+1);
+            fprintf(stderr,"Error: replacement value for cache%d is not valid.\n", cacheNumber+1);
             errors++;
         } else if(long_replacement==-2) {
-            fprintf(stderr,"Error: Missing value cache%d:replacement\n", cacheNumber+1);
+            fprintf(stderr,"Error: Missing replacement value for cache%d.\n", cacheNumber+1);
             errors++;
         } else {
             caches[cacheNumber].replacement=long_replacement;

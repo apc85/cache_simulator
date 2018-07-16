@@ -1,6 +1,7 @@
 #include <math.h>
 #include "datamanipulation.h"
 #include "datainterface.h"
+#include "simulator.h"
 
 //colors defined to be used in the program
 const char* const colors[] = { "green", "red", "yellow", "green", "red", "grey", "orange", "purple", "pink", "lightblue", "lightgreen", "white"};
@@ -151,7 +152,7 @@ void showCacheLineData(int level, int i){
    printf("line: %x     tag: %x    set: %x\n", line.line, line.tag, line.set);
    printf("content: %s\n", contentString);
    printf("user content: %s\n", (char*)line.user_content);
-   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d  first accessed: %d\n", line.valid, line.dirty, line.last_accessed, line.times_accessed, line.first_accessed);
+   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d  first accessed: %d\n", line.valid, line.dirty, line.lastAccess, line.accessCount, line.firstAccess);
    printf("------------------------------------------------------\n");
    free(line.content);
 }
@@ -195,18 +196,38 @@ void readLineCacheData(int level, struct cacheLine* line, int i){
          USER_CONTENT_CACHE, &line->user_content,
          VALID, &line->valid,
          DIRTY, &line->dirty,
-         TIMES_ACCESSED, &line->times_accessed,
-         LAST_ACCESSED, &line->last_accessed,
-         FIRST_ACCESSED, &line->first_accessed,
+         TIMES_ACCESSED, &line->accessCount,
+         LAST_ACCESSED, &line->lastAccess,
+         FIRST_ACCESSED, &line->firstAccess,
          -1);
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
          COLOR_CACHE, colors[READ],
+         TIMES_ACCESSED, line->accessCount+1,
+         LAST_ACCESSED, cycle,
          -1);
    //number of words in a cache line
    line->content = malloc((sizeof(long))*caches[level].numWords);
    //turn String format to long array.
    contentStringToArray(line->content, contentString, caches[level].numWords);
    g_free(contentString);
+}
+
+void readFlagsCacheData(int level, struct cacheLine* line, int i){
+   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+   GtkTreeIter iter;
+   char *contentString;
+   gtk_tree_model_iter_nth_child (model, &iter, NULL, i);
+
+   gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
+         LINE, &line->line,
+         TAG, &line->tag,
+         SET, &line->set,
+         VALID, &line->valid,
+         DIRTY, &line->dirty,
+         TIMES_ACCESSED, &line->accessCount,
+         LAST_ACCESSED, &line->lastAccess,
+         FIRST_ACCESSED, &line->firstAccess,
+         -1);
 }
 /**
  * This function reads a instruction cache line.
@@ -228,12 +249,14 @@ void readLineCacheInstructions(int level, struct cacheLine* line, int i){
          USER_CONTENT_CACHE, &line->user_content,
          VALID, &line->valid,
          DIRTY, &line->dirty,
-         TIMES_ACCESSED, &line->times_accessed,
-         LAST_ACCESSED, &line->last_accessed,
-         FIRST_ACCESSED, &line->first_accessed,
+         TIMES_ACCESSED, &line->accessCount,
+         LAST_ACCESSED, &line->lastAccess,
+         FIRST_ACCESSED, &line->firstAccess,
          -1);
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
          COLOR_CACHE, colors[READ],
+         TIMES_ACCESSED, line->accessCount+1,
+         LAST_ACCESSED, cycle,
          -1);
    //number of words in a cache line
    line->content = malloc((sizeof(unsigned))*caches[level].numWords);
@@ -258,7 +281,7 @@ void showCacheLineInstructions(int level, int i){
    printf("line: %x     tag: %x    set: %x\n", line.line, line.tag, line.set);
    printf("content:%s\n", contentString);
    printf("user content: %s\n", (char*)line.user_content);
-   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d  first accessed: %d\n", line.valid, line.dirty, line.last_accessed, line.times_accessed, line.first_accessed);
+   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d  first accessed: %d\n", line.valid, line.dirty, line.lastAccess, line.accessCount, line.firstAccess);
    printf("------------------------------------------------------\n");
    free(line.content);
 }
@@ -289,6 +312,9 @@ void writeCacheLine(int level, struct cacheLine *line, unsigned line_number) {
          TAG, line->tag,
          CONTENT_CACHE, contentString, 
          COLOR_CACHE, colors[WRITE],
+         TIMES_ACCESSED, 1,
+         LAST_ACCESSED, cycle,
+         FIRST_ACCESSED, cycle,
          -1);
 }
 
@@ -312,9 +338,9 @@ void writeLineCacheData(int level, struct cacheLine* line, int i){
          USER_CONTENT_CACHE, line->user_content,
          VALID, line->valid,
          DIRTY, line->dirty,
-         TIMES_ACCESSED, line->times_accessed,
-         LAST_ACCESSED, line->last_accessed,
-         FIRST_ACCESSED, line->first_accessed,
+         TIMES_ACCESSED, 1,
+         LAST_ACCESSED, cycle,
+         FIRST_ACCESSED, cycle,
          -1);
 }
 /**
@@ -337,9 +363,9 @@ void writeLineCacheInstructions(int level, struct cacheLine* line, int i){
          USER_CONTENT_CACHE, line->user_content,
          VALID, line->valid,
          DIRTY, line->dirty,
-         TIMES_ACCESSED, line->times_accessed,
-         LAST_ACCESSED, line->last_accessed,
-         FIRST_ACCESSED, line->first_accessed,
+         TIMES_ACCESSED, line->accessCount,
+         LAST_ACCESSED, line->lastAccess,
+         FIRST_ACCESSED, line->firstAccess,
          -1);
 }
 /**
@@ -533,9 +559,9 @@ void writeBlankDataCacheLine(int level, unsigned line){
    cacheLineAdd.tag=0;
    cacheLineAdd.dirty=0;
    cacheLineAdd.valid=0;
-   cacheLineAdd.last_accessed=0;
-   cacheLineAdd.times_accessed=0;
-   cacheLineAdd.first_accessed=0;
+   cacheLineAdd.lastAccess=0;
+   cacheLineAdd.accessCount=0;
+   cacheLineAdd.firstAccess=0;
    unsigned lineContent[caches[level].numWords];
    for(unsigned i=0; i<caches[level].numWords; i++){
       lineContent[i]=0;	
@@ -557,9 +583,9 @@ void writeBlankInstructionCacheLine(int level, unsigned line){
    cacheLineAdd.tag=0;
    cacheLineAdd.dirty=0;
    cacheLineAdd.valid=0;
-   cacheLineAdd.last_accessed=0;
-   cacheLineAdd.times_accessed=0;
-   cacheLineAdd.first_accessed=0;
+   cacheLineAdd.lastAccess=0;
+   cacheLineAdd.accessCount=0;
+   cacheLineAdd.firstAccess=0;
    unsigned lineContent[caches[level].numWords];
    for(unsigned i=0; i<caches[level].numWords; i++){
       lineContent[i]=0;	

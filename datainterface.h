@@ -29,9 +29,9 @@ struct cacheLine{
 
   unsigned valid;
   unsigned dirty;
-  unsigned last_accessed;
-  unsigned times_accessed;
-  unsigned first_accessed;
+  unsigned lastAccess;
+  unsigned accessCount;
+  unsigned firstAccess;
 };
 
 struct memoryPosition{
@@ -55,6 +55,7 @@ void writeCacheLine(int level, struct cacheLine *line, unsigned line_number);
 //para caches divididas
 long findTagInCache(int level, unsigned set, unsigned requestTag);
 void showCacheLineData(int level, int i);
+void readFlagsCacheData(int level, struct cacheLine* line, int i);
 void readLineCacheData(int level, struct cacheLine* line, int i);
 void writeLineCacheData(int level, struct cacheLine* line, int i);
 void setColorDataCacheLine(int level, int i, int color);
