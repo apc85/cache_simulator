@@ -750,3 +750,17 @@ void scrollInstructionCacheToRow(int level, long row) {
    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW(cacheLevelPanels[level].viewInstruction),
          path, NULL, TRUE, 0.5, 0);
 }
+
+/**
+ * Function for printing error messages. If gui mode it also shows error dialog.
+ * @param message to print
+ */
+void printErrorMessage(char * message){
+   GtkWidget *dialog = gtk_message_dialog_new (GTK_WINDOW(window),
+                                  GTK_DIALOG_DESTROY_WITH_PARENT,
+                                  GTK_MESSAGE_ERROR,
+                                  GTK_BUTTONS_CLOSE,
+                                  "Error loading file");
+   gtk_dialog_run (GTK_DIALOG (dialog));
+   gtk_widget_destroy (dialog);
+}
