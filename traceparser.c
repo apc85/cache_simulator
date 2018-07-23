@@ -36,6 +36,7 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
       line++;
    }
 
+   char message[1000];
    int fieldId = 0;
    char * pch = strtok (line," ");
    while (pch != NULL)
@@ -44,68 +45,70 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
       switch(fieldId) {
          case 0:// Load/Fetch or Store (One character)
             if(strlen(pch) != 1 || ( *pch != 'L' && *pch != 'S')) {
-               fprintf(stderr,"memory operation must be Load/Fetch (L) or Store (S). Line %d\n", lineNumber);
+               printErrorMessage("memory operation must be Load/Fetch (L) or Store (S).", lineNumber);
                return -1;
             }
             operationType = *pch == 'L' ? LOAD : STORE;
             break; 
          case 1: // Address (Must be hexadecimal)
             if(!isCorrectHexadecimal(pch)){
-               fprintf(stderr,"invalid address. line %d\n", lineNumber);
+               printErrorMessage("invalid address.", lineNumber);
                return -1;
             }
             address = strtol(pch, NULL, 16);
 
             if(address<memory.page_base_address||address>=memory.page_base_address+memory.page_size){
-	       fprintf(stderr,"address out of page range. line %d\n", lineNumber);
+               printErrorMessage("address out of page range.", lineNumber);
                return -1;
 	    }
             break;
          case 2: // Instruction or Data (One character)
             if(strlen(pch) != 1 || ( *pch != 'I' && *pch != 'D')) {
-               fprintf(stderr,"memory operation must be Intruction (I) or Data (D). Line %d\n", lineNumber);
+               printErrorMessage("memory operation must be Intruction (I) or Data (D).", lineNumber);
                return -1;
             }
             instructionOrData = *pch == 'I' ? INSTRUCTION : DATA;
             if(operationType==STORE && instructionOrData==INSTRUCTION){
-               fprintf(stderr,"You can not store (S) an Instruction (I). Line %d\n", lineNumber);
+               printErrorMessage("You can not store (S) an Instruction (I).", lineNumber);
                return -1;
             }
             break;
          case 3: // Size (Must be number of bytes and power of two)
             if(!isCorrectDecimal(pch)){
-               fprintf(stderr,"invalid size. Line %d\n", lineNumber);
+               printErrorMessage("invalid size.", lineNumber);
                return -1;
             }
             size = atoi(pch);
             if(!isPowerOf2(size)){
-               fprintf(stderr,"size must be power of 2. Line %d\n", lineNumber);
+               printErrorMessage("size must be power of 2.", lineNumber);
                return -1;
             }
             int word_bytes=cpu.word_width/8;
             if(size!=(word_bytes)){
-               fprintf(stderr,"Only word size access is already implemented. Please, use %d bytes size. Line %d\n", word_bytes, lineNumber);
+               sprintf(message,"Only word size access is already implemented. Please, use %d bytes size.", word_bytes);
+               printErrorMessage(message, lineNumber);
                return -1;
             }
             break;
          case 4: // Data (Must be a number)
             if(!isCorrectDecimal(pch)){
-               fprintf(stderr,"invalid data. Line %d\n", lineNumber);
+               printErrorMessage("invalid data.", lineNumber);
                return -1;					
             }
             data = atol(pch);
             if(operationType==LOAD){
-               fprintf(stderr,"you can not use the data field in load (L) operations. Line %d\n", lineNumber);
+               printErrorMessage("you can not use the data field in load (L) operations.", lineNumber);
                return -1;		
             }
             if(ceil(log(data+1)/log(2))>(size*8)){
 	       
-               fprintf(stderr,"data value is too large to be stored in %d bytes. Line %d\n", word_bytes, lineNumber);
+               sprintf(message,"data value is too large to be stored in %d bytes.", word_bytes);
+               printErrorMessage(message, lineNumber);
                return -1;
             }
             break;
          default: // Too many fields
-            fprintf(stderr,"too many fields. Line %d\n", lineNumber);
+            printErrorMessage("too many fields.", lineNumber);
             return -1;
       }
       // Get next field
@@ -113,7 +116,7 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
       pch = strtok (NULL, " ");
    }
    if(fieldId < 3) {
-      fprintf(stderr,"too few fields. Line %d\n", lineNumber);
+      printErrorMessage("too few fields.", lineNumber);
       return -1;
    }
 
@@ -178,6 +181,7 @@ int preprocessTraceLine(char *currentLine) {
  * It allocates memory, freeMemory() should be called when the memory operations read are no longer necessary.
  */
 int readTraceFile(char * filename){
+   window=NULL;
    numberOfOperations = 0;
    int errors = 0;
    FILE *file;

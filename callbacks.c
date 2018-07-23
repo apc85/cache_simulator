@@ -201,6 +201,8 @@ void callbackTest( GtkWidget *widget, gpointer   data){
 goToNextLineTrace();
 printf("%s", getCurrentLineTrace());
 
+printErrorMessage("probando", 4);
+
 }
 #endif
 

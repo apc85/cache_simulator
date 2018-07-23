@@ -65,6 +65,6 @@ extern int useGUI;
    void scrollDataCacheToRow(int level, long row);
    void scrollInstructionCacheToRow(int level, long row);
    void scrollTextViewToLine(long line);
-   void printErrorMessage(char * message);
+   void printErrorMessage(char * message, int lineNumber);
 
 #endif

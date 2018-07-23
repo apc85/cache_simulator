@@ -752,15 +752,20 @@ void scrollInstructionCacheToRow(int level, long row) {
 }
 
 /**
- * Function for printing error messages. If gui mode it also shows error dialog.
+ * Function for printing error messages. If gui mode it shows error dialog.
  * @param message to print
  */
-void printErrorMessage(char * message){
-   GtkWidget *dialog = gtk_message_dialog_new (GTK_WINDOW(window),
+void printErrorMessage(char * message, int lineNumber){
+
+   if(window==NULL){
+       fprintf(stderr, "%s Line %d\n", message, lineNumber);
+   }else{
+        GtkWidget *dialog = gtk_message_dialog_new (GTK_WINDOW(window),
                                   GTK_DIALOG_DESTROY_WITH_PARENT,
                                   GTK_MESSAGE_ERROR,
                                   GTK_BUTTONS_CLOSE,
-                                  "Error loading file");
-   gtk_dialog_run (GTK_DIALOG (dialog));
-   gtk_widget_destroy (dialog);
+                                  "%s", message);
+        gtk_dialog_run (GTK_DIALOG (dialog));
+        gtk_widget_destroy (dialog);
+   }
 }
