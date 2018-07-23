@@ -61,6 +61,9 @@ void callbackRestart( GtkWidget *widget, gpointer   data){
    //coloreo de azul la linea siguiente
    gtk_text_buffer_apply_tag (buffer, tagBlue, &lineIterNext, &lineIterNextNext);
 
+   setStatistics("Totals", "Accesses", "0");
+   setStatistics("Totals", "Access time", "0,0");
+
 }
 
 /**
