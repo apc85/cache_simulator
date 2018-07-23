@@ -75,7 +75,7 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
 
    while(currentLine) {
 
-      printf("%s", currentLine);
+      //printf("%s", currentLine);
        
       if(preprocessTraceLine(currentLine)) {
          struct memOperation operation;
@@ -201,6 +201,14 @@ void callbackTest( GtkWidget *widget, gpointer   data){
 goToNextLineTrace();
 printf("%s", getCurrentLineTrace());
 
+
+ GtkWidget *dialog = gtk_message_dialog_new (GTK_WINDOW(window),
+                                  GTK_DIALOG_DESTROY_WITH_PARENT,
+                                  GTK_MESSAGE_ERROR,
+                                  GTK_BUTTONS_CLOSE,
+                                  "Error loading file");
+ gtk_dialog_run (GTK_DIALOG (dialog));
+ gtk_widget_destroy (dialog);
 }
 #endif
 
