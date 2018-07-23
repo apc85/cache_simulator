@@ -79,7 +79,9 @@ void callbackSimulateAll( GtkWidget *widget, gpointer   data)
        
       if(preprocessTraceLine(currentLine)) {
          struct memOperation operation;
-         parseLine(currentLine, -1, &operation);
+         if(parseLine(currentLine, -1, &operation)==-1){
+              return;
+         }
          if(operation.hasBreakPoint && !firstOperation){
               break;
          }
@@ -102,11 +104,11 @@ void callbackNextStep( GtkWidget *widget, gpointer   data)
 {
    removeAllColors();
    char *currentLine = getCurrentLineTrace();
-
-   
    if(currentLine!=NULL&&preprocessTraceLine(currentLine)) {
       struct memOperation operation;
-      parseLine(currentLine, -1, &operation);
+      if(parseLine(currentLine, -1, &operation)==-1){
+           return;
+      }
       simulate_step(&operation);
    }
 
