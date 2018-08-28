@@ -16,7 +16,7 @@ int countLines(FILE* fp);
  * Parse a trace line. It receives a string with the trace line and its line number in the trace file.
  * It returns by reference a structure with the parsed information.
  */
-int parseLine(char* line, int lineNumber, struct memOperation *operation){
+int parseLine(char* line, int lineNumber, struct memOperation *result){
 #if DEBUG
    fprintf(stderr,"Parsing trace line --%s--\n", line);
 #endif
@@ -25,7 +25,7 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
    int size=cpu.word_width/8;
    long data=DEFAULT_DATA;
    int instructionOrData=DEFAULT_INSTRUCTION_OR_DATA;
-   int operationType=DEFAULT_OPERATION_TYPE;
+   int operation=DEFAULT_OPERATION_TYPE;
    long address=DEFAULT_ADDRESS; 
 
 
@@ -48,7 +48,7 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
                printErrorMessage("memory operation must be Load/Fetch (L) or Store (S).", lineNumber);
                return -1;
             }
-            operationType = *pch == 'L' ? LOAD : STORE;
+            operation = *pch == 'L' ? LOAD : STORE;
             break; 
          case 1: // Address (Must be hexadecimal)
             if(!isCorrectHexadecimal(pch)){
@@ -68,7 +68,7 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
                return -1;
             }
             instructionOrData = *pch == 'I' ? INSTRUCTION : DATA;
-            if(operationType==STORE && instructionOrData==INSTRUCTION){
+            if(operation==STORE && instructionOrData==INSTRUCTION){
                printErrorMessage("You can not store (S) an Instruction (I).", lineNumber);
                return -1;
             }
@@ -96,7 +96,7 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
                return -1;					
             }
             data = atol(pch);
-            if(operationType==LOAD){
+            if(operation==LOAD){
                printErrorMessage("you can not use the data field in load (L) operations.", lineNumber);
                return -1;		
             }
@@ -120,14 +120,14 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
       return -1;
    }
 
-   if(operation!=NULL){
+   if(result!=NULL){
 
-       operation->hasBreakPoint=hasBreakPoint;
-       operation->size=size;
-       operation->data=data;
-       operation->instructionOrData=instructionOrData;
-       operation->operationType=operationType;
-       operation->address=address; 
+       result->hasBreakPoint=hasBreakPoint;
+       result->size=size;
+       result->data=data;
+       result->instructionOrData=instructionOrData;
+       result->operation=operation;
+       result->address=address; 
 
    }
    return 0;
@@ -135,7 +135,7 @@ int parseLine(char* line, int lineNumber, struct memOperation *operation){
 
 void printMemOperation(FILE *fp, struct memOperation *operation) {
    fprintf(fp, operation->hasBreakPoint ? "! " : "  ");
-   fprintf(fp, operation->operationType==LOAD ? "L " : "S ");
+   fprintf(fp, operation->operation==LOAD ? "L " : "S ");
    fprintf(fp, "%0*lx ", (int)cpu.address_width/4, operation->address);
    fprintf(fp, operation->instructionOrData==INSTRUCTION ? "I " : "D ");
    fprintf(fp, "% d ", operation->size);

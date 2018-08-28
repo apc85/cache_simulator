@@ -12,7 +12,7 @@ char *interfaceError = NULL;
  * This function sets memory to its initial state.
  */
 void resetMemory() {
-   GtkTreeIter iter;	
+   GtkTreeIter iter;   
    //get iterator at position 0
    gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(modelMEMORY),
          &iter,
@@ -33,118 +33,61 @@ void resetMemory() {
             &iter);
    }
 }
-/**
- * This function resets a unified cache. Sets the data cache to its initial state.
- * @param level where the cache is located. 
- */
-void resetCache(int level){
-   //I reset data cache as I had defined unified caches as divided caches which don't have instruction cache. Just to make it easier.
-   resetDataCache(level);
-}
+
+void resetCacheModel(GtkTreeModel *model,int level){
+   //this is for filling each field with the correct amount of bits it must be represented with.
+   struct cacheLine* line;
+   GtkTreeIter iter;
+   //get iter at first position
+   gtk_tree_model_get_iter_first (model, &iter);
+   //set each field to its initial value
+   unsigned cache_content[caches[level].numWords];
+   for(int i=0; i<caches[level].numWords; i++){
+      cache_content[i]=0;
+   }
+   //this converts form long array to string representation.
+   char cache_content_char[2000];
+   contentArrayToString(cache_content, cache_content_char, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
+   //I write all the reseted fields in each cache line
+   for(int i=0; i<caches[level].numLines; i++){ 
+      gtk_list_store_set (GTK_LIST_STORE(model), &iter,
+            LINE, i,
+            TAG, 0,
+            SET, i/caches[level].asociativity,
+            CONTENT_CACHE, cache_content_char,
+            USER_CONTENT_CACHE, NULL,
+            VALID, 0,
+            DIRTY, 0,
+            TIMES_ACCESSED, 0,
+            LAST_ACCESSED, 0,
+            FIRST_ACCESSED, 0,
+            COLOR_CACHE, colors[WHITE],
+            -1);
+      //move iter to next position
+      gtk_tree_model_iter_next (GTK_TREE_MODEL(model), &iter);
+   }
+} 
+
 /**
  * This function resets a Data cache. Sets the data cache to its initial state.
  * @param cache level where the cache is located. 
  */
-void resetDataCache(int level){
-   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
-   //this is for filling each field with the correct amount of bits it must be represented with.
-   struct cacheLine* line;
-   GtkTreeIter iter;
-   //get iter at first position
-   gtk_tree_model_get_iter_first (model, &iter);
-   //set each field to its initial value
-   unsigned cache_content[caches[level].numWords];
-   for(int i=0; i<caches[level].numWords; i++){
-      cache_content[i]=0;
-   }
-   //this converts form long array to string representation.
-   char cache_content_char[2000];
-   contentArrayToString(cache_content, cache_content_char, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
-   //I write all the reseted fields in each cache line
-   for(int i=0; i<caches[level].numLines; i++){ 
-      gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-            LINE, i,
-            TAG, 0,
-            SET, i/caches[level].asociativity,
-            CONTENT_CACHE, cache_content_char,
-            USER_CONTENT_CACHE, NULL,
-            VALID, 0,
-            DIRTY, 0,
-            TIMES_ACCESSED, 0,
-            LAST_ACCESSED, 0,
-            FIRST_ACCESSED, 0,
-            COLOR_CACHE, colors[WHITE],
-            -1);
-      //move iter to next position
-      gtk_tree_model_iter_next (GTK_TREE_MODEL(model), &iter);
-   }
-} 
-/**
- * This function resets a Instruction cache. Sets the data cache to its initial state.
- * @param level where the cache is located. 
- */
-void resetInstructionCache(int level){
-   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
-   //this is for filling each field with the correct amount of bits it must be represented with.
-   struct cacheLine* line;
-   GtkTreeIter iter;
-   //get iter at first position
-   gtk_tree_model_get_iter_first (model, &iter);
-   //set each field to its initial value
-   unsigned cache_content[caches[level].numWords];
-   for(int i=0; i<caches[level].numWords; i++){
-      cache_content[i]=0;
-   }
-   //this converts form long array to string representation.
-   char cache_content_char[2000];
-   contentArrayToString(cache_content, cache_content_char, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
-   //I write all the reseted fields in each cache line
-   for(int i=0; i<caches[level].numLines; i++){ 
-      gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-            LINE, i,
-            TAG, 0,
-            SET, i/caches[level].asociativity,
-            CONTENT_CACHE, cache_content_char,
-            USER_CONTENT_CACHE, NULL,
-            VALID, 0,
-            DIRTY, 0,
-            TIMES_ACCESSED, 0,
-            LAST_ACCESSED, 0,
-            FIRST_ACCESSED, 0,
-            COLOR_CACHE, colors[WHITE],
-            -1);
-      //move iter to next position
-      gtk_tree_model_iter_next (GTK_TREE_MODEL(model), &iter);
-   }
-} 
-/**
- * This function shows all the values contained in the fields of a unified cache line
- * @param level which will be shown
- * @param i line index
- */
-void showCacheLine(int level, int i){
-   //I show data cache as I had defined unified caches as divided caches which don't have instruction cache. Just to make it easier.
-   showCacheLineData(level, i);
+void resetCache(int level){
+   if(cacheLevels[level].modelData) 
+      resetCacheModel(GTK_TREE_MODEL(cacheLevels[level].modelData),level);
+   if(cacheLevels[level].modelInstruction) 
+      resetCacheModel(GTK_TREE_MODEL(cacheLevels[level].modelInstruction),level);
 }
-/**
- * This function reads a cache line.
- * @param level which will be read
- * @param line. A pointer to a struct cacheLine were data will be placed. User must free line.content after calling the function. 
- * @param i line index
- */
-void readLineCache(int level, struct cacheLine* line, int i){
-   //I read data cache as I had defined unified caches as divided caches which don't have instruction cache. Just to make it easier.
-   readLineCacheData(level, line, i);
-}
+
 /**
  * This function shows all the values contained in the fields of a data cache line
  * @param level which will be shown
  * @param i line index
  */
-void showCacheLineData(int level, int i){
+void showLineFromCache(int instructionOrData, int level, int i){
    struct cacheLine line;
    //first I read it
-   readLineCacheData(level, &line, i);
+   readLineFromCache(instructionOrData, level, &line, i);
    char contentString[2000];
    contentArrayToString(line.content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
    //I print the values.
@@ -152,14 +95,24 @@ void showCacheLineData(int level, int i){
    printf("line: %x     tag: %x    set: %x\n", line.line, line.tag, line.set);
    printf("content: %s\n", contentString);
    printf("user content: %s\n", (char*)line.user_content);
-   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d  first accessed: %d\n", line.valid, line.dirty, line.lastAccess, line.accessCount, line.firstAccess);
+   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d  first accessed: %d\n",
+            line.valid, line.dirty, line.lastAccess, line.accessCount, line.firstAccess);
    printf("------------------------------------------------------\n");
    free(line.content);
 }
 
-long findTagInCache(int level, unsigned requestSet, unsigned requestTag) {
-   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+long findTagInCache(int instructionOrData, int level, unsigned requestSet, unsigned requestTag) {
+   GtkTreeModel *model;
    GtkTreeIter iter;
+
+   if(caches[level].separated == 0 || instructionOrData == DATA) {
+      model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+      printf("Data\n");
+   }
+   else {
+      model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
+      printf("Instruction %d %d %d==%d\n",level, caches[level].separated, instructionOrData, DATA);
+   }
    unsigned set,tag,valid,via=0;
    // Get first via in this set
    int more = gtk_tree_model_iter_nth_child (model, &iter, NULL, requestSet*caches[level].asociativity);
@@ -182,11 +135,21 @@ long findTagInCache(int level, unsigned requestSet, unsigned requestTag) {
  * @param line. A pointer to a struct cacheLine were data will be placed. User must free line.content after calling the function. 
  * @param i line index
  */
-void readLineCacheData(int level, struct cacheLine* line, int i){
-   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+void readLineFromCache(int instructionOrData, int level, struct cacheLine* line, int lineNumber){
+   GtkTreeModel *model;
+   GtkTreeView *view;
    GtkTreeIter iter;
    char *contentString;
-   gtk_tree_model_iter_nth_child (model, &iter, NULL, i);
+
+   if(!caches[level].separated || instructionOrData == DATA) {
+      model = GTK_TREE_MODEL(cacheLevels[level].modelData);
+      view = GTK_TREE_VIEW(cacheLevelPanels[level].viewData);
+   }
+   else {
+      model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
+      view = GTK_TREE_VIEW(cacheLevelPanels[level].viewInstruction);
+   }
+   gtk_tree_model_iter_nth_child (model, &iter, NULL, lineNumber);
 
    gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
          LINE, &line->line,
@@ -205,6 +168,9 @@ void readLineCacheData(int level, struct cacheLine* line, int i){
          TIMES_ACCESSED, line->accessCount+1,
          LAST_ACCESSED, cycle,
          -1);
+   char rowString[50];
+   sprintf(rowString, "%d", lineNumber);
+   gtk_tree_view_scroll_to_cell (view, gtk_tree_path_new_from_string(rowString), NULL, TRUE, 0.5, 0);
    //number of words in a cache line
    line->content = malloc((sizeof(long))*caches[level].numWords);
    //turn String format to long array.
@@ -212,11 +178,17 @@ void readLineCacheData(int level, struct cacheLine* line, int i){
    g_free(contentString);
 }
 
-void readFlagsCacheData(int level, struct cacheLine* line, int i){
-   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+void readFlagsFromCache(int instructionOrData, int level, struct cacheLine* line, int lineNumber){
+   GtkTreeModel *model;
    GtkTreeIter iter;
    char *contentString;
-   gtk_tree_model_iter_nth_child (model, &iter, NULL, i);
+
+   if(!caches[level].separated || instructionOrData == DATA)
+      model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+   else
+      model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
+
+   gtk_tree_model_iter_nth_child (model, &iter, NULL, lineNumber);
 
    gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
          LINE, &line->line,
@@ -228,62 +200,6 @@ void readFlagsCacheData(int level, struct cacheLine* line, int i){
          LAST_ACCESSED, &line->lastAccess,
          FIRST_ACCESSED, &line->firstAccess,
          -1);
-}
-/**
- * This function reads a instruction cache line.
- * @param level which will be read
- * @param line A pointer to a struct cacheLine were data will be placed. User must free line.content after calling the function. 
- * @param i line index
- */
-void readLineCacheInstructions(int level, struct cacheLine* line, int i){
-   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
-   GtkTreeIter iter;
-   char *contentString;
-   contentArrayToString(line->content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
-   gtk_tree_model_iter_nth_child (model, &iter, NULL, i);
-   gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
-         LINE, &line->line,
-         TAG, &line->tag,
-         SET, &line->set,
-         CONTENT_CACHE, &contentString,
-         USER_CONTENT_CACHE, &line->user_content,
-         VALID, &line->valid,
-         DIRTY, &line->dirty,
-         TIMES_ACCESSED, &line->accessCount,
-         LAST_ACCESSED, &line->lastAccess,
-         FIRST_ACCESSED, &line->firstAccess,
-         -1);
-   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-         COLOR_CACHE, colors[READ],
-         TIMES_ACCESSED, line->accessCount+1,
-         LAST_ACCESSED, cycle,
-         -1);
-   //number of words in a cache line
-   line->content = malloc((sizeof(unsigned))*caches[level].numWords);
-   //turn String format to long array.
-   contentStringToArray(line->content, contentString, caches[level].numWords);
-   g_free(contentString);
-}
-/**
- * This function reads a Instruction cache line.
- * @param level which will be read
- * @param cacheLine. A pointer to a struct cacheLine were data will be placed. User must free line.content after calling the function. 
- * @param i line index
- */
-void showCacheLineInstructions(int level, int i){
-   struct cacheLine line;
-   //I read the cache line
-   readLineCacheInstructions(level, &line, i);
-   char contentString[2000];
-   contentArrayToString(line.content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
-   //I print the values of each field
-   printf("------------------------------------------------------\n");
-   printf("line: %x     tag: %x    set: %x\n", line.line, line.tag, line.set);
-   printf("content:%s\n", contentString);
-   printf("user content: %s\n", (char*)line.user_content);
-   printf("valid: %d   dirty: %d   last accessed: %d  times accessed: %d  first accessed: %d\n", line.valid, line.dirty, line.lastAccess, line.accessCount, line.firstAccess);
-   printf("------------------------------------------------------\n");
-   free(line.content);
 }
 /**
  * This function writes a cache line.
@@ -291,21 +207,27 @@ void showCacheLineInstructions(int level, int i){
  * @param line. A pointer to a struct cacheLine containing the data to be written.
  * @param i line index
  */
-void writeLineCache(int level, struct cacheLine* line, int i){
-   writeLineCacheData(level, line, i);
-}
-
-void writeCacheLine(int level, struct cacheLine *line, unsigned line_number) {
-   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
+void writeLineToCache(int instructionOrData, int level, struct cacheLine *line, unsigned lineNumber) {
+   GtkTreeModel *model;
+   GtkTreeView *view;
    GtkTreeIter iter;
    char contentString[2000];
+
+   if(!caches[level].separated || instructionOrData == DATA) {
+      model = GTK_TREE_MODEL(cacheLevels[level].modelData);
+      view = GTK_TREE_VIEW(cacheLevelPanels[level].viewData);
+   }
+   else {
+      model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
+      view = GTK_TREE_VIEW(cacheLevelPanels[level].viewInstruction);
+   }
    contentArrayToString(line->content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
    printf("Write Content: ");
    for(int i = 0; i < caches[level].numWords; i++) {
       printf("%x ",line->content[i]);
    }
    printf(" ---> %s\n", contentString);
-   gtk_tree_model_iter_nth_child (model, &iter, NULL, line_number);
+   gtk_tree_model_iter_nth_child (model, &iter, NULL, lineNumber);
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
          VALID, line->valid,
          DIRTY, line->dirty,
@@ -316,58 +238,11 @@ void writeCacheLine(int level, struct cacheLine *line, unsigned line_number) {
          LAST_ACCESSED, cycle,
          FIRST_ACCESSED, cycle,
          -1);
+   char rowString[50];
+   sprintf(rowString, "%d", lineNumber);
+   gtk_tree_view_scroll_to_cell (view, gtk_tree_path_new_from_string(rowString), NULL, TRUE, 0.5, 0);
 }
 
-/**
- * This function writes a data cache line.
- * @param level which will be written
- * @param cacheLine. A pointer to a struct cacheLine containing the data to be written.
- * @param i line index
- */
-void writeLineCacheData(int level, struct cacheLine* line, int i){
-   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
-   GtkTreeIter iter;
-   char contentString[2000];
-   contentArrayToString(line->content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
-   gtk_tree_model_iter_nth_child (model, &iter, NULL, i);
-   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-         LINE, line->line,
-         TAG, line->tag,
-         SET, line->set,
-         CONTENT_CACHE, contentString,
-         USER_CONTENT_CACHE, line->user_content,
-         VALID, line->valid,
-         DIRTY, line->dirty,
-         TIMES_ACCESSED, 1,
-         LAST_ACCESSED, cycle,
-         FIRST_ACCESSED, cycle,
-         -1);
-}
-/**
- * This function writes a Instruction cache line.
- * @param level which will be written
- * @param line  A pointer to a struct cacheLine containing the data to be written.
- * @param i line index
- */
-void writeLineCacheInstructions(int level, struct cacheLine* line, int i){
-   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
-   GtkTreeIter iter;
-   char contentString[2000];
-   contentArrayToString(line->content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
-   gtk_tree_model_iter_nth_child (model, &iter, NULL, i);
-   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-         LINE, line->line,
-         TAG, line->tag,
-         SET, line->set,
-         CONTENT_CACHE, contentString,
-         USER_CONTENT_CACHE, line->user_content,
-         VALID, line->valid,
-         DIRTY, line->dirty,
-         TIMES_ACCESSED, line->accessCount,
-         LAST_ACCESSED, line->lastAccess,
-         FIRST_ACCESSED, line->firstAccess,
-         -1);
-}
 /**
  * This function shows a memory position
  * @param address is the memory address
@@ -387,6 +262,7 @@ int showMemoryAddress(long address){
    printf("------------------------------------------------------\n");
    return 0;
 }
+
 /**
  * This function reads a memory position
  * @param pos. Read data will be placed in here. User must take care of freeing pos.user_content
@@ -473,7 +349,7 @@ int setMemoryAddressColor(long address, int color){
       return -2;
    }
    //get the table row from the memory address
-   sprintf(iterstring, "%ld", (address-memory.page_base_address)/(cpu.word_width/8));	
+   sprintf(iterstring, "%ld", (address-memory.page_base_address)/(cpu.word_width/8));   
    gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
          &iter,
          iterstring);
@@ -481,118 +357,6 @@ int setMemoryAddressColor(long address, int color){
          COLOR, colors[color],
          -1);
    return 0;
-}
-/**
- * This function sets a memory word position to its initial value
- * @param address is the memory address
- */
-void clearMemoryAddress(long address){
-   struct memoryPosition pos;
-   pos.address=address * cpu.word_width/8;
-   pos.content=0;
-   writeMemoryAddress(&pos, address);
-}
-/**
- * This function colours a data cache line
- * @param level which will be coloured.
- * @param i memory address
- * @param color. This is an enum type. It tells the function which color to use.
- */
-void setColorDataCacheLine(int level, int i, int color){
-   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelData);
-   GtkTreeIter iter;
-   char iterstring[50];
-   sprintf(iterstring, "%d", i);	
-   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
-         &iter,
-         iterstring);
-   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-         COLOR_CACHE, colors[color],
-         -1);
-}
-/**
- * This function colours a data cache line
- * @param level which will be coloured.
- * @param i memory address
- * @param color. This is an enum type. It tells the function which color to use.
- */
-void setColorCacheLine(int level, int i, int color){
-   setColorDataCacheLine(level, i, color);
-}
-/**
- * This function colours a Instruction cache line
- * @param level which will be coloured.
- * @param i memory address
- * @param color. This is an enum type. It tells the function which color to use.
- */
-void setColorInstructionsCacheLine(int level, int i, int color){
-   GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
-   GtkTreeIter iter;
-   char iterstring[50];
-   sprintf(iterstring, "%d", i);	
-   gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL(model),
-         &iter,
-         iterstring);
-   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-         COLOR_CACHE, colors[color],
-         -1);
-}
-/**
- * This function sets a cache line to its initial value
- * @param level to be written
- * @param line to be written
- */
-void writeBlankCacheLine(int level, unsigned line){
-   writeBlankDataCacheLine(level, line);
-}
-
-/**
- * This function sets a data cache line to its initial value
- * @param level to be written
- * @param line to be written
- */
-void writeBlankDataCacheLine(int level, unsigned line){
-   
-   struct cacheLine cacheLineAdd;
-   cacheLineAdd.line=line;
-   cacheLineAdd.set=line/(caches[level].asociativity);
-   cacheLineAdd.tag=0;
-   cacheLineAdd.dirty=0;
-   cacheLineAdd.valid=0;
-   cacheLineAdd.lastAccess=0;
-   cacheLineAdd.accessCount=0;
-   cacheLineAdd.firstAccess=0;
-   unsigned lineContent[caches[level].numWords];
-   for(unsigned i=0; i<caches[level].numWords; i++){
-      lineContent[i]=0;	
-   }
-   cacheLineAdd.content=lineContent;
-   cacheLineAdd.user_content=NULL;
-   writeLineCacheData(level, &cacheLineAdd, line);
-}
-/**
- * This function sets a Instruction cache line to its initial value
- * @param level to be written
- * @param line to be written
- */
-void writeBlankInstructionCacheLine(int level, unsigned line){
-   
-   struct cacheLine cacheLineAdd;
-   cacheLineAdd.line=line;
-   cacheLineAdd.set=line/(caches[level].asociativity);
-   cacheLineAdd.tag=0;
-   cacheLineAdd.dirty=0;
-   cacheLineAdd.valid=0;
-   cacheLineAdd.lastAccess=0;
-   cacheLineAdd.accessCount=0;
-   cacheLineAdd.firstAccess=0;
-   unsigned lineContent[caches[level].numWords];
-   for(unsigned i=0; i<caches[level].numWords; i++){
-      lineContent[i]=0;	
-   }
-   cacheLineAdd.content=lineContent;
-   cacheLineAdd.user_content=NULL;
-   writeLineCacheInstructions(level, &cacheLineAdd, line);
 }
 /**
  * This function is used to add a property or value to the simulation statistics panel
@@ -745,16 +509,11 @@ void printStatistics(FILE* fp) {
             COMPONET_OR_PROPERTY, &name, -1);
       //print title
       printf("%s\n", name);
-     
-
       //print children
-
       GtkTreeIter child;
-      int hasNextProperty=gtk_tree_model_iter_children (tree_model,
+      int hasNextProperty=gtk_tree_model_iter_children(tree_model,
             &child,
             &iter);
-
-      
 
       while(hasNextProperty){
          char *name;
@@ -781,10 +540,8 @@ void printStatistics(FILE* fp) {
  * This function is used to remove all the colors from the cache and memory tables
  */
 void removeAllColors(){
-
    //remove colors from all caches
    for(int i=0; i<numberCaches; i++){
-
        GtkTreeModel *model= GTK_TREE_MODEL(cacheLevels[i].modelData);
        GtkTreeIter iter;
        int hasNext= gtk_tree_model_get_iter_first (model, &iter);
@@ -795,10 +552,8 @@ void removeAllColors(){
        }
 
        if(caches[i].separated){
-
            model= GTK_TREE_MODEL(cacheLevels[i].modelInstruction);
            hasNext= gtk_tree_model_get_iter_first (model, &iter);
-
            while(hasNext){
               gtk_list_store_set (GTK_LIST_STORE(model), &iter, COLOR_CACHE, colors[WHITE], -1);
               hasNext=gtk_tree_model_iter_next (model, &iter);
@@ -810,8 +565,8 @@ void removeAllColors(){
    GtkTreeIter iter;
    int hasNext= gtk_tree_model_get_iter_first (GTK_TREE_MODEL(modelMEMORY), &iter);
    while(hasNext){
-   	gtk_list_store_set (GTK_LIST_STORE(modelMEMORY), &iter, COLOR, colors[WHITE], -1);
-   	hasNext=gtk_tree_model_iter_next (GTK_TREE_MODEL(modelMEMORY), &iter);
+      gtk_list_store_set (GTK_LIST_STORE(modelMEMORY), &iter, COLOR, colors[WHITE], -1);
+      hasNext=gtk_tree_model_iter_next (GTK_TREE_MODEL(modelMEMORY), &iter);
    }
 
 }

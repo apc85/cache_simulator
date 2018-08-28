@@ -5,11 +5,11 @@
 #include <gtk/gtk.h>
 
 struct cacheLEVEL {
-  GtkListStore *modelData;//estructura de data
-  GtkListStore *modelInstruction;//estructura de data
+  GtkListStore *modelData;
+  GtkListStore *modelInstruction;
 };
 
-GtkListStore *modelMEMORY;//estructura de data
+GtkListStore *modelMEMORY; 
 
 struct cacheLEVEL cacheLevels[MAX_CACHES];
 

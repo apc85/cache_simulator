@@ -17,7 +17,7 @@ struct memOperation {
   int hasBreakPoint;
   int instructionOrData;
   long address;
-  int operationType;
+  int operation;
   int size;
   long data;
 };

@@ -33,73 +33,47 @@ void createMemoryModel(){
  */
 void createCacheModel(int level){
    //Creo la cache. en caso de que sea dividia esta será la parte de data
-   GtkTreeIter   iter;
-   GtkTreeIter   iterInstruction;
-   GtkTreeViewColumn* column;
    GtkListStore *modelData;
    GtkListStore *modelInstruction;
-   /*
-    LINE=0,
-    SET=1,
-    VALID=2,
-    DIRTY=3,
-    TIMES_ACCESSED=4,
-    LAST_ACCESSED=5,
-    FIRST_ACCESSED=6,
-    TAG=7,
-    CONTENT_CACHE=8,
-    COLOR_CACHE=9,
-    USER_CONTENT_CACHE=10,
-    N_COLUMNS_CACHE=11
-    */
    modelData= gtk_list_store_new(N_COLUMNS_CACHE,
-         G_TYPE_UINT,   
-         G_TYPE_UINT,   
-         G_TYPE_UINT,   
-         G_TYPE_UINT,    
-         G_TYPE_UINT,   
-         G_TYPE_UINT,
-         G_TYPE_UINT,
-         G_TYPE_UINT,
-         G_TYPE_STRING,
-         G_TYPE_STRING,
-         G_TYPE_POINTER
-         );
+         G_TYPE_UINT,     /* LINE=0, */
+         G_TYPE_UINT,     /* SET=1, */
+         G_TYPE_UINT,     /* VALID=2, */
+         G_TYPE_UINT,     /* DIRTY=3, */
+         G_TYPE_UINT,     /* TIMES_ACCESSED=4, */
+         G_TYPE_UINT,     /* LAST_ACCESSED=5, */
+         G_TYPE_UINT,     /* FIRST_ACCESSED=6, */
+         G_TYPE_UINT,     /* TAG=7, */
+         G_TYPE_STRING,   /* CONTENT_CACHE=8, */
+         G_TYPE_STRING,   /* COLOR_CACHE=9, */
+         G_TYPE_POINTER   /* USER_CONTENT_CACHE=10, */
+         );               
    cacheLevels[level].modelData=modelData;
+   for(int i=0; i<caches[level].numLines; i++)
+      gtk_list_store_append(modelData, &iter);
+
    if(caches[level].separated){
       modelInstruction= gtk_list_store_new(N_COLUMNS_CACHE,
-            G_TYPE_UINT,   
-            G_TYPE_UINT,   
-            G_TYPE_UINT,   
-            G_TYPE_UINT,    
-            G_TYPE_UINT,   
-            G_TYPE_UINT,
-            G_TYPE_UINT,
-            G_TYPE_UINT,
-            G_TYPE_STRING,
-            G_TYPE_STRING,
-            G_TYPE_POINTER
-            );
+            G_TYPE_UINT,   /* LINE=0, */
+            G_TYPE_UINT,   /* SET=1, */
+            G_TYPE_UINT,   /* VALID=2, */
+            G_TYPE_UINT,   /* DIRTY=3, */                    
+            G_TYPE_UINT,   /* TIMES_ACCESSED=4, */
+            G_TYPE_UINT,   /* LAST_ACCESSED=5, */
+            G_TYPE_UINT,   /* FIRST_ACCESSED=6, */
+            G_TYPE_UINT,   /* TAG=7, */
+            G_TYPE_STRING, /* CONTENT_CACHE=8, */
+            G_TYPE_STRING, /* COLOR_CACHE=9, */
+            G_TYPE_POINTER /* USER_CONTENT_CACHE=10, */
+            );             
       cacheLevels[level].modelInstruction=modelInstruction;
+      for(int i=0; i<caches[level].numLines; i++)
+         gtk_list_store_append(modelInstruction, &iter);
    }
-   //modelMEMORY=modelData;	
- 
 #if DEBUG
-   fprintf(stderr,"cache level %d: lines: %d, asociativity: %ld, sets: %d, words line: %d\n", level+1, caches[level].numLines, caches[level].asociativity, caches[level].numSets, caches[level].numWords);
+         fprintf(stderr,"cache level %d: lines: %d, asociativity: %ld, sets: %d, words line: %d\n", level+1, caches[level].numLines, caches[level].asociativity, caches[level].numSets, caches[level].numWords);
 #endif
-   for(int i=0; i<caches[level].numLines; i++){
-      gtk_list_store_append(modelData, &iter);
-      if(caches[level].separated){ 
-         gtk_list_store_append(modelInstruction, &iterInstruction);
       }
-      if(caches[level].separated){
-         writeBlankDataCacheLine(level, i);
-         writeBlankInstructionCacheLine(level, i);
-      }else{
-         writeBlankCacheLine(level, i);
-      }
-   }
-}
 
 /**
  * Function that generates all data structures for the program.
@@ -109,6 +83,7 @@ void generateDataStorage(){
    createMemoryModel();
    for(int i=0; i< numberCaches; i++){
       createCacheModel(i);
+      resetCache(i);
    }
    create_model_statistics();
 }

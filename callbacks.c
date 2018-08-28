@@ -12,15 +12,8 @@
 void callbackRestart( GtkWidget *widget, gpointer   data){
    cycle = 0;
    // Reset each cache
-   for(int i=0; i<numberCaches; i++){
-      // If it is a divided cache, both parts must be reset
-      if(caches[i].separated){
-         resetDataCache(i);
-         resetInstructionCache(i);
-      } else {
-         resetCache(i);
-      }
-   }
+   for(int i=0; i<numberCaches; i++)
+      resetCache(i);
    resetMemory();
 
    // Go to the first line in the trace panel */
@@ -227,7 +220,7 @@ gint delete_event( GtkWidget *widget,
     * GTK will emit the "destroy" signal. Returning TRUE means
     * you don't want the window to be destroyed.
     * This is useful for popping up 'are you sure you want to quit?'
-    * type dialogs. */
+    * operation dialogs. */
    //g_print ("fin del programa\n");
    /* Change TRUE to FALSE and the main window will be destroyed with
     * a "delete_event". */

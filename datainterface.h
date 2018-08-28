@@ -42,47 +42,25 @@ struct memoryPosition{
 
 extern char *interfaceError;
 
-//para caches unificadas
-void showCacheLine(int level, int i);
-void readLineCache(int level, struct cacheLine* line, int i);
-void writeLineCache(int level, struct cacheLine* line, int i);
-void setColorCacheLine(int level, int i, int color);
+void resetMemory();
+void resetCacheModel(GtkTreeModel *model,int level);
 void resetCache(int level);
-void writeBlankCacheLine(int level, unsigned line);
 
-void writeCacheLine(int level, struct cacheLine *line, unsigned line_number);
+void showLineFromCache(int instructionOrData, int level, int i);
+long findTagInCache(int instructionOrData, int level, unsigned requestSet, unsigned requestTag);
+void readLineFromCache(int instructionOrData, int level, struct cacheLine* line, int lineNumber);
+void readFlagsFromCache(int instructionOrData, int level, struct cacheLine* line, int lineNumber);
+void writeLineToCache(int instructionOrData, int level, struct cacheLine *line, unsigned lineNumber);
 
-//para caches divididas
-long findTagInCache(int level, unsigned set, unsigned requestTag);
-void showCacheLineData(int level, int i);
-void readFlagsCacheData(int level, struct cacheLine* line, int i);
-void readLineCacheData(int level, struct cacheLine* line, int i);
-void writeLineCacheData(int level, struct cacheLine* line, int i);
-void setColorDataCacheLine(int level, int i, int color);
-void resetDataCache(int level);
-void writeBlankDataCacheLine(int level, unsigned line);
-
-void showCacheLineInstructions(int level, int i);
-void readLineCacheInstructions(int level, struct cacheLine* line, int i);
-void writeLineCacheInstructions(int level, struct cacheLine* line, int i);
-void setColorInstructionsCacheLine(int level, int i, int color);
-void resetInstructionCache(int level);
-void writeBlankInstructionCacheLine(int level, unsigned line);
-
-// Function calls to manipulate the memory
 int showMemoryAddress(long address);
 int readMemoryAddress(struct memoryPosition *pos, long address);
 int writeMemoryAddress(struct memoryPosition *pos, long address);
 int setMemoryAddressColor(long address, int color);
-void resetMemory();
-void clearMemoryAddress(long address);
 
-// Function calls to manage the performance and statistics storage
 void setStatistics(char* component, char* property, char* value);
 char* getStatistics(char* component, char* property);
 void printStatistics(FILE* fp);
 
-//function calls to manipulate the whole memory hierarchy.
 void removeAllColors();
 
 #endif

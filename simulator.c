@@ -11,7 +11,7 @@ unsigned long cycle = 0;
 /* Private functions */
 void incrementDoubleStatistics(char *component, char *property, double value);
 void incrementIntegerStatistics(char *component, char *property, int value);
-int selectVia(int cacheLevel, int set);
+int selectVia(int instructionOrData, int cacheLevel, int set);
 
 struct response_type {
    double time;
@@ -39,12 +39,12 @@ void simulate_step(struct memOperation *operation) {
       unsigned offset = ( response.address & ((1 << caches[cacheLevel].offsetBits)-1) ) >> 2;
       long line;
       response.time += caches[cacheLevel].access_time;
-      if((line = findTagInCache(cacheLevel, set, tag)) != -1) {
+      if((line = findTagInCache(operation->instructionOrData, cacheLevel, set, tag)) != -1) {
          // Hit
          printf(">   Cache L%d: Hit (%ld)\n", cacheLevel+1, line);
          struct cacheLine cacheData;
          cacheData.content = malloc((sizeof(long))*caches[cacheLevel].numWords);
-         readLineCacheData(cacheLevel, &cacheData, line);
+         readLineFromCache(operation->instructionOrData, cacheLevel, &cacheData, line);
          if(response.size == 1) {
             response.data[0] = cacheData.content[offset];
             printf("Will get %d -> %d\n",offset, response.data[0]);
@@ -56,7 +56,7 @@ void simulate_step(struct memOperation *operation) {
       } else {
          // Miss
          printf(">   Cache L%d: Miss 2^%d-1 = %f\n", cacheLevel+1,caches[cacheLevel].offsetBits, pow(2,caches[cacheLevel].offsetBits)-1);
-         if(operation->operationType == LOAD) {
+         if(operation->operation == LOAD) {
             response.size = caches[cacheLevel].numWords;
             response.address &= -1 << caches[cacheLevel].offsetBits;
             free(response.data);
@@ -70,7 +70,7 @@ void simulate_step(struct memOperation *operation) {
 
    if(response.resolved < 0) {
       response.resolved = numberCaches;
-      if(operation->operationType == LOAD) {
+      if(operation->operation == LOAD) {
          struct memoryPosition pos;
          response.time += memory.access_time_1;
          for(unsigned i=0, address=response.address; i < response.size; i++, address+=cpu.word_width/8) {
@@ -99,20 +99,20 @@ void simulate_step(struct memOperation *operation) {
       unsigned tag = response.address >> (caches[cacheLevel].offsetBits+caches[cacheLevel].setBits);
       unsigned set = (response.address >> caches[cacheLevel].offsetBits) & ((1 << caches[cacheLevel].setBits)-1);
       long line;
-      if((line = findTagInCache(cacheLevel, tag, set)) > 0) {
+      if((line = findTagInCache(operation->instructionOrData, cacheLevel, tag, set)) > 0) {
          // Hit
          printf("<   Cache L%d: Hit\n", cacheLevel+1);
       } else {
          // Miss
          printf("<   Cache L%d: Miss\n", cacheLevel+1);
-         if(operation->operationType == LOAD) {
+         if(operation->operation == LOAD) {
             struct cacheLine cacheData;
             cacheData.dirty = 1;
             cacheData.valid = 1;
             cacheData.tag = tag;
             cacheData.content = response.data;
-            int via = selectVia(cacheLevel, set);
-            writeCacheLine(cacheLevel, &cacheData, via);
+            int via = selectVia(operation->instructionOrData, cacheLevel, set);
+            writeLineToCache(operation->instructionOrData, cacheLevel, &cacheData, via);
          } else {
             // Assuming WriteThrough and WriteNoAllocate
             
@@ -126,7 +126,7 @@ void simulate_step(struct memOperation *operation) {
    cycle++;
 }
 
-int selectVia(int cacheLevel, int set) {
+int selectVia(int instructionOrData, int cacheLevel, int set) {
    struct cacheLine cacheData;
    int lruLine = -1;
    int lruTime = -1;
@@ -137,7 +137,7 @@ int selectVia(int cacheLevel, int set) {
    int firstLine = set*caches[cacheLevel].asociativity;
    for(int i = 0, via = rand() % caches[cacheLevel].asociativity; i < caches[cacheLevel].asociativity; i++, via=(via+1) % caches[cacheLevel].asociativity) {
       int line = firstLine + via;
-      readFlagsCacheData(cacheLevel, &cacheData, line);
+      readFlagsFromCache(instructionOrData, cacheLevel, &cacheData, line);
       if(cacheData.valid == 0)
          return line;
       if(lruLine == -1 || lruTime > cacheData.lastAccess) {
