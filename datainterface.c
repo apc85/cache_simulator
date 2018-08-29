@@ -295,6 +295,8 @@ int readMemoryAddress(struct memoryPosition *pos, long address){
    gtk_list_store_set (GTK_LIST_STORE(model), &iter,
          COLOR, colors[READ],
          -1);
+
+   scrollMemoryToPos(address);
    return 0;
 }
 /**
@@ -327,6 +329,7 @@ int writeMemoryAddress(struct memoryPosition *pos, long address){
          USER_CONTENT, pos->user_content,
          COLOR, colors[WRITE],
          -1);
+   scrollMemoryToPos(address);
    return 0;
 }
 /**
