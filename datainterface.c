@@ -144,10 +144,12 @@ void readLineFromCache(int instructionOrData, int level, struct cacheLine* line,
    if(!caches[level].separated || instructionOrData == DATA) {
       model = GTK_TREE_MODEL(cacheLevels[level].modelData);
       view = GTK_TREE_VIEW(cacheLevelPanels[level].viewData);
+      scrollDataCacheToRow(level, lineNumber);
    }
    else {
       model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
       view = GTK_TREE_VIEW(cacheLevelPanels[level].viewInstruction);
+      scrollInstructionCacheToRow(level, lineNumber);
    }
    gtk_tree_model_iter_nth_child (model, &iter, NULL, lineNumber);
 
@@ -168,9 +170,7 @@ void readLineFromCache(int instructionOrData, int level, struct cacheLine* line,
          TIMES_ACCESSED, line->accessCount+1,
          LAST_ACCESSED, cycle,
          -1);
-   char rowString[50];
-   sprintf(rowString, "%d", lineNumber);
-   gtk_tree_view_scroll_to_cell (view, gtk_tree_path_new_from_string(rowString), NULL, TRUE, 0.5, 0);
+
    //number of words in a cache line
    line->content = malloc((sizeof(long))*caches[level].numWords);
    //turn String format to long array.
@@ -216,10 +216,12 @@ void writeLineToCache(int instructionOrData, int level, struct cacheLine *line, 
    if(!caches[level].separated || instructionOrData == DATA) {
       model = GTK_TREE_MODEL(cacheLevels[level].modelData);
       view = GTK_TREE_VIEW(cacheLevelPanels[level].viewData);
+      scrollDataCacheToRow(level, lineNumber);
    }
    else {
       model= GTK_TREE_MODEL(cacheLevels[level].modelInstruction);
       view = GTK_TREE_VIEW(cacheLevelPanels[level].viewInstruction);
+      scrollInstructionCacheToRow(level, lineNumber);
    }
    contentArrayToString(line->content, contentString, (caches[level].line_size*8)/cpu.word_width, cpu.word_width/4);
    printf("Write Content: ");
@@ -238,9 +240,7 @@ void writeLineToCache(int instructionOrData, int level, struct cacheLine *line, 
          LAST_ACCESSED, cycle,
          FIRST_ACCESSED, cycle,
          -1);
-   char rowString[50];
-   sprintf(rowString, "%d", lineNumber);
-   gtk_tree_view_scroll_to_cell (view, gtk_tree_path_new_from_string(rowString), NULL, TRUE, 0.5, 0);
+   
 }
 
 /**

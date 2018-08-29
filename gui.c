@@ -698,6 +698,11 @@ void scrollTextViewToLine(long line) {
  * @param address which the memory panel will be scrolled to.
  */
 int scrollMemoryToPos(long address) {
+
+   if(!useGUI){
+      return -3;
+   }
+   
    char rowChar[50];
    //if not word address return error
    if(address%(cpu.word_width/8)!=0){
@@ -731,6 +736,9 @@ void scrollCacheToRow(int level, long row) {
  * @param row cache line which the data cache panel will be scrolled to.
  */
 void scrollDataCacheToRow(int level, long row) {
+   if(!useGUI){
+       return;
+   }
    char rowChar[50];
    sprintf(rowChar, "%ld", row);
    GtkTreePath * path=gtk_tree_path_new_from_string (rowChar);
@@ -744,6 +752,9 @@ void scrollDataCacheToRow(int level, long row) {
  * @param row cache line which the instruction cache panel will be scrolled to.
  */
 void scrollInstructionCacheToRow(int level, long row) {
+   if(!useGUI){
+       return;
+   }
    char rowChar[50];
    sprintf(rowChar, "%ld", row);
    GtkTreePath * path=gtk_tree_path_new_from_string (rowChar);
