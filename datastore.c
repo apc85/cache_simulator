@@ -115,10 +115,22 @@ GtkTreeModel *create_model_statistics(void){
    gtk_tree_store_set(GTK_TREE_STORE(model), &toplevel,
          COMPONET_OR_PROPERTY, "CPU",
          -1);
+   /* Append a child to the top level row, and fill in some data */
+   gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
+   gtk_tree_store_set(GTK_TREE_STORE(model), &child,
+         COMPONET_OR_PROPERTY, "Accesses",
+         VALUE, "",
+         -1);
    /* Append a second top level row, and fill it with some data */
    gtk_tree_store_append(GTK_TREE_STORE(model), &toplevel, NULL);
    gtk_tree_store_set(GTK_TREE_STORE(model), &toplevel,
          COMPONET_OR_PROPERTY, "Memory",
+         -1);
+   /* Append a child to the second top level row, and fill in some data */
+   gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
+   gtk_tree_store_set(GTK_TREE_STORE(model), &child,
+         COMPONET_OR_PROPERTY, "Accesses",
+         VALUE, "",
          -1);
    for(int i=0; i<numberCaches; i++){
       char currentCache[100];
@@ -130,7 +142,12 @@ GtkTreeModel *create_model_statistics(void){
       /* Append a child to the second top level row, and fill in some data */
       gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
       gtk_tree_store_set(GTK_TREE_STORE(model), &child,
-            COMPONET_OR_PROPERTY, "Faults",
+            COMPONET_OR_PROPERTY, "Accesses",
+            VALUE, "",
+            -1);
+      gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
+      gtk_tree_store_set(GTK_TREE_STORE(model), &child,
+            COMPONET_OR_PROPERTY, "Misses",
             VALUE, "",
             -1);
       gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
@@ -140,15 +157,25 @@ GtkTreeModel *create_model_statistics(void){
             -1);
       gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
       gtk_tree_store_set(GTK_TREE_STORE(model), &child,
-            COMPONET_OR_PROPERTY, "Fault rate",
+            COMPONET_OR_PROPERTY, "Miss Rate",
             VALUE, "",
             -1);
       gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
       gtk_tree_store_set(GTK_TREE_STORE(model), &child,
-            COMPONET_OR_PROPERTY, "Hit rate",
+            COMPONET_OR_PROPERTY, "Hit Rate",
             VALUE, "",
             -1);
    }
+   /* Append a last top level row, and fill it with some data */
+   gtk_tree_store_append(GTK_TREE_STORE(model), &toplevel, NULL);
+   gtk_tree_store_set(GTK_TREE_STORE(model), &toplevel,
+         COMPONET_OR_PROPERTY, "Totals",
+         -1);
+   gtk_tree_store_append(GTK_TREE_STORE(model), &child, &toplevel);
+   gtk_tree_store_set(GTK_TREE_STORE(model), &child,
+         COMPONET_OR_PROPERTY, "Access Time",
+         VALUE, "",
+         -1);
    statistics_model= model;
    return GTK_TREE_MODEL(model);
 }
